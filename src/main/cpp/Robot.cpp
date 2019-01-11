@@ -6,6 +6,9 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Robot.h"
+#include "RobotPeriodic.h"
+#include "RobotAutonomous.h"
+#include "RobotTeleop.h"
 
 #include <iostream>
 
