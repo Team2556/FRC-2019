@@ -9,6 +9,7 @@
 #include "RobotPeriodic.h"
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
+#include "ctre/Phoenix.h"
 
 #include <iostream>
 
