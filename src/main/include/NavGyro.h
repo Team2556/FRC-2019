@@ -4,6 +4,7 @@
  *  Created on: Feb 1, 2018
  *      Author: team2556
  */
+#define NAVX
 
 #ifndef SRC_NAVGYRO_H_
 #define SRC_NAVGYRO_H_

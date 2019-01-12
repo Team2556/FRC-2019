@@ -14,6 +14,7 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
+#include "NavGyro.h"
 
 
 class Robot : public frc::TimedRobot {
@@ -26,6 +27,8 @@ class Robot : public frc::TimedRobot {
   WPI_TalonSRX          MotorControl_LR{3};
   WPI_TalonSRX          MotorControl_RR{4};
 	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
+  NavGyro               pNavGyro{};
+
 
   void RobotInit() override;
   void RobotPeriodic() override;
