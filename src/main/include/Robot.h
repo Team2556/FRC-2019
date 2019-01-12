@@ -20,12 +20,12 @@ class Robot : public frc::TimedRobot {
  public:
 
   frc::XboxController   Xbox1{0};
-  frc::XboxController   Xbox2{0};
-  WPI_TalonSRX          MotorControl_LF{0};
-  WPI_TalonSRX          MotorControl_LR{1};
+  frc::XboxController   Xbox2{1};
+  WPI_TalonSRX          MotorControl_LF{1};
   WPI_TalonSRX          MotorControl_RF{2};
-  WPI_TalonSRX          MotorControl_RR{3};
-	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LF, MotorControl_LF, MotorControl_LF};
+  WPI_TalonSRX          MotorControl_LR{3};
+  WPI_TalonSRX          MotorControl_RR{4};
+	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
 
   void RobotInit() override;
   void RobotPeriodic() override;

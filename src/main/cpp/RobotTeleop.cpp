@@ -25,9 +25,9 @@ void RobotTeleop::Init()
 // ----------------------------------------------------------------------------
 
 void RobotTeleop::Periodic()
-    {
+{
     pRobot->RobotDrive.DriveCartesian(
-        pRobot->Xbox1.GetX(frc::GenericHID::kRightHand), 
-        pRobot->Xbox1.GetY(frc::GenericHID::kRightHand), 
-        0);
-    }
+        pRobot->Xbox1.GetX(frc::XboxController::kLeftHand), 
+        pRobot->Xbox1.GetY(frc::XboxController::kLeftHand)*-1, 
+        pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
+}
