@@ -9,5 +9,13 @@
 
 class RobotAutonomous {
  public:
-  RobotAutonomous();
+  // Contructor
+  RobotAutonomous(Robot * pclRobot);
+
+  // Members
+  Robot * pRobot;
+
+  // Methods
+  void Init();
+  void Periodic();
 };

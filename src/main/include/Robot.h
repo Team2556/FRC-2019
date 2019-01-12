@@ -9,11 +9,24 @@
 
 #include <string>
 
+// FRC includes
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include "frc/WPILib.h"
+#include "ctre/Phoenix.h"
+
 
 class Robot : public frc::TimedRobot {
  public:
+
+  frc::XboxController   Xbox1{0};
+  frc::XboxController   Xbox2{0};
+  WPI_TalonSRX          MotorControl_LF{0};
+  WPI_TalonSRX          MotorControl_LR{1};
+  WPI_TalonSRX          MotorControl_RF{2};
+  WPI_TalonSRX          MotorControl_RR{3};
+	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LF, MotorControl_LF, MotorControl_LF};
+
   void RobotInit() override;
   void RobotPeriodic() override;
   void AutonomousInit() override;

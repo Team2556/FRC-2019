@@ -5,6 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include "Robot.h"
 #include "RobotTeleop.h"
 
-RobotTeleop::RobotTeleop() {}
+// Constructor
+RobotTeleop::RobotTeleop(Robot * pRobot) 
+    {
+    this->pRobot = pRobot;
+    }
+
+
+// ----------------------------------------------------------------------------
+
+void RobotTeleop::Init()
+    {
+    }
+
+
+// ----------------------------------------------------------------------------
+
+void RobotTeleop::Periodic()
+    {
+    pRobot->RobotDrive.DriveCartesian(
+        pRobot->Xbox1.GetX(frc::GenericHID::kRightHand), 
+        pRobot->Xbox1.GetY(frc::GenericHID::kRightHand), 
+        0);
+    }

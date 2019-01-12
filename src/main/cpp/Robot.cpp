@@ -5,20 +5,40 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+// System includes
+#include <iostream>
+
+// FRC includes
+#include "frc/WPILib.h"
+#include <frc/smartdashboard/SmartDashboard.h>
+#include "ctre/Phoenix.h"
+
+// Robot project includes
 #include "Robot.h"
 #include "RobotPeriodic.h"
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
 
-#include <iostream>
+// Objects and variable for this file only
+RobotTeleop       * ControlTeleop;
+RobotAutonomous   * ControlAutonomous;
 
-#include <frc/smartdashboard/SmartDashboard.h>
 
-void Robot::RobotInit() {
+// ============================================================================
+// Robot class implementation
+// ============================================================================
+
+void Robot::RobotInit() 
+  {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
-}
+
+  ControlTeleop     = new RobotTeleop(this);
+  ControlAutonomous = new RobotAutonomous(this);
+  }
+
+// ----------------------------------------------------------------------------
 
 /**
  * This function is called every robot packet, no matter the mode. Use
@@ -29,6 +49,8 @@ void Robot::RobotInit() {
  * LiveWindow and SmartDashboard integrated updating.
  */
 void Robot::RobotPeriodic() {}
+
+// ============================================================================
 
 /**
  * This autonomous (along with the chooser code above) shows how to select
@@ -48,25 +70,45 @@ void Robot::AutonomousInit() {
   std::cout << "Auto selected: " << m_autoSelected << std::endl;
 
   if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
+      // Custom Auto goes here
+      ControlTeleop->Init();
   } else {
-    // Default Auto goes here
+      // Default Auto goes here
+      ControlAutonomous->Init();
   }
 }
+
+// ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() {
   if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
+      // Custom Auto goes here
+      ControlTeleop->Periodic();
   } else {
-    // Default Auto goes here
+      // Default Auto goes here
+      ControlAutonomous->Periodic();
   }
 }
 
-void Robot::TeleopInit() {}
+// ============================================================================
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopInit() 
+  {
+  ControlTeleop->Init();
+  }
+
+// ----------------------------------------------------------------------------
+
+void Robot::TeleopPeriodic() 
+  {
+    ControlTeleop->Periodic();  
+  }
+
+// ============================================================================
 
 void Robot::TestPeriodic() {}
+
+// ----------------------------------------------------------------------------
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }
