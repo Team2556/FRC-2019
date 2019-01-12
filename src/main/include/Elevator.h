@@ -7,15 +7,7 @@
 
 #pragma once
 
-class RobotAutonomous {
+class Elevator {
  public:
-  // Contructor
-  RobotAutonomous(Robot * pclRobot);
-
-  // Members
-  Robot * pRobot;
-
-  // Methods
-  void Init();
-  void Periodic();
+  Elevator();
 };

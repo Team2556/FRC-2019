@@ -9,5 +9,13 @@
 
 class RobotTeleop {
  public:
-  RobotTeleop();
+  // Contructor
+  RobotTeleop(Robot * pRobot);
+
+  // Members
+  Robot * pRobot;
+
+  // Methods
+  void Init();
+  void Periodic();
 };

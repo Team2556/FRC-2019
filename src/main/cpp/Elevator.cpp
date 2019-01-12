@@ -5,17 +5,6 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#pragma once
+#include "Elevator.h"
 
-class RobotAutonomous {
- public:
-  // Contructor
-  RobotAutonomous(Robot * pclRobot);
-
-  // Members
-  Robot * pRobot;
-
-  // Methods
-  void Init();
-  void Periodic();
-};
+Elevator::Elevator() {}

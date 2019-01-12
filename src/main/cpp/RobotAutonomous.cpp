@@ -5,6 +5,27 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include "Robot.h"
 #include "RobotAutonomous.h"
 
-RobotAutonomous::RobotAutonomous() {}
+// Constructor
+RobotAutonomous::RobotAutonomous(Robot * pclRobot) 
+    {
+    this->pRobot = pRobot;
+    }
+
+
+// ----------------------------------------------------------------------------
+
+void RobotAutonomous::Init()
+    {
+
+    }
+
+
+// ----------------------------------------------------------------------------
+
+void RobotAutonomous::Periodic()
+    {
+
+    }
