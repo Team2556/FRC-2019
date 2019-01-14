@@ -40,6 +40,7 @@ public:
     void   UpdateValues();
     void   SetCommandYaw(float fAngle);
     void   SetCommandYawToCurrent();
+    void   ResetYaw();
     float  GetYaw();
     float  GetYawError();
     float  CorrectRotate(float fRotateLess);

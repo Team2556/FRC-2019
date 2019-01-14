@@ -18,10 +18,13 @@
 #include "RobotPeriodic.h"
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
+#include "DriveBase.h"
+
 
 // Objects and variable for this file only
 RobotTeleop       * ControlTeleop;
 RobotAutonomous   * ControlAutonomous;
+DriveBase         * MecDrive;
 
 
 // ============================================================================
@@ -34,8 +37,11 @@ void Robot::RobotInit()
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 
+  MecDrive          = new DriveBase(this);
   ControlTeleop     = new RobotTeleop(this);
   ControlAutonomous = new RobotAutonomous(this);
+  
+  pNavGyro.Init();
   }
 
 // ----------------------------------------------------------------------------
@@ -101,6 +107,25 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic() 
   {
+    if(Xbox1.GetBButton())
+    {
+      MecDrive->drivemode = true;
+    }
+    else if(Xbox1.GetXButton())
+    {
+      MecDrive->drivemode = false;
+    }
+    if (MecDrive->drivemode == true)
+    {
+      MecDrive->GyroDrive();
+      SmartDashboard::PutString("DriveMode", "Gryo");
+    }
+    else
+    {
+      MecDrive->FieldOrientedDrive();
+      SmartDashboard::PutString("DriveMode", "Field Orienteds");
+    }
+
     ControlTeleop->Periodic();  
   }
 
