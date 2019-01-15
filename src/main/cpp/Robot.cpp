@@ -10,17 +10,15 @@
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
 #include "DriveBase.h"
+#include "Elevator.h"
 
 
-<<<<<<< HEAD
-#include <iostream>
-=======
 // Objects and variable for this file only
 RobotTeleop       * ControlTeleop;
 RobotAutonomous   * ControlAutonomous;
 DriveBase         * MecDrive;
+Elevator          * ControlElevator;
 
->>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -28,19 +26,16 @@ void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
-<<<<<<< HEAD
-}
-=======
 
   MecDrive          = new DriveBase(this);
   ControlTeleop     = new RobotTeleop(this);
   ControlAutonomous = new RobotAutonomous(this);
+  ControlElevator   = new Elevator(this);
   
   pNavGyro.Init();
   }
 
 // ----------------------------------------------------------------------------
->>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 /**
  * This function is called every robot packet, no matter the mode. Use
@@ -64,31 +59,14 @@ void Robot::RobotPeriodic() {}
  * make sure to add them to the chooser code above as well.
  */
 void Robot::AutonomousInit() {
-  m_autoSelected = m_chooser.GetSelected();
-  // m_autoSelected = SmartDashboard::GetString("Auto Selector",
-  //     kAutoNameDefault);
-  std::cout << "Auto selected: " << m_autoSelected << std::endl;
-
-  if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
-  } else {
-    // Default Auto goes here
-  }
+ 
 }
 
 void Robot::AutonomousPeriodic() {
-  if (m_autoSelected == kAutoNameCustom) {
-    // Custom Auto goes here
-  } else {
-    // Default Auto goes here
-  }
 }
 
 void Robot::TeleopInit() {}
 
-<<<<<<< HEAD
-void Robot::TeleopPeriodic() {}
-=======
 // ----------------------------------------------------------------------------
 
 void Robot::TeleopPeriodic() 
@@ -113,10 +91,10 @@ void Robot::TeleopPeriodic()
     }
 
     ControlTeleop->Periodic();  
+    ControlElevator->Output();
   }
 
 // ============================================================================
->>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 void Robot::TestPeriodic() {}
 
