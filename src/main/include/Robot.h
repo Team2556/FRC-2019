@@ -16,7 +16,6 @@
 #include "ctre/Phoenix.h"
 #include "NavGyro.h"
 
-
 class Robot : public frc::TimedRobot {
  public:
 

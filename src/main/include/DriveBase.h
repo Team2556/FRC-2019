@@ -7,16 +7,20 @@
 
 #pragma once
 
-class RobotTeleop {
+#include "Robot.h"
+
+class DriveBase {
  public:
-  // Contructor
-  RobotTeleop(Robot * pRobot);
+  //constructer
+  DriveBase(Robot * pRobot);
 
-  // Members
+  //Members
   Robot * pRobot;
+  bool drivemode;
 
 
-  // Methods
-  void Init();
-  void Periodic();
+  //Functions
+  void NormalDrive();
+  void GyroDrive();
+  void FieldOrientedDrive();
 };

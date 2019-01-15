@@ -9,8 +9,18 @@
 #include "RobotPeriodic.h"
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
+#include "DriveBase.h"
 
+
+<<<<<<< HEAD
 #include <iostream>
+=======
+// Objects and variable for this file only
+RobotTeleop       * ControlTeleop;
+RobotAutonomous   * ControlAutonomous;
+DriveBase         * MecDrive;
+
+>>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -18,7 +28,19 @@ void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
+<<<<<<< HEAD
 }
+=======
+
+  MecDrive          = new DriveBase(this);
+  ControlTeleop     = new RobotTeleop(this);
+  ControlAutonomous = new RobotAutonomous(this);
+  
+  pNavGyro.Init();
+  }
+
+// ----------------------------------------------------------------------------
+>>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 /**
  * This function is called every robot packet, no matter the mode. Use
@@ -64,7 +86,37 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {}
 
+<<<<<<< HEAD
 void Robot::TeleopPeriodic() {}
+=======
+// ----------------------------------------------------------------------------
+
+void Robot::TeleopPeriodic() 
+  {
+    if(Xbox1.GetBButton())
+    {
+      MecDrive->drivemode = true;
+    }
+    else if(Xbox1.GetXButton())
+    {
+      MecDrive->drivemode = false;
+    }
+    if (MecDrive->drivemode == true)
+    {
+      MecDrive->GyroDrive();
+      SmartDashboard::PutString("DriveMode", "Gryo");
+    }
+    else
+    {
+      MecDrive->FieldOrientedDrive();
+      SmartDashboard::PutString("DriveMode", "Field Orienteds");
+    }
+
+    ControlTeleop->Periodic();  
+  }
+
+// ============================================================================
+>>>>>>> 7726a9d7436c94d5c1705c682373e1f3a760afa8
 
 void Robot::TestPeriodic() {}
 
