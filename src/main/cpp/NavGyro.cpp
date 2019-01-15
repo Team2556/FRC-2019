@@ -11,7 +11,7 @@
 //#include "RobotMap.h"
 
 #ifdef NAVX
-#include <AHRS.h>
+#include <frc/AHRS.h>
 #endif
 
 #ifdef ADXRS_GYRO
