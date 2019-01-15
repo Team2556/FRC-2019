@@ -17,10 +17,15 @@ class DriveBase {
   //Members
   Robot * pRobot;
   bool drivemode;
+  int      stopHoldCounter = 0;
+  bool     bRotatePrevious = false;
 
 
   //Functions
+  
   void NormalDrive();
   void GyroDrive();
   void FieldOrientedDrive();
+  void GyroTurningDrive();
+  void Drive();
 };

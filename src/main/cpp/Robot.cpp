@@ -107,25 +107,8 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic() 
   {
-    if(Xbox1.GetBButton())
-    {
-      MecDrive->drivemode = true;
-    }
-    else if(Xbox1.GetXButton())
-    {
-      MecDrive->drivemode = false;
-    }
-    if (MecDrive->drivemode == true)
-    {
-      MecDrive->GyroDrive();
-      SmartDashboard::PutString("DriveMode", "Gryo");
-    }
-    else
-    {
-      MecDrive->FieldOrientedDrive();
-      SmartDashboard::PutString("DriveMode", "Field Orienteds");
-    }
-
+    
+    MecDrive->Drive();
     ControlTeleop->Periodic();  
   }
 
