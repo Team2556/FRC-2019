@@ -9,5 +9,13 @@
 
 class Elevator {
  public:
-  Elevator();
+
+  Elevator(Robot * pRobot);
+  //Function
+    void Output(void);
+
+  //Created pointers//
+    frc::DoubleSolenoid * hatchSolenoid;
+    Robot * pRobot;
+
 };

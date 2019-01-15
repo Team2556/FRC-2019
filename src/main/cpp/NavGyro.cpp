@@ -6,12 +6,12 @@
  */
 
 
-#include "WPILib.h"
+#include "frc/WPILib.h"
 
 //#include "RobotMap.h"
 
 #ifdef NAVX
-#include <AHRS.h>
+#include <frc/AHRS.h>
 #endif
 
 #ifdef ADXRS_GYRO
