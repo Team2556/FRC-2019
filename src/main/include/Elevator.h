@@ -8,15 +8,14 @@
 #pragma once
 
 class Elevator {
-public:
-Elevator(Robot * pRobot);
+ public:
 
-void ElevatorMove();
-void Pneumatics();
-void input();
-void output();
-//counts # of times "A" is pressed
-int solCounter = 0;
-int ACounter = 0;
-Robot * pRobot;
+  Elevator(Robot * pRobot);
+  //Function
+    void Output(void);
+
+  //Created pointers//
+    frc::DoubleSolenoid * hatchSolenoid;
+    Robot * pRobot;
+
 };

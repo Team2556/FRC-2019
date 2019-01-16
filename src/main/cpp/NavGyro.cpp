@@ -6,12 +6,12 @@
  */
 
 
-#include "WPILib.h"
+#include "frc/WPILib.h"
 
 //#include "RobotMap.h"
 
 #ifdef NAVX
-#include <AHRS.h>
+#include <frc/AHRS.h>
 #endif
 
 #ifdef ADXRS_GYRO
@@ -107,7 +107,7 @@ void NavGyro::SetCommandYawToCurrent()
 float NavGyro::GetYaw()
     {
 #if defined(NAVX)
-    return pNavX->GetYaw();
+    return pNavX->GetYaw(); 
 #elif defined(ADXRS_GYRO)
     return pADXRS->GetAngle();
 #else
@@ -115,6 +115,12 @@ float NavGyro::GetYaw()
 #endif
     }
 
+
+void NavGyro::ResetYaw()
+{
+    pNavX->Reset();
+    SetCommandYawToCurrent();
+}
 
 // ----------------------------------------------------------------------------
 
@@ -183,5 +189,8 @@ float fNormalizeAngle180(float fAngle)
     while (fAngle >=  180.0) fAngle -= 360.0;
     return fAngle;
     }
+
+
+
 
 

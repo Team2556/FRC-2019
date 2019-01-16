@@ -7,15 +7,25 @@
 
 #pragma once
 
-class RobotAutonomous {
+#include "Robot.h"
+
+class DriveBase {
  public:
-  // Contructor
-  RobotAutonomous(Robot * pclRobot);
+  //constructer
+  DriveBase(Robot * pRobot);
 
-  // Members
+  //Members
   Robot * pRobot;
+  bool drivemode;
+  int      stopHoldCounter = 0;
+  bool     bRotatePrevious = false;
 
-  // Methods
-  void Init();
-  void Periodic();
+
+  //Functions
+  
+  void NormalDrive();
+  void GyroDrive();
+  void FieldOrientedDrive();
+  void GyroTurningDrive();
+  void Drive();
 };
