@@ -26,6 +26,9 @@ class Robot : public frc::TimedRobot {
   WPI_TalonSRX          MotorControl_RF{2};
   WPI_TalonSRX          MotorControl_LR{3};
   WPI_TalonSRX          MotorControl_RR{4};
+  WPI_TalonSRX          Elevator_Motor{8};
+  WPI_TalonSRX          Intake1{6};
+  WPI_TalonSRX          Intake2{7}; 
 	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
   NavGyro               pNavGyro{};
 

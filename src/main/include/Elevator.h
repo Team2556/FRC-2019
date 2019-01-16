@@ -8,6 +8,15 @@
 #pragma once
 
 class Elevator {
- public:
-  Elevator();
+public:
+Elevator(Robot * pRobot);
+
+void ElevatorMove();
+void Pneumatics();
+void input();
+void output();
+//counts # of times "A" is pressed
+int solCounter = 0;
+int ACounter = 0;
+Robot * pRobot;
 };

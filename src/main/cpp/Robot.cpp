@@ -10,7 +10,6 @@
 
 // FRC includes
 #include "frc/WPILib.h"
-#include <frc/smartdashboard/SmartDashboard.h>
 #include "ctre/Phoenix.h"
 
 // Robot project includes
@@ -18,10 +17,12 @@
 #include "RobotPeriodic.h"
 #include "RobotAutonomous.h"
 #include "RobotTeleop.h"
+#include "Elevator.h"
 
 // Objects and variable for this file only
 RobotTeleop       * ControlTeleop;
 RobotAutonomous   * ControlAutonomous;
+Elevator          * ControlElevator;
 
 
 // ============================================================================
@@ -102,6 +103,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
   {
     ControlTeleop->Periodic();  
+    ControlElevator->ElevatorMove();
   }
 
 // ============================================================================
