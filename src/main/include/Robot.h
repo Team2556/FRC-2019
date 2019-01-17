@@ -27,7 +27,7 @@ class Robot : public frc::TimedRobot {
   WPI_TalonSRX          MotorControl_RR{4};
 	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
   NavGyro               pNavGyro{};
-
+  cs::UsbCamera		      UsbCamera1;
 
   void RobotInit() override;
   void RobotPeriodic() override;

@@ -11,6 +11,7 @@
 #include "RobotTeleop.h"
 #include "DriveBase.h"
 #include "Elevator.h"
+#include "Climb.h"
 
 
 // Objects and variable for this file only
@@ -18,11 +19,13 @@ RobotTeleop       * ControlTeleop;
 RobotAutonomous   * ControlAutonomous;
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
+Climb             * Climber;
 
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
-void Robot::RobotInit() {
+void Robot::RobotInit() 
+{
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
@@ -33,6 +36,11 @@ void Robot::RobotInit() {
   ControlElevator   = new Elevator(this);
   
   pNavGyro.Init();
+
+
+  UsbCamera1 = CameraServer::GetInstance()->StartAutomaticCapture();
+  UsbCamera1.SetResolution(160, 120);
+  UsbCamera1.SetFPS(20);
   }
 
 // ----------------------------------------------------------------------------
