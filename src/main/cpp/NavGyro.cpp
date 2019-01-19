@@ -144,11 +144,18 @@ float  NavGyro::CorrectRotate(float fRotateLess)
 	return fRotateLess;
 }
 float  NavGyro::GetRotate()
-	{
-		float YawError = this->GetYawError() *0.05;
-		YawError = this->CorrectRotate(YawError);
-		return YawError;
-	}
+{
+    float YawError = this->GetYawError() *0.05;
+    YawError = this->CorrectRotate(YawError);
+    return YawError;
+}
+
+float NavGyro::GetTilt()
+{
+    pNavX->GetPitch();
+}
+
+
 
 float	NavGyro::GetDisplacemetX()
 {
@@ -189,6 +196,9 @@ float fNormalizeAngle180(float fAngle)
     while (fAngle >=  180.0) fAngle -= 360.0;
     return fAngle;
     }
+
+
+
 
 
 

@@ -13,7 +13,17 @@ class Climb {
  public:
   Climb(Robot * pRobot);
   void Climbing();
-
+  void Oscillation(int Side);// 0 is the front and 1 is the back
+  void test();
+  void ShuffleForward();
+  DoubleSolenoid    * FrontClimb;
+  DoubleSolenoid    * RearClimb;
 
   Robot * pRobot;
+  int isClimbing = 0;
+  float fInitPitch = 0;
+  int ClimbCounter = 0;
+  float initBadTilt = 0.0;
+  int Timer = 0;
+
 };

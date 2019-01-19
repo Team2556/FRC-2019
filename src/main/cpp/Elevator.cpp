@@ -13,18 +13,74 @@ Elevator::Elevator(Robot * pRobot)
     this->pRobot = pRobot;
 
     //create new DoubleSolenoid//
-    hatchSolenoid = new frc::DoubleSolenoid(11,0,1);
+    hatchSolenoid = new frc::DoubleSolenoid(11,4,5);
 }
+
+
+
+void Elevator::CoDriveControls()// master function that controls everything and goes into teleop 
+{
+    Output();
+    Intake();
+    RollerIn();
+    RollerOut();
+    RollerLeft();
+    RollerRight();
+}
+
+void Elevator::Intake()
+{
+
+}
+
 
 void Elevator::Output()
 {
-    //Pneumatic Controlls
-    if(pRobot->Xbox2.GetYButtonPressed())
+    //Pneumatic Controls
+    hatchSolenoid->Set(pRobot->Xbox2.GetYButton() ? frc::DoubleSolenoid::Value::kForward : frc::DoubleSolenoid::Value::kReverse);
+
+
+    //Motor Output
+
+}
+
+
+
+
+//------------------------------------------------------
+//  Basic Functions to control the rollers in sync
+//------------------------------------------------------
+
+
+void Elevator::RollerIn()
+{
+    if(pRobot->Xbox2.GetAButton())
     {
-        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+        RightRoller.Set(ControlMode::PercentOutput, speed);
+        LeftRoller.Set(ControlMode::PercentOutput, -speed);
     }
-    else if(pRobot->Xbox2.GetYButtonReleased())
+}
+void Elevator::RollerOut()
+{
+    if(pRobot->Xbox2.GetYButton())
     {
-        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kReverse);      
+        RightRoller.Set(ControlMode::PercentOutput, -speed);
+        LeftRoller.Set(ControlMode::PercentOutput, speed);
+    }
+}
+void Elevator::RollerLeft()
+{
+    if(pRobot->Xbox2.GetXButton())
+    {
+        RightRoller.Set(ControlMode::PercentOutput, -speed);
+        LeftRoller.Set(ControlMode::PercentOutput, -speed);
+    }
+}
+void Elevator::RollerRight()
+{
+    if(pRobot->Xbox2.GetBButton())
+    {
+        RightRoller.Set(ControlMode::PercentOutput, speed);
+        LeftRoller.Set(ControlMode::PercentOutput, speed);
     }
 }

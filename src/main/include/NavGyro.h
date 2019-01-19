@@ -45,10 +45,12 @@ public:
     float  GetYawError();
     float  CorrectRotate(float fRotateLess);
     float  GetRotate();
+    float  GetTilt();
     float	GetDisplacemetX();
     float	GetDisplacemetY();
     float	GetDisplacemetZ();
 
+    
 };
 
 #endif /* SRC_NAVGYRO_H_ */
