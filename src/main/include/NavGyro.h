@@ -4,7 +4,8 @@
  *  Created on: Feb 1, 2018
  *      Author: team2556
  */
-#define NAVX
+//#define NAVX
+#define ADXRS_GYRO
 
 #ifndef SRC_NAVGYRO_H_
 #define SRC_NAVGYRO_H_
@@ -14,7 +15,7 @@
 #endif
 
 #ifdef ADXRS_GYRO
-#include <ADXRS450_Gyro.h>
+#include "frc/ADXRS450_Gyro.h"
 #endif
 
 class NavGyro
@@ -24,30 +25,35 @@ public:
     NavGyro();
     virtual ~NavGyro();
 
+private:
     // Data
 #ifdef NAVX
-    AHRS *  		pNavX;
+    AHRS                * pNavX;
 #endif
 #ifdef ADXRS_GYRO
-    ADXRS450_Gyro *	pADXRS;
+    frc::ADXRS450_Gyro  * pADXRS;
 #endif
 
+public:
     float		fGyroCommandYaw;
     bool		bPresetTurning;
 
     // Methods
-    void   Init();
-    void   UpdateValues();
-    void   SetCommandYaw(float fAngle);
-    void   SetCommandYawToCurrent();
-    void   ResetYaw();
-    float  GetYaw();
-    float  GetYawError();
-    float  CorrectRotate(float fRotateLess);
-    float  GetRotate();
-    float	GetDisplacemetX();
-    float	GetDisplacemetY();
-    float	GetDisplacemetZ();
+    void    Init();
+    void    UpdateValues();
+    void    SetCommandYaw(float fAngle);
+    void    SetCommandYawToCurrent();
+    void    ResetYaw();
+    float   GetYaw();
+    float   GetYawError();
+    float   CorrectRotate(float fRotateLess);
+    float   GetRotate();
+
+#ifdef NAVX
+    float   GetDisplacemetX();
+    float   GetDisplacemetY();
+    float   GetDisplacemetZ();
+#endif
 
 };
 

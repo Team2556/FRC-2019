@@ -39,7 +39,7 @@ NavGyro::NavGyro()
 #endif
 
 #ifdef ADXRS_GYRO
-    pADXRS = new ADXRS450_Gyro(SPI::Port::kOnboardCS0);
+    pADXRS = new frc::ADXRS450_Gyro(frc::SPI::Port::kOnboardCS0);
 #endif
 
     }
@@ -49,8 +49,9 @@ NavGyro::NavGyro()
 
 NavGyro::~NavGyro()
     {
-	// TODO Auto-generated destructor stub
+
     }
+
 
 // ----------------------------------------------------------------------------
 // Methods
@@ -61,26 +62,29 @@ void NavGyro::Init()
     // Get the initial starting angle
 #ifdef NAVX
     fGyroCommandYaw = pNavX->GetYaw();
+    pNavX->ResetDisplacement();
 #endif
 #ifdef ADXRS_GYRO
 //    pADXRS->Calibrate();
     fGyroCommandYaw = pADXRS->GetAngle();
 #endif
-    pNavX->ResetDisplacement();
     }
 
 
 // ----------------------------------------------------------------------------
 
+#ifdef NAVX
 void NavGyro::UpdateValues()
 {
-	float fAccelX = pNavX->GetRawAccelX();
-	float fAccelY = pNavX->GetRawAccelY();
-	int UpdateRate = pNavX->GetRequestedUpdateRate();
-	bool bMoving = pNavX->IsMoving();
+	float fAccelX    = pNavX->GetRawAccelX();
+	float fAccelY    = pNavX->GetRawAccelY();
+	int   UpdateRate = pNavX->GetRequestedUpdateRate();
+	bool  bMoving    = pNavX->IsMoving();
+
 	SmartDashboard::PutNumber("Is Moving", bMoving);
 	pNavX->UpdateDisplacement(fAccelX,fAccelY,UpdateRate,true);
 }
+#endif
 
 //-----------------------------------------------------------------------------
 void NavGyro::SetCommandYaw(float fAngle)
@@ -116,11 +120,16 @@ float NavGyro::GetYaw()
     }
 
 
+// ----------------------------------------------------------------------------
+
 void NavGyro::ResetYaw()
 {
+#if defined(NAVX)
     pNavX->Reset();
+#endif
     SetCommandYawToCurrent();
 }
+
 
 // ----------------------------------------------------------------------------
 
@@ -131,6 +140,7 @@ float  NavGyro::GetYawError()
 
 
 //-----------------------------------------------------------------------------
+
 float  NavGyro::CorrectRotate(float fRotateLess)
 {
 	if(fRotateLess >  0.5)
@@ -143,27 +153,47 @@ float  NavGyro::CorrectRotate(float fRotateLess)
 	}
 	return fRotateLess;
 }
+
+
+//-----------------------------------------------------------------------------
+
 float  NavGyro::GetRotate()
 	{
-		float YawError = this->GetYawError() *0.05;
-		YawError = this->CorrectRotate(YawError);
-		return YawError;
+    float YawError;
+
+    YawError = this->GetYawError() * 0.05;
+    YawError = this->CorrectRotate(YawError);
+    return YawError;
 	}
+
+
+#if defined(NAVX)
+//-----------------------------------------------------------------------------
 
 float	NavGyro::GetDisplacemetX()
 {
-	return	pNavX->GetDisplacementX()*3.28084;
+    // Get X displacement and convert to feet
+	return	pNavX->GetDisplacementX() * 3.28084;
 }
+
+
+//-----------------------------------------------------------------------------
 
 float	NavGyro::GetDisplacemetY()
 {
-	return	pNavX->GetDisplacementY()*3.28084;
+    // Get X displacement and convert to feet
+	return	pNavX->GetDisplacementY() * 3.28084;
 }
 
+
+//-----------------------------------------------------------------------------
+
 float	NavGyro::GetDisplacemetZ()
-{
+    {
+    // Get Z displacement and convert to feet
 	return	pNavX->GetDisplacementZ()*3.28084;
-}
+    }
+#endif
 
 // ----------------------------------------------------------------------------
 // Utilities

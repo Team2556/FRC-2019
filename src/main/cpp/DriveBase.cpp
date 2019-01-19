@@ -7,7 +7,13 @@
 
 #include "DriveBase.h"
 
+
+// ============================================================================
+// Class DriveBase
+// ============================================================================
+
 //Constructor
+
 DriveBase::DriveBase(Robot * pRobot) 
 {
     this->pRobot = pRobot;
@@ -17,6 +23,10 @@ DriveBase::DriveBase(Robot * pRobot)
 
 // All comments are in field oriented drive
 
+// ----------------------------------------------------------------------------
+// Methods
+// ----------------------------------------------------------------------------
+
 void DriveBase::GyroDrive()
 {
     float 			fXStick = 0.0;
@@ -24,29 +34,33 @@ void DriveBase::GyroDrive()
     float			fRotate = 0.0;
     bool			bAllowRotate = false;
 
-
+    // Get joystick inputs
     fXStick = pRobot->Xbox1.GetX(frc::XboxController::kLeftHand);
-    fYStick = (pRobot->Xbox1.GetY(frc::XboxController::kLeftHand) * -1.0);
+    fYStick = pRobot->Xbox1.GetY(frc::XboxController::kLeftHand) * -1.0;
     fRotate = pRobot->Xbox1.GetX(frc::XboxController::kRightHand);
 
-
-
-    if(pRobot->Xbox1.GetPOV()>-1 && pRobot->pNavGyro.bPresetTurning == false)
+    if ((pRobot->Xbox1.GetPOV() > -1) && (pRobot->pNavGyro.bPresetTurning == false))
     {
     	pRobot->pNavGyro.fGyroCommandYaw = pRobot->pNavGyro.fGyroCommandYaw + pRobot->Xbox1.GetPOV();
     	pRobot->pNavGyro.bPresetTurning = true;
     }
-    if(fabs(pRobot->pNavGyro.GetYawError())<10)
+
+    // If small pointing error then 
+    if (fabs(pRobot->pNavGyro.GetYawError()) < 10.0)
     {
     	pRobot->pNavGyro.bPresetTurning = false;
     }
 
-    bAllowRotate = pRobot->Xbox1.GetTriggerAxis(frc::XboxController::kRightHand)>.5;
+    // If the right trigger is pressed then rotate is controlled by right stick
+    bAllowRotate = pRobot->Xbox1.GetTriggerAxis(frc::XboxController::kRightHand) > 0.5;
 
     if (bAllowRotate)
 	{
+    // Get rotation rate from the right stick
 	fRotate = pRobot->Xbox1.GetX(frc::XboxController::kRightHand);
 	fRotate = pRobot->pNavGyro.CorrectRotate(fRotate);
+
+    // Set commanded angle to whatever the current angle is
 	pRobot->pNavGyro.SetCommandYawToCurrent();
 	}
     else
@@ -57,13 +71,10 @@ void DriveBase::GyroDrive()
 
     pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, 0.0);
 
+} // end GyroDrive()
 
 
-
-
-
-
-}
+// ----------------------------------------------------------------------------
 
 void DriveBase::NormalDrive()
 {
@@ -72,6 +83,9 @@ void DriveBase::NormalDrive()
         pRobot->Xbox1.GetY(frc::XboxController::kLeftHand)*-1, 
         pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
 }
+
+
+// ----------------------------------------------------------------------------
 
 void DriveBase::FieldOrientedDrive()
 {
@@ -105,7 +119,7 @@ void DriveBase::FieldOrientedDrive()
     //    bAllowRotate = true;
     //}
     //determine if the robot is allowed to rotate
-    SmartDashboard::PutNumber("X-Axis", pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
+    frc::SmartDashboard::PutNumber("X-Axis", pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
     bAllowRotate = pRobot->Xbox1.GetTriggerAxis(frc::XboxController::kRightHand)>.5;
 
     //determine whether to get rotate values from gyro or controller
@@ -130,17 +144,17 @@ void DriveBase::FieldOrientedDrive()
     }
 
     //plug values into drive function
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.pNavX->GetYaw()));
+    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.GetYaw()));
 
     //reset gyro
     if(pRobot->Xbox1.GetAButton())
     {
         pRobot->pNavGyro.ResetYaw();
     }
-}
+} // end FieldOrientedDrive()
 
 
-
+// ----------------------------------------------------------------------------
 
 void DriveBase::GyroTurningDrive()
 {
@@ -174,19 +188,10 @@ void DriveBase::GyroTurningDrive()
         bAllowRotate = false;
     }
 
-
-
-
-
-
-    
-
     if(bAllowRotate == true)
     {
         bRotatePrevious = true;
-        
     }
-
 
     if(bAllowRotate == false && bRotatePrevious == true && stopHoldCounter < 5)
     {
@@ -197,7 +202,6 @@ void DriveBase::GyroTurningDrive()
         stopHoldCounter = 0;
         bRotatePrevious = false;
     }
-
 
     if (bRotatePrevious)
 	{
@@ -212,30 +216,28 @@ void DriveBase::GyroTurningDrive()
         }
         fRotate = pRobot->pNavGyro.CorrectRotate(fRotate);
         pRobot->pNavGyro.SetCommandYawToCurrent();
-        SmartDashboard::PutBoolean("Gryo Enabled", false);
-
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
 	}
     else
     {
         // Calculate a rotation rate from robot angle error
     	fRotate = pRobot->pNavGyro.GetRotate();
-        SmartDashboard::PutBoolean("Gryo Enabled", true);
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", true);
     }
-    SmartDashboard::PutNumber("Counter", stopHoldCounter);
-    SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
-    SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
+    frc::SmartDashboard::PutNumber("Counter", stopHoldCounter);
+    frc::SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
+    frc::SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
 
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.pNavX->GetYaw()));
-
+    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.GetYaw()));
 
     if(pRobot->Xbox1.GetAButton())
     {
         pRobot->pNavGyro.ResetYaw();
     }
-}
+} // end GyroTurningDrive()
 
 
-
+// ----------------------------------------------------------------------------
 
 void DriveBase::Drive()
 {
@@ -250,11 +252,11 @@ void DriveBase::Drive()
     if (this->drivemode == true)
     {
       this->GyroTurningDrive();
-      SmartDashboard::PutString("DriveMode", "Gryo");
+      frc::SmartDashboard::PutString("DriveMode", "Gryo");
     }
     else
     {
       this->FieldOrientedDrive();
-      SmartDashboard::PutString("DriveMode", "Field Orienteds");
+      frc::SmartDashboard::PutString("DriveMode", "Field Orienteds");
     }
-}
+} // end Drive()
