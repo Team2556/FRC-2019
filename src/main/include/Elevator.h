@@ -12,6 +12,7 @@ class Elevator {
 
   Elevator(Robot * pRobot);
   //Functions
+  void ElevatorControl();
   void Intake();
   void Output();
   void RollerIn();
@@ -22,9 +23,10 @@ class Elevator {
 
   //Created pointers
   frc::DoubleSolenoid * hatchSolenoid;
-  WPI_TalonSRX          LeftRoller{1}; // will become 5 when we have enough motor controllers
-  WPI_TalonSRX          RightRoller{2};// will become 6 when we have enough motor controllers
-  
+  WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER}; // will become 5 when we have enough motor controllers
+  WPI_TalonSRX          RightRoller{CAN_TALON_LEFT_ROLLER};// will become 6 when we have enough motor controllers
+  WPI_TalonSRX          ElevatorLeft{CAN_TALON_LEFT_ELEV}; // will become 5 when we have enough motor controllers
+  WPI_TalonSRX          ElevatorRight{CAN_TALON_RIGHT_ELEV};// will become 6 when we have enough motor controllers
 
     Robot * pRobot;
 

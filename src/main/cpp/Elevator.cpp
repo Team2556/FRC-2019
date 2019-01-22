@@ -17,6 +17,19 @@ Elevator::Elevator(Robot * pRobot)
 }
 
 
+void Elevator::ElevatorControl()
+{
+    if(pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand)>pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
+    {
+        ElevatorRight.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
+        ElevatorLeft.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
+    }
+    else 
+    {
+        ElevatorRight.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
+        ElevatorLeft.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
+    }
+}
 
 void Elevator::CoDriveControls()// master function that controls everything and goes into teleop 
 {

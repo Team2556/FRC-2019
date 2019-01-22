@@ -34,9 +34,13 @@ void Robot::RobotInit() {
   UsbCamera1 = CameraServer::GetInstance()->StartAutomaticCapture();
   UsbCamera1.SetResolution(160, 120);
   UsbCamera1.SetFPS(20);
-  //SmartDashboard::PutNumber("Timing", 10);
-  //SmartDashboard::PutNumber("Shuffle Period", 1);// time betwwen full shuffles
-  //SmartDashboard::PutNumber("Switch Delay", 1);// delay between raising and droping front pistons
+
+  int timing = SmartDashboard::GetNumber("Timing", 10);
+  SmartDashboard::PutNumber("Timing", timing);
+  int period = SmartDashboard::GetNumber("Shuffle Period", 1);
+  SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
+  int delay = SmartDashboard::GetNumber("Switch Delay", 1);
+  SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
   double speed = SmartDashboard::GetNumber("Roller Speed", 1);
   SmartDashboard::PutNumber("Roller Speed", speed);
 
@@ -69,7 +73,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
   {
   //Teleop Functions
-    //MecDrive->Drive();
+    MecDrive->Drive();
     ControlElevator->CoDriveControls();
     //Climber->Climbing();
   }
