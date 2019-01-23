@@ -39,7 +39,7 @@ NavGyro::NavGyro()
 #endif
 
 #ifdef ADXRS_GYRO
-    pADXRS = new ADXRS450_Gyro(SPI::Port::kOnboardCS0);
+    pADXRS = new frc::ADXRS450_Gyro(frc::SPI::Port::kOnboardCS0);
 #endif
 
     }
@@ -61,17 +61,18 @@ void NavGyro::Init()
     // Get the initial starting angle
 #ifdef NAVX
     fGyroCommandYaw = pNavX->GetYaw();
+    pNavX->ResetDisplacement();
 #endif
 #ifdef ADXRS_GYRO
 //    pADXRS->Calibrate();
     fGyroCommandYaw = pADXRS->GetAngle();
 #endif
-    pNavX->ResetDisplacement();
     }
 
 
 // ----------------------------------------------------------------------------
 
+#ifdef NAVX
 void NavGyro::UpdateValues()
 {
 	float fAccelX = pNavX->GetRawAccelX();
@@ -81,8 +82,10 @@ void NavGyro::UpdateValues()
 	SmartDashboard::PutNumber("Is Moving", bMoving);
 	pNavX->UpdateDisplacement(fAccelX,fAccelY,UpdateRate,true);
 }
+#endif
 
 //-----------------------------------------------------------------------------
+
 void NavGyro::SetCommandYaw(float fAngle)
     {
     fGyroCommandYaw = fNormalizeAngle360(fAngle);
@@ -116,21 +119,27 @@ float NavGyro::GetYaw()
     }
 
 
+// ----------------------------------------------------------------------------
+
 void NavGyro::ResetYaw()
 {
+#if defined(NAVX)
     pNavX->Reset();
+#endif
     SetCommandYawToCurrent();
 }
+
 
 // ----------------------------------------------------------------------------
 
 float  NavGyro::GetYawError()
     {
-    return -fNormalizeAngle180(GetYaw() - fGyroCommandYaw);
+    return fNormalizeAngle180(fGyroCommandYaw - GetYaw());
     }
 
 
 //-----------------------------------------------------------------------------
+
 float  NavGyro::CorrectRotate(float fRotateLess)
 {
 	if(fRotateLess >  0.5)
@@ -143,19 +152,38 @@ float  NavGyro::CorrectRotate(float fRotateLess)
 	}
 	return fRotateLess;
 }
-float  NavGyro::GetRotate()
+
+
+//-----------------------------------------------------------------------------
+float  NavGyro::GetRotate(float fRotateMax)
 {
-    float YawError = this->GetYawError() *0.05;
-    YawError = this->CorrectRotate(YawError);
-    return YawError;
+    float fRotateCmd;
+
+    // Calculate drive train rotate command value
+    fRotateCmd = this->GetYawError() * 0.05;
+
+    // Make use rotate command doesn't exceed max limits
+	if (fRotateCmd >  fRotateMax) fRotateCmd =  fRotateMax;
+	if (fRotateCmd < -fRotateMax) fRotateCmd = -fRotateMax;
+
+    return fRotateCmd;
 }
+
+
+//-----------------------------------------------------------------------------
 
 float NavGyro::GetTilt()
 {
-    pNavX->GetPitch();
+#if defined(NAVX)
+    return pNavX->GetPitch();
+#else
+    return 0.0;
+#endif
 }
 
+//-----------------------------------------------------------------------------
 
+#if defined(NAVX)
 
 float	NavGyro::GetDisplacemetX()
 {
@@ -171,6 +199,7 @@ float	NavGyro::GetDisplacemetZ()
 {
 	return	pNavX->GetDisplacementZ()*3.28084;
 }
+#endif
 
 // ----------------------------------------------------------------------------
 // Utilities

@@ -5,6 +5,7 @@
  *      Author: team2556
  */
 #define NAVX
+//#define ADXRS_GYRO
 
 #ifndef SRC_NAVGYRO_H_
 #define SRC_NAVGYRO_H_
@@ -14,7 +15,7 @@
 #endif
 
 #ifdef ADXRS_GYRO
-#include <ADXRS450_Gyro.h>
+#include "frc/ADXRS450_Gyro.h"
 #endif
 
 class NavGyro
@@ -24,14 +25,16 @@ public:
     NavGyro();
     virtual ~NavGyro();
 
+private:
     // Data
 #ifdef NAVX
     AHRS *  		pNavX;
 #endif
 #ifdef ADXRS_GYRO
-    ADXRS450_Gyro *	pADXRS;
+    frc::ADXRS450_Gyro  * pADXRS;
 #endif
 
+public:
     float		fGyroCommandYaw;
     bool		bPresetTurning;
 
@@ -43,13 +46,17 @@ public:
     void   ResetYaw();
     float  GetYaw();
     float  GetYawError();
+	
     float  CorrectRotate(float fRotateLess);
-    float  GetRotate();
     float  GetTilt();
+	
+    float  GetRotate(float fRotateMax = 0.5);
+	
+#ifdef NAVX
     float	GetDisplacemetX();
     float	GetDisplacemetY();
     float	GetDisplacemetZ();
-
+#endif
     
 };
 
