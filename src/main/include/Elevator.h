@@ -11,11 +11,26 @@ class Elevator {
  public:
 
   Elevator(Robot * pRobot);
-  //Function
-    void Output(void);
+  //Functions
+  void ElevatorControl();
+  void Intake();
+  void Output();
+  void RollerIn();
+  void RollerOut();
+  void RollerLeft();
+  void RollerRight();
+  void CoDriveControls();
 
-  //Created pointers//
-    frc::DoubleSolenoid * hatchSolenoid;
+  //Created pointers
+  frc::DoubleSolenoid * hatchSolenoid;
+  WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER}; // will become 5 when we have enough motor controllers
+  WPI_TalonSRX          RightRoller{CAN_TALON_LEFT_ROLLER};// will become 6 when we have enough motor controllers
+  WPI_TalonSRX          ElevatorLeft{CAN_TALON_LEFT_ELEV}; // will become 5 when we have enough motor controllers
+  WPI_TalonSRX          ElevatorRight{CAN_TALON_RIGHT_ELEV};// will become 6 when we have enough motor controllers
+
     Robot * pRobot;
+
+  //Variables
+  double speed = SmartDashboard::GetNumber("Roller Speed", 1);
 
 };

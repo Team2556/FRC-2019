@@ -8,21 +8,42 @@
 #include "Robot.h"
 #include "DriveBase.h"
 #include "Elevator.h"
+#include "Climb.h"
 
 
 // Objects and variable for this file only
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
+Climb             * Climber;
 
 
 #include <frc/smartdashboard/SmartDashboard.h>
+
+
+
 
 void Robot::RobotInit() {
 
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
+  Climber           = new Climb(this);
   
   pNavGyro.Init();
+
+
+  UsbCamera1 = CameraServer::GetInstance()->StartAutomaticCapture();
+  UsbCamera1.SetResolution(160, 120);
+  UsbCamera1.SetFPS(20);
+
+  int timing = SmartDashboard::GetNumber("Timing", 10);
+  SmartDashboard::PutNumber("Timing", timing);
+  int period = SmartDashboard::GetNumber("Shuffle Period", 1);
+  SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
+  int delay = SmartDashboard::GetNumber("Switch Delay", 1);
+  SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
+  double speed = SmartDashboard::GetNumber("Roller Speed", 1);
+  SmartDashboard::PutNumber("Roller Speed", speed);
+
   }
 
 // ----------------------------------------------------------------------------
@@ -44,7 +65,7 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
-
+  
 }
 
 // ----------------------------------------------------------------------------
@@ -53,7 +74,8 @@ void Robot::TeleopPeriodic()
   {
   //Teleop Functions
     MecDrive->Drive();
-    ControlElevator->Output();
+    ControlElevator->CoDriveControls();
+    //Climber->Climbing();
   }
 
 // ============================================================================
