@@ -59,10 +59,6 @@ void DriveBase::GyroDrive()
 
 
 
-
-
-
-
 }
 
 void DriveBase::NormalDrive()
@@ -130,7 +126,7 @@ void DriveBase::FieldOrientedDrive()
     }
 
     //plug values into drive function
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.pNavX->GetYaw()));
+    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.GetYaw()));
 
     //reset gyro
     if(pRobot->Xbox1.GetAButton())
@@ -225,7 +221,7 @@ void DriveBase::GyroTurningDrive()
     SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
     SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
 
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.pNavX->GetYaw()));
+    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.GetYaw()));
 
 
     if(pRobot->Xbox1.GetAButton())

@@ -81,6 +81,11 @@ void Elevator::RollerOut()
         LeftRoller.Set(ControlMode::PercentOutput, speed);
     }
 }
+<<<<<<< HEAD
+
+
+
+=======
 void Elevator::RollerLeft()
 {
     if(pRobot->Xbox2.GetXButton())
@@ -97,3 +102,4 @@ void Elevator::RollerRight()
         LeftRoller.Set(ControlMode::PercentOutput, speed);
     }
 }
+>>>>>>> f36a2818c8ab540fe32be153d75c1d8c3a6f0e55
