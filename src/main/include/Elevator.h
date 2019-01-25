@@ -13,12 +13,13 @@ class Elevator {
   Elevator(Robot * pRobot);
   //Functions
   void ElevatorControl();
-  void Intake();
-  void Output();
+  void RollersControl();
+
   void RollerIn();
   void RollerOut();
   void RollerLeft();
   void RollerRight();
+  
   void CoDriveControls();
 
   //Created pointers
@@ -28,7 +29,7 @@ class Elevator {
   WPI_TalonSRX          ElevatorLeft{CAN_TALON_LEFT_ELEV}; // will become 5 when we have enough motor controllers
   WPI_TalonSRX          ElevatorRight{CAN_TALON_RIGHT_ELEV};// will become 6 when we have enough motor controllers
 
-    Robot * pRobot;
+  Robot * pRobot;
 
   //Variables
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);

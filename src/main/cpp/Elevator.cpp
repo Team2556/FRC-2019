@@ -6,7 +6,12 @@
 /*----------------------------------------------------------------------------*/
 #include "frc/WPILib.h"
 #include "Robot.h"
+#include "DriverCommands.h"
 #include "Elevator.h"
+
+// ----------------------------------------------------------------------------
+// Constructor
+// ----------------------------------------------------------------------------
 
 Elevator::Elevator(Robot * pRobot) 
 {
@@ -17,9 +22,14 @@ Elevator::Elevator(Robot * pRobot)
 }
 
 
+// ----------------------------------------------------------------------------
+// Methods
+// ----------------------------------------------------------------------------
+
 void Elevator::ElevatorControl()
 {
-    if(pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand)>pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
+#if 0
+    if(pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand) > pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
     {
         ElevatorRight.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
         ElevatorLeft.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
@@ -29,53 +39,62 @@ void Elevator::ElevatorControl()
         ElevatorRight.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
         ElevatorLeft.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
     }
+#else
+        ElevatorRight.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
+        ElevatorLeft.Set(ControlMode::PercentOutput, -pRobot->DriverCmd.fElevatorUpDownSpeed());
+
+#endif
 }
 
-void Elevator::CoDriveControls()// master function that controls everything and goes into teleop 
+
+// ----------------------------------------------------------------------------
+// Master function that controls everything and goes into teleop 
+void Elevator::CoDriveControls()
 {
-    Output();
-    Intake();
+    RollersControl();
     RollerIn();
     RollerOut();
     RollerLeft();
     RollerRight();
 }
 
-void Elevator::Intake()
+
+// ----------------------------------------------------------------------------
+
+void Elevator::RollersControl()
 {
+    // Figure out whether rollers should be up or down
+    if (pRobot->DriverCmd.bRollersDown())
+        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    else
+        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+
+    // Motor control
 
 }
 
 
-void Elevator::Output()
-{
-    //Pneumatic Controls
-    hatchSolenoid->Set(pRobot->Xbox2.GetYButton() ? frc::DoubleSolenoid::Value::kForward : frc::DoubleSolenoid::Value::kReverse);
-
-
-    //Motor Output
-
-}
-
-
-
-
-//------------------------------------------------------
+// ----------------------------------------------------------------------------
 //  Basic Functions to control the rollers in sync
-//------------------------------------------------------
+// ----------------------------------------------------------------------------
 
+// I HOPE THIS IS ONLY TEST CODE
 
 void Elevator::RollerIn()
 {
-    if(pRobot->Xbox2.GetAButton())
+    if (pRobot->DriverCmd.bTestButton(0))
     {
         RightRoller.Set(ControlMode::PercentOutput, speed);
         LeftRoller.Set(ControlMode::PercentOutput, -speed);
     }
 }
+
+
+// ----------------------------------------------------------------------------
+
 void Elevator::RollerOut()
 {
-    if(pRobot->Xbox2.GetYButton())
+    if (pRobot->DriverCmd.bTestButton(3))
     {
         RightRoller.Set(ControlMode::PercentOutput, -speed);
         LeftRoller.Set(ControlMode::PercentOutput, speed);
@@ -83,9 +102,11 @@ void Elevator::RollerOut()
 }
 
 
+// ----------------------------------------------------------------------------
+
 void Elevator::RollerLeft()
 {
-    if(pRobot->Xbox2.GetXButton())
+    if (pRobot->DriverCmd.bTestButton(2))
     {
         RightRoller.Set(ControlMode::PercentOutput, -speed);
         LeftRoller.Set(ControlMode::PercentOutput, -speed);
@@ -93,9 +114,11 @@ void Elevator::RollerLeft()
 }
 
 
+// ----------------------------------------------------------------------------
+
 void Elevator::RollerRight()
 {
-    if(pRobot->Xbox2.GetBButton())
+    if (pRobot->DriverCmd.bTestButton(2))
     {
         RightRoller.Set(ControlMode::PercentOutput, speed);
         LeftRoller.Set(ControlMode::PercentOutput, speed);

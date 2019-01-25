@@ -16,19 +16,19 @@
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
 #include "NavGyro.h"
+#include "DriverCommands.h"
 
 class Robot : public frc::TimedRobot {
  public:
 
-  frc::XboxController   Xbox1{XBOX_ONE};
-  frc::XboxController   Xbox2{XBOX_TWO};
   WPI_TalonSRX          MotorControl_LF{CAN_TALON_LF};
   WPI_TalonSRX          MotorControl_RF{CAN_TALON_RF};
   WPI_TalonSRX          MotorControl_LR{CAN_TALON_LR};
   WPI_TalonSRX          MotorControl_RR{CAN_TALON_RR};
 	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
-  NavGyro               pNavGyro{};
+  NavGyro               Nav;
   cs::UsbCamera		      UsbCamera1;
+  DriverCommands        DriverCmd;
   
   void RobotInit() override;
   void RobotPeriodic() override;

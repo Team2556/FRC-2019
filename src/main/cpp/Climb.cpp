@@ -7,6 +7,10 @@
 
 #include "Climb.h"
 
+// ----------------------------------------------------------------------------
+// Constructor
+// ----------------------------------------------------------------------------
+
 Climb::Climb(Robot * pRobot) 
 {
     this->pRobot = pRobot;
@@ -15,6 +19,10 @@ Climb::Climb(Robot * pRobot)
     
 }
 
+
+// ----------------------------------------------------------------------------
+// Methods
+// ----------------------------------------------------------------------------
 
 void Climb::Oscillation(int Side)
 {
@@ -36,6 +44,9 @@ void Climb::Oscillation(int Side)
     Timer++;
 }
 
+
+// ----------------------------------------------------------------------------
+
 void Climb::ShuffleForward()
 {
     static bool     IsMoving = false;
@@ -48,7 +59,7 @@ void Climb::ShuffleForward()
 
     frc::SmartDashboard::PutBoolean("Is Shuffling", true);
     //allow for disabling the shuffling while remaining in this function
-    if (pRobot->Xbox2.GetTriggerAxis(frc::XboxController::JoystickHand::kLeftHand) > .5)
+    if (pRobot->DriverCmd.fTestValue(1) > .5)
     {
         IsMoving = true;
     }
@@ -98,26 +109,26 @@ void Climb::ShuffleForward()
 }
 
 
-
+// ----------------------------------------------------------------------------
 
 void Climb::Climbing()
 {
-    frc::SmartDashboard::PutNumber("Tilt", pRobot->pNavGyro.GetTilt());
-    //frc::SmartDashboard::PutNumber("Difference", pRobot->pNavGyro.GetTilt());
-    if(pRobot->Xbox2.GetAButton())
+    frc::SmartDashboard::PutNumber("Tilt", pRobot->Nav.GetTilt());
+    //frc::SmartDashboard::PutNumber("Difference", pRobot->Nav.GetTilt());
+    if(pRobot->DriverCmd.bTestButton(0)) // A
     {
         isClimbing = 1;// all out
-        fInitPitch = pRobot->pNavGyro.GetTilt();
+        fInitPitch = pRobot->Nav.GetTilt();
     }
-    if(pRobot->Xbox2.GetBButton())
+    if(pRobot->DriverCmd.bTestButton(1)) // B
     {
         isClimbing = 0;// all in
     }
-    if(pRobot->Xbox2.GetXButton())
+    if(pRobot->DriverCmd.bTestButton(2)) // X
     {
         isClimbing = 2;// front in
     }
-    if(pRobot->Xbox2.GetYButton())
+    if(pRobot->DriverCmd.bTestButton(3)) // Y
     {
         isClimbing = 3;// back in
     }
@@ -125,7 +136,7 @@ void Climb::Climbing()
 
 
 
-    if(pRobot->Xbox2.GetTriggerAxis(frc::XboxController::JoystickHand::kRightHand) > .5)
+    if(pRobot->DriverCmd.fTestValue(0) > .5)
     {
      
         ShuffleForward();
@@ -133,7 +144,7 @@ void Climb::Climbing()
     else if (isClimbing == 1)// all out
     {
         frc::SmartDashboard::PutBoolean("Is Shuffling", false);
-        if(fInitPitch - pRobot->pNavGyro.GetTilt()<-1.5 && ClimbCounter < 3)
+        if(fInitPitch - pRobot->Nav.GetTilt()<-1.5 && ClimbCounter < 3)
         {
             FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
             Oscillation(1);
@@ -141,7 +152,7 @@ void Climb::Climbing()
 
             ClimbCounter++;
         }
-        else if(fInitPitch - pRobot->pNavGyro.GetTilt()>1.5 && ClimbCounter < 3)
+        else if(fInitPitch - pRobot->Nav.GetTilt()>1.5 && ClimbCounter < 3)
         {
             Oscillation(0);
             RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
@@ -152,11 +163,11 @@ void Climb::Climbing()
             RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
             FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
             ClimbCounter = 0;
-            initBadTilt = pRobot->pNavGyro.GetTilt();
+            initBadTilt = pRobot->Nav.GetTilt();
         }
-        if(pRobot->Xbox2.GetBumper(frc::XboxController::JoystickHand::kLeftHand))
+        if(pRobot->DriverCmd.bTestButton(4)) // Left bumper
         {
-            fInitPitch = pRobot->pNavGyro.GetTilt();
+            fInitPitch = pRobot->Nav.GetTilt();
         }
     }
     else if (isClimbing == 0)// all in
@@ -181,18 +192,20 @@ void Climb::Climbing()
 }
 
 
+// ----------------------------------------------------------------------------
+
 void Climb::test()
 {
 
-    if (pRobot->Xbox2.GetAButton())
+    if (pRobot->DriverCmd.bTestButton(0))
     {
         isClimbing = 0;
     }
-    else if (pRobot->Xbox2.GetBButton())
+    else if (pRobot->DriverCmd.bTestButton(1))
     {
         isClimbing = 1;
     }
-    else if (pRobot->Xbox2.GetXButton())
+    else if (pRobot->DriverCmd.bTestButton(2))
     {
         isClimbing = 2;
     }

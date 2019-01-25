@@ -10,6 +10,7 @@
 #include "Robot.h"
 #include "DriveBase.h"
 #include "Elevator.h"
+
 #include "Climb.h"
 
 // Objects and variable for this file only
@@ -25,7 +26,7 @@ void Robot::RobotInit() {
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
   
-  pNavGyro.Init();
+  Nav.Init();
 
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture();
   UsbCamera1.SetResolution(160, 120);
