@@ -101,7 +101,7 @@ void DriveBase::FieldOrientedDrive()
     //    bAllowRotate = true;
     //}
     //determine if the robot is allowed to rotate
-    SmartDashboard::PutNumber("X-Axis", pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
+    frc::SmartDashboard::PutNumber("X-Axis", pRobot->Xbox1.GetX(frc::XboxController::kRightHand));
     bAllowRotate = pRobot->Xbox1.GetTriggerAxis(frc::XboxController::kRightHand)>.5;
 
     //determine whether to get rotate values from gyro or controller
@@ -208,18 +208,18 @@ void DriveBase::GyroTurningDrive()
         }
         fRotate = pRobot->pNavGyro.CorrectRotate(fRotate);
         pRobot->pNavGyro.SetCommandYawToCurrent();
-        SmartDashboard::PutBoolean("Gryo Enabled", false);
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
 
 	}
     else
     {
         // Calculate a rotation rate from robot angle error
     	fRotate = pRobot->pNavGyro.GetRotate();
-        SmartDashboard::PutBoolean("Gryo Enabled", true);
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", true);
     }
-    SmartDashboard::PutNumber("Counter", stopHoldCounter);
-    SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
-    SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
+    frc::SmartDashboard::PutNumber("Counter", stopHoldCounter);
+    frc::SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
+    frc::SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
 
     pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->pNavGyro.GetYaw()));
 
@@ -246,11 +246,11 @@ void DriveBase::Drive()
     if (this->drivemode == true)
     {
       this->GyroTurningDrive();
-      SmartDashboard::PutString("DriveMode", "Gryo");
+      frc::SmartDashboard::PutString("DriveMode", "Gryo");
     }
     else
     {
       this->FieldOrientedDrive();
-      SmartDashboard::PutString("DriveMode", "Field Orienteds");
+      frc::SmartDashboard::PutString("DriveMode", "Field Orienteds");
     }
 }

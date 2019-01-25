@@ -7,23 +7,28 @@
 
 #pragma once
 
+#include "frc/wpilib.h"
 #include "Robot.h"
 
 class Climb {
  public:
+  // Constructor
   Climb(Robot * pRobot);
+
+  // Variables
+  Robot                 * pRobot;
+  frc::DoubleSolenoid   * FrontClimb;
+  frc::DoubleSolenoid   * RearClimb;
+  int                     isClimbing = 0;
+  float                   fInitPitch = 0;
+  int                     ClimbCounter = 0;
+  float                   initBadTilt = 0.0;
+  int                     Timer = 0;
+
+  // Methods
   void Climbing();
   void Oscillation(int Side);// 0 is the front and 1 is the back
   void test();
   void ShuffleForward();
-  DoubleSolenoid    * FrontClimb;
-  DoubleSolenoid    * RearClimb;
-
-  Robot * pRobot;
-  int isClimbing = 0;
-  float fInitPitch = 0;
-  int ClimbCounter = 0;
-  float initBadTilt = 0.0;
-  int Timer = 0;
 
 };

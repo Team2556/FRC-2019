@@ -31,6 +31,6 @@ class Elevator {
     Robot * pRobot;
 
   //Variables
-  double speed = SmartDashboard::GetNumber("Roller Speed", 1);
+  double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
 
 };
