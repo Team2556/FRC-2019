@@ -11,12 +11,17 @@
 
 #include "RobotMap.h"
 
+//#define JOYSTICK
+
 class DriverCommands 
 {
 public:
   DriverCommands();
 
 protected:
+#ifdef JOYSTICK
+  frc::Joystick         JStick1{0};
+#endif
   frc::XboxController   Xbox1{XBOX_ONE};
   frc::XboxController   Xbox2{XBOX_TWO};
 

@@ -5,6 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+// http://first.wpi.edu/FRC/roborio/release/docs/cpp/classfrc_1_1XboxController.html
+// http://first.wpi.edu/FRC/roborio/release/docs/cpp/classfrc_1_1Joystick.html
+
 #include "DriverCommands.h"
 
 // ----------------------------------------------------------------------------
@@ -23,7 +26,11 @@ DriverCommands::DriverCommands()
 
 float DriverCommands::fMoveForward()
     {
+#ifdef JOYSTICK
+    return JStick1.GetX();
+#else
     return Xbox1.GetX(frc::XboxController::kLeftHand);
+#endif
     }
 
 
@@ -31,7 +38,11 @@ float DriverCommands::fMoveForward()
 
 float DriverCommands::fMoveSideways()
     {
+#ifdef JOYSTICK
+    return JStick1.GetY() * -1.0;
+#else
     return Xbox1.GetY(frc::XboxController::kLeftHand) * -1.0;
+#endif
     }
 
 
@@ -39,7 +50,11 @@ float DriverCommands::fMoveSideways()
 
 float DriverCommands::fRotate()
     {
+#ifdef JOYSTICK
+    return JStick1.GetTwist();
+#else
     return Xbox1.GetX(frc::XboxController::kRightHand);
+#endif
     }
 
 // ----------------------------------------------------------------------------
@@ -47,6 +62,9 @@ float DriverCommands::fRotate()
 // Return true if player wants to rotate robot manually
 bool DriverCommands::bManualRotate()
     {
+#ifdef JOYSTICK
+    return JStick1.GetTrigger();
+#else
     switch (this->CurrDriveMode)
         {
         case DriveMode::Gyro :
@@ -61,6 +79,7 @@ bool DriverCommands::bManualRotate()
             return false;
             break;
         }
+#endif
     }
 
 // ----------------------------------------------------------------------------
@@ -69,7 +88,11 @@ bool DriverCommands::bManualRotate()
 // in degrees. Return -1 if no POV is commanded.
 int DriverCommands::POV()
     {
+#ifdef JOYSTICK
+    return JStick1.GetPOV();
+#else
     return Xbox1.GetPOV();
+#endif
     }
 
 
