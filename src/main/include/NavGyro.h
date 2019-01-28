@@ -15,7 +15,7 @@
 #endif
 
 #ifdef ADXRS_GYRO
-#include "frc/ADXRS450_Gyro.h"
+#include "frc/wpilib.h"
 #endif
 
 class NavGyro

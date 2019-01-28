@@ -4,6 +4,7 @@
 
 
 // CAN BUS IDs
+// NEED TO INCLUDE IDs FOR POWER BOARD AND PNEUMATICS BOARD
 #define         CAN_TALON_LF            1
 #define         CAN_TALON_RF            2
 #define         CAN_TALON_LR            3
@@ -12,3 +13,4 @@
 #define         CAN_TALON_RIGHT_ROLLER  6
 #define         CAN_TALON_LEFT_ELEV     7
 #define         CAN_TALON_RIGHT_ELEV    8
+
