@@ -7,46 +7,59 @@
 
 
 #pragma once
+
 #include "frc/WPILib.h"
+
+#include "robotmap.h"
 #include "NavGyro.h"
 
+#define LT_SENSORS_FRONT  6
+#define LT_SENSORS_BACK   2
 
 class ColorSens {
  public:
   ColorSens();
 
-  bool    LineFound();
-  bool    BackLineFound();
   void    UpdateValues();
   void    UpdateBackValues();
   double  GetStrafe(float InitStrafe, bool AllowStrafe);
   double  GetRotate(float InitRotate, bool AllowRotate);
-  void    FindMinMax(int * Min, int * Max);
-  void    BackMinMax(int * Min, int * Max);
-  void    SetRotate(NavGyro * pNavGyro, bool AllowRotate);
-  float   FindClose(float Angle);
-
-
-  double Angles[8] = {61.25, 118.75, 90, -90, -118.75, -61.25, 180, 0};
-  double Strafes[6] = {1,.66,.33,-.33,-.66,-1};
-  double Rotates[2] = {-.1,.1};
-  bool GyroReset;
   
-  frc::DigitalInput  RLSens[6] = 
+  double Strafes[LT_SENSORS_FRONT] = {1.0, 0.66, 0.33, -0.33, -0.66, -1.0};
+  double Rotates[LT_SENSORS_BACK]  = {-0.1, 0.1};
+
+  // Map sensor DIO inputs to sensor array
+  frc::DigitalInput  RLSens[LT_SENSORS_FRONT] = 
   {
-    frc::DigitalInput(0),
-    frc::DigitalInput(1),
-    frc::DigitalInput(2),
-    frc::DigitalInput(3),
-    frc::DigitalInput(4),
-    frc::DigitalInput(5)
+    frc::DigitalInput(DIO_LT_FRONT_1),
+    frc::DigitalInput(DIO_LT_FRONT_2),
+    frc::DigitalInput(DIO_LT_FRONT_3),
+    frc::DigitalInput(DIO_LT_FRONT_4),
+    frc::DigitalInput(DIO_LT_FRONT_5),
+    frc::DigitalInput(DIO_LT_FRONT_6)
   };
 
-  frc::DigitalInput BackSens[2] = 
+  frc::DigitalInput BackSens[LT_SENSORS_BACK] = 
   {
-    frc::DigitalInput(6),
-    frc::DigitalInput(7)
+    frc::DigitalInput(DIO_LT_BACK_1),
+    frc::DigitalInput(DIO_LT_BACK_2)
   };
-  
-  bool                Values[6];
+
+  // Structures to hold front and back sensor info
+  struct
+  {
+    bool    Values[LT_SENSORS_FRONT];
+    bool    bLineFound;
+    int     iMinIndex;
+    int     iMaxIndex;
+  } FrontSensors;
+
+  struct
+  {
+    bool    Values[LT_SENSORS_BACK];
+    bool    bLineFound;
+    int     iMinIndex;
+    int     iMaxIndex;
+  } BackSensors;
+
 };

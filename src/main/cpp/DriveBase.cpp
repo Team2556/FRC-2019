@@ -8,6 +8,8 @@
 #include "DriverCommands.h"
 #include "DriveBase.h"
 
+float FindClose(float Angle);
+
 // ============================================================================
 // Class DriveBase
 // ============================================================================
@@ -73,7 +75,11 @@ void DriveBase::GyroDrive()
 
 
     fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, pRobot->DriverCmd.GetLineUpStrafe());
-    pRobot->LineTracker.SetRotate(&pRobot->Nav, pRobot->DriverCmd.GetLineUpStrafe());
+    if (pRobot->LineTracker.BackSensors.bLineFound && pRobot->DriverCmd.GetLineUpStrafe())
+    {
+        float   fClosestAngle = FindClose(pRobot->Nav.GetYaw());
+        pRobot->Nav.SetCommandYaw(fClosestAngle);
+    }
     pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
 
 
@@ -268,3 +274,23 @@ void DriveBase::Drive()
                 break;
         }
     } // end Drive()
+
+// ============================================================================
+// Local methods
+// ============================================================================
+
+float FindClose(float Angle)
+{
+    double Angles[8] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, 0.0};
+
+    int closestIndex = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        if (fabs(Angle-Angles[i])<fabs(Angle-Angles[closestIndex]))
+        {
+            closestIndex = i;
+        }
+    }
+    SmartDashboard::PutNumber("Set Angle", Angles[closestIndex]);
+    return Angles[closestIndex];
+}
