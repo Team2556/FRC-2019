@@ -20,11 +20,16 @@ class Elevator {
   void RollerOut();
   void RollerLeft();
   void RollerRight();
+
+  void ElevatorTilt();
   
   void CoDriveControls();
 
   //Created pointers
   frc::DoubleSolenoid * hatchSolenoid;
+
+  frc::DoubleSolenoid   * EleTilt;
+
   WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER}; // will become 5 when we have enough motor controllers
   WPI_TalonSRX          RightRoller{CAN_TALON_LEFT_ROLLER};// will become 6 when we have enough motor controllers
   WPI_TalonSRX          ElevatorLeft{CAN_TALON_LEFT_ELEV}; // will become 5 when we have enough motor controllers
