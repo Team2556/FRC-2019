@@ -5,73 +5,110 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "LineTrack.h"
 #include "Robot.h"
+
+// ----------------------------------------------------------------------------
+// Constructor
+// ----------------------------------------------------------------------------
 
 ColorSens::ColorSens() 
 {
 }
 
-bool ColorSens::LineFound()
-{
-    for (int i = 0; i < 6; i++)
-    {
-        if(RLSens[i].Get())
-        {
-            return true;
-        }
-    }
-    GyroReset = false;
-    return false;
-}
-
-bool ColorSens::BackLineFound()
-{
-    if (this->LineFound() == false)
-    {
-        return false;
-    }
-    for (int i = 0; i < 2; i++)
-    {
-        if(BackSens[i].Get())
-        {
-            return true;
-        }
-    }
-    return false;
-}
+// ----------------------------------------------------------------------------
+// Methods
+// ----------------------------------------------------------------------------
 
 void ColorSens::UpdateValues()
 {
-    frc::SmartDashboard::PutBoolean("Line Found", this->LineFound());
-
-    frc::SmartDashboard::PutBoolean("0", this->RLSens[0].Get());
-    frc::SmartDashboard::PutBoolean("1", this->RLSens[1].Get());
-    frc::SmartDashboard::PutBoolean("2", this->RLSens[2].Get());
-    frc::SmartDashboard::PutBoolean("3", this->RLSens[3].Get());
-    frc::SmartDashboard::PutBoolean("4", this->RLSens[4].Get());
-    frc::SmartDashboard::PutBoolean("5", this->RLSens[5].Get());
-    for(int i = 0; i < 6; i++)
+    // Read the values and see if a line was found
+    FrontSensors.bLineFound = false;
+    for(int i = 0; i < LT_SENSORS_FRONT; i++)
     {
-        Values[i] = RLSens[i].Get();
+        FrontSensors.Values[i] = RLSens[i].Get();
+        if (FrontSensors.Values[i] == true)
+            FrontSensors.bLineFound = true;
+    }
+
+    // Find the minimum index value that is true
+    for (int i = 0; i < LT_SENSORS_FRONT; i++)
+        if (FrontSensors.Values[i] == true)
+        {
+            FrontSensors.iMinIndex = i;
+            break;    
+        }
+
+    // Find the maximum index value that is true
+    for (int i = LT_SENSORS_FRONT-1; i >= 0 ; i--)
+        if (FrontSensors.Values[i] == true)
+        {
+            FrontSensors.iMaxIndex = i;
+            break;    
+        }
+
+    char szNum[10];
+    frc::SmartDashboard::PutBoolean("Line Found", FrontSensors.bLineFound);
+    for(int i = 0; i < LT_SENSORS_FRONT; i++) 
+    {
+        sprintf(szNum, "%d", i);
+        frc::SmartDashboard::PutBoolean(szNum, FrontSensors.Values[i]);
     }
 }
 
+
+// ----------------------------------------------------------------------------
+
 void ColorSens::UpdateBackValues()
 {
-    frc::SmartDashboard::PutBoolean("Back Line Found", this->BackLineFound());
-    frc::SmartDashboard::PutBoolean("Back Right", this->BackSens[0].Get());
-    frc::SmartDashboard::PutBoolean("Back Left", this->BackSens[1].Get());
+    // Read the values and see if a line was found
+    BackSensors.bLineFound = false;
+    for(int i = 0; i < LT_SENSORS_BACK; i++)
+    {
+        BackSensors.Values[i] = BackSens[i].Get();
+        if (BackSensors.Values[i] == true)
+            BackSensors.bLineFound = true;
+    }
+
+    // Find the minimum index value that is true
+    for (int i = 0; i < LT_SENSORS_BACK; i++)
+        if (BackSensors.Values[i] == true)
+        {
+            BackSensors.iMinIndex = i;
+            break;    
+        }
+
+    // Find the maximum index value that is true
+    for (int i = LT_SENSORS_BACK-1; i >= 0 ; i--)
+        if (BackSensors.Values[i] == true)
+        {
+            BackSensors.iMaxIndex = i;
+            break;
+        }
+
+    char szNum[10];
+    frc::SmartDashboard::PutBoolean("Line Found", BackSensors.bLineFound);
+    for(int i = 0; i < LT_SENSORS_BACK; i++) 
+    {
+        sprintf(szNum, "%d", i);
+        frc::SmartDashboard::PutBoolean(szNum, BackSensors.Values[i]);
+    }
+
 }
 
+
+// ----------------------------------------------------------------------------
+
+// Return an error term from -1.0 to 1.0, or InitStrafe if line not found
 double ColorSens::GetStrafe(float InitStrafe, bool AllowStrafe)
 {
     this->UpdateValues();
-    if (this->LineFound() && AllowStrafe)
+    if (FrontSensors.bLineFound && AllowStrafe)
     {
-        int Min, Max;
-        this->FindMinMax(&Min, &Max);
-        return (Strafes[Min]+Strafes[Max])/2;
+        return (Strafes[FrontSensors.iMinIndex] + Strafes[FrontSensors.iMaxIndex]) / 2.0;
     }
     else
     {
@@ -80,14 +117,16 @@ double ColorSens::GetStrafe(float InitStrafe, bool AllowStrafe)
     
 }
 
+
+// ----------------------------------------------------------------------------
+
+// Return an error term from -1.0 to 1.0, or InitRotate if line not found
 double  ColorSens::GetRotate(float InitRotate, bool AllowRotate)
 {
     this->UpdateBackValues();
-    if (this->BackLineFound() && AllowRotate)
+    if (BackSensors.bLineFound && AllowRotate)
     {
-        int Min, Max;
-        this->BackMinMax(&Min, &Max);
-        return (Rotates[Min]+Rotates[Max])/2;
+        return (Rotates[BackSensors.iMinIndex] + Rotates[BackSensors.iMaxIndex]) / 2.0;
     }
     else 
     {
@@ -95,61 +134,3 @@ double  ColorSens::GetRotate(float InitRotate, bool AllowRotate)
     }
 }
 
-void ColorSens::FindMinMax(int * Min, int * Max)
-{
-    *Min = -1;
-    for (int i = 0; i < 6; i++)
-    {
-        if (Values[i] == true)
-        {
-            *Max = i;
-            if (*Min == -1)
-            {
-                *Min = i;
-            }
-        }
-    }
-}
-
-void ColorSens::BackMinMax(int * Min, int * Max)
-{
-    *Min = -1;
-    for (int i = 0; i < 2; i++)
-    {
-        if (BackSens[i].Get() == true)
-        {
-            *Max = i;
-            if (*Min == -1)
-            {
-                *Min = i;
-            }
-        }
-    }
-}
-
-
-
-
-
-void    ColorSens::SetRotate(NavGyro * pNavGyro, bool AllowRotate)
-{
-    if (this->BackLineFound() && AllowRotate)
-    {
-        pNavGyro->SetCommandYaw(FindClose(pNavGyro->GetYaw()));
-    }
-}
-
-
-float     ColorSens::FindClose(float Angle)
-{
-    int closestIndex = 0;
-    for (int i = 0; i < 8; i++)
-    {
-        if (fabs(Angle-Angles[i])<fabs(Angle-Angles[closestIndex]))
-        {
-            closestIndex = i;
-        }
-    }
-    SmartDashboard::PutNumber("Set Angle", Angles[closestIndex]);
-    return Angles[closestIndex];
-}

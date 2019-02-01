@@ -19,6 +19,8 @@ Elevator::Elevator(Robot * pRobot)
 
     //create new DoubleSolenoid//
     hatchSolenoid = new frc::DoubleSolenoid(11,4,5);
+
+    EleTilt = new frc::DoubleSolenoid(11,0,1);
 }
 
 
@@ -78,8 +80,6 @@ void Elevator::RollersControl()
 //  Basic Functions to control the rollers in sync
 // ----------------------------------------------------------------------------
 
-// I HOPE THIS IS ONLY TEST CODE
-
 void Elevator::RollerIn()
 {
     if (pRobot->DriverCmd.bTestButton(0))
@@ -122,5 +122,21 @@ void Elevator::RollerRight()
     {
         RightRoller.Set(ControlMode::PercentOutput, speed);
         LeftRoller.Set(ControlMode::PercentOutput, speed);
+    }
+}
+
+void Elevator::ElevatorTilt()
+{
+    if (pRobot->DriverCmd.bTestButton(0))
+    {
+        EleTilt->Set(frc::DoubleSolenoid::Value::kForward);
+    }
+    else if (pRobot->DriverCmd.bTestButton(1))
+    {
+        EleTilt->Set(frc::DoubleSolenoid::Value::kReverse);
+    }
+    else
+    {
+        EleTilt->Set(frc::DoubleSolenoid::Value::kOff);
     }
 }
