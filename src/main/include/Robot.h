@@ -32,7 +32,6 @@ class Robot : public frc::TimedRobot {
   cs::UsbCamera		      UsbCamera1;
   DriverCommands        DriverCmd;
   ColorSens             LineTracker;
-
   
   void RobotInit() override;
   void RobotPeriodic() override;

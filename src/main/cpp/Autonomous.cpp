@@ -114,7 +114,7 @@ void Autonomous::Auto1()
             fStrafe = pRobot->DriverCmd.GetAutoStrafe();
 
 
-            if (pRobot->LineTracker.LineFound())
+            if (pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 ActionNum = 60;
                 SectionStart = AutoCounter;
@@ -168,7 +168,7 @@ void Autonomous::Auto1()
             fStrafe = pRobot->DriverCmd.GetAutoStrafe();
 
 
-            if (pRobot->LineTracker.LineFound())
+            if (pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 ActionNum = 100;
                 SectionStart = AutoCounter;
