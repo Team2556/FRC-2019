@@ -11,11 +11,13 @@
 #include "DriveBase.h"
 #include "Elevator.h"
 #include "Climb.h"
+#include "Autonomous.h"
 
 // Objects and variable for this file only
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
 Climb             * Climber;
+Autonomous        * Autos;
 
 // ----------------------------------------------------------------------------
 
@@ -24,9 +26,10 @@ void Robot::RobotInit() {
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
-
+  Autos             = new Autonomous(this, MecDrive);
   
   Nav.Init();
+  MecDrive->Init();
 
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture();
   UsbCamera1.SetResolution(160, 120);
@@ -54,13 +57,16 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
- 
+  //Auto selector will go here and run the coresponding Auto's Init to select it
+  //For now there is only one auto for testing purposes so its init will allways be called
+  Autos->Auto1Init();
 }
 
 // ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() 
 {
+  Autos->Auto1();
 }
 
 // ----------------------------------------------------------------------------

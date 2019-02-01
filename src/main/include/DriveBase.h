@@ -16,18 +16,19 @@ class DriveBase {
 
   //Members
   Robot * pRobot;
+  frc::Ultrasonic   Ultra{8, 9,  frc::Ultrasonic::DistanceUnit::kInches};
 //  bool drivemode;
   int      stopHoldCounter = 0;
   bool     bRotatePrevious = false;
 
 
   //Functions
-  
+  void Init();
   void NormalDrive();
   void GyroDrive();
   void FieldOrientedDrive();
   void OldFieldOrientedDrive();
   void GyroTurningDrive();
   void Drive();
-  float LineUpStrafe();
+  float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
 };

@@ -63,6 +63,7 @@ float DriverCommands::fRotate()
 // Return true if player wants to rotate robot manually
 bool DriverCommands::bManualRotate()
     {
+        frc::SmartDashboard::PutNumber("Right X", this->fRotate());
 #ifdef JOYSTICK
     return JStick1.GetTrigger();
 #else
@@ -115,6 +116,8 @@ DriverCommands::DriveMode DriverCommands::GetDriveMode()
 
    if (Xbox1.GetXButtonPressed())
         CurrDriveMode = DriveMode::FieldOriented;
+   if (Xbox1.GetYButtonPressed())
+        CurrDriveMode = DriveMode::Normal;
 
     return CurrDriveMode;
     }
@@ -128,6 +131,20 @@ bool DriverCommands::GetLineUpStrafe()
         return true;
     }
     return false;
+}
+
+bool DriverCommands::UltrasonicAllowed()
+{
+    return Xbox1.GetBumper(frc::XboxController::kLeftHand);
+}
+
+double DriverCommands::GetAutoStrafe()
+{
+    if (Xbox2.GetTriggerAxis(frc::XboxController::kRightHand) > Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
+    {
+        return Xbox2.GetTriggerAxis(frc::XboxController::kRightHand);
+    }
+    return -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
 }
 
 

@@ -104,6 +104,21 @@ void NavGyro::SetCommandYawToCurrent()
 #endif
     }
 
+// ----------------------------------------------------------------------------
+
+bool NavGyro::GetPresetTurning()
+{
+    if(fabs(this->GetYawError())<10)
+    {
+    	return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
 
 // ----------------------------------------------------------------------------
 

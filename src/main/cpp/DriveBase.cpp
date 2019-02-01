@@ -51,7 +51,7 @@ void DriveBase::GyroDrive()
 
     // If the right trigger is pressed then rotate is controlled by right stick
     bAllowRotate = pRobot->DriverCmd.bManualRotate();
-
+    
     if (bAllowRotate)
 	{
         // Get rotation rate from the right stick
@@ -71,7 +71,7 @@ void DriveBase::GyroDrive()
     	fRotate = pRobot->Nav.GetRotate();
     }
 
-
+    fForward = this->LimitFWDDrive(fForward, false, 12);
     fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, pRobot->DriverCmd.GetLineUpStrafe());
     pRobot->LineTracker.SetRotate(&pRobot->Nav, pRobot->DriverCmd.GetLineUpStrafe());
     pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
@@ -165,13 +165,13 @@ void DriveBase::OldFieldOrientedDrive()
 
 void DriveBase::FieldOrientedDrive()
 {
-    float 		fXStick = 0.0;
-    float 		fYStick = 0.0;
+    float 		fForward = 0.0;
+    float 		fStrafe = 0.0;
     float		fRotate = 0.0;
     bool		bAllowRotate = false;
 
-    fXStick = pRobot->DriverCmd.fMoveForward();
-    fYStick = pRobot->DriverCmd.fMoveSideways();
+    fForward = pRobot->DriverCmd.fMoveForward();;
+    fStrafe = pRobot->DriverCmd.fMoveSideways();
 
     if(pRobot->DriverCmd.bManualRotate())
     {
@@ -231,19 +231,20 @@ void DriveBase::FieldOrientedDrive()
     frc::SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
     frc::SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
 
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->Nav.GetYaw()));
+    pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
 
     if(pRobot->DriverCmd.bResetGyro())
     {
         pRobot->Nav.ResetYaw();
     }
-} // end GyroTurningDrive()
+} // end FieldOrientedDrive()
 
 
 // ----------------------------------------------------------------------------
 
 void DriveBase::Drive()
-    {
+    {  
+    
     switch (pRobot->DriverCmd.GetDriveMode())
         {
             case DriverCommands::DriveMode::Gyro :
@@ -268,3 +269,27 @@ void DriveBase::Drive()
                 break;
         }
     } // end Drive()
+
+
+
+float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance)
+{
+
+    float Distance = Ultra.GetRangeInches();
+    SmartDashboard::PutNumber("Distance", Distance);
+    
+    float Error = Distance - CommandDistance;
+
+    if(!(pRobot->DriverCmd.UltrasonicAllowed()) && !Auto)
+    {
+        return InitDrive;
+    }
+    float MaxSpeed = (Error / 100) +.05;
+    SmartDashboard::PutNumber("Max Speed", MaxSpeed);
+    return MaxSpeed;
+}
+
+void DriveBase::Init()
+{
+    Ultra.SetAutomaticMode(true);
+}

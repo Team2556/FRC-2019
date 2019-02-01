@@ -43,6 +43,7 @@ public:
     void   UpdateValues();
     void   SetCommandYaw(float fAngle);
     void   SetCommandYawToCurrent();
+    bool   GetPresetTurning();
     void   ResetYaw();
     float  GetYaw();
     float  GetYawError();

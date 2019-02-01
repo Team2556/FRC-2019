@@ -40,7 +40,9 @@ public:
   bool      bResetGyro();
   int       POV();
   DriveMode GetDriveMode();
-  bool      GetLineUpStrafe();
+  bool      GetLineUpStrafe();\
+  bool      UltrasonicAllowed();
+  double    GetAutoStrafe();
 
   // Elevator commands
   float     fElevatorUpDownSpeed();
