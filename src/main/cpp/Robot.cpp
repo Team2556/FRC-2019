@@ -82,10 +82,10 @@ void Robot::TeleopInit()
 
 void Robot::TeleopPeriodic() 
   {
-  //Teleop Functions
+    //Teleop Functions
     MecDrive->Drive();
     LineTracker.UpdateValues();
-    ControlElevator->CoDriveControls();
+    ControlElevator->ElevatorControls();
     //Climber->Climbing();
     SmartDashboard::PutNumber("Angle", Nav.GetYaw());
   }

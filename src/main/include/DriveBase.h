@@ -31,4 +31,7 @@ class DriveBase {
   void GyroTurningDrive();
   void Drive();
   float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
+
+  float EncoderTest();
+  
 };

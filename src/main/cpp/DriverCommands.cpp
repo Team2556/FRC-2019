@@ -168,13 +168,32 @@ float DriverCommands::fElevatorUpDownSpeed()
 
 
 // ----------------------------------------------------------------------------
-// Return true to command roller assembly down
+// Return true to command roller assembly down or a false to go up
 bool DriverCommands::bRollersDown()
+{
+    if (Xbox2.GetBumper(frc::XboxController::kRightHand))
     {
-    return Xbox2.GetYButton();
+        RollersDown = false;
     }
+    if (Xbox2.GetBumper(frc::XboxController::kLeftHand))
+    {
+        RollersDown = true;
+    }
+    return RollersDown;
+}
 
-
+bool DriverCommands::bElevatorTilt()
+{
+    if (Xbox2.GetStartButton())
+    {
+        ElevatorTilted = false;
+    }
+    if (Xbox2.GetBackButton())
+    {
+        ElevatorTilted = true;
+    }
+    return ElevatorTilted;
+}
 // ----------------------------------------------------------------------------
 // Test commands
 // ----------------------------------------------------------------------------
@@ -225,7 +244,7 @@ float DriverCommands::fTestValue(int iControl)
     {
     float   fControlValue;
 
-    if ((iControl < 0) || (iControl > 1))
+    if ((iControl < 0) || (iControl > 3))
         return 0.0;
 
     switch (iControl)
@@ -235,6 +254,12 @@ float DriverCommands::fTestValue(int iControl)
             break;
         case 1 :
             fControlValue = Xbox2.GetTriggerAxis(frc::XboxController::JoystickHand::kLeftHand);
+            break;
+        case 2 :
+            fControlValue = Xbox2.GetX(frc::XboxController::kLeftHand);
+            break;
+        case 3 :
+            fControlValue = Xbox2.GetY(frc::XboxController::kLeftHand);
             break;
         default :
             fControlValue = 0.0;

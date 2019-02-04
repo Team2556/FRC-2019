@@ -14,8 +14,9 @@ class Elevator {
   Elevator(Robot * pRobot);
   //Functions
   void ElevatorControl();
-  void RollersControl();
+  void WristControl();
 
+  void RollerControl();
   void RollerIn();
   void RollerOut();
   void RollerLeft();
@@ -23,18 +24,15 @@ class Elevator {
 
   void ElevatorTilt();
   
-  void CoDriveControls();
+  void ElevatorControls();
 
   //Created pointers
-  frc::DoubleSolenoid * hatchSolenoid;
-
   frc::DoubleSolenoid   * EleTilt;
 
-  WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER}; // will become 5 when we have enough motor controllers
-  WPI_TalonSRX          RightRoller{CAN_TALON_LEFT_ROLLER};// will become 6 when we have enough motor controllers
-  WPI_TalonSRX          ElevatorLeft{CAN_TALON_LEFT_ELEV}; // will become 5 when we have enough motor controllers
-  WPI_TalonSRX          ElevatorRight{CAN_TALON_RIGHT_ELEV};// will become 6 when we have enough motor controllers
-
+  WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER};
+  WPI_TalonSRX          RightRoller{CAN_TALON_RIGHT_ROLLER};
+  WPI_TalonSRX          ElevatorUpDown{CAN_TALON_ELEV}; 
+  WPI_TalonSRX          Wrist{CAN_TALON_WRIST};
   Robot * pRobot;
 
   //Variables

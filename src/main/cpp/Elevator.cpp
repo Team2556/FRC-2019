@@ -18,8 +18,6 @@ Elevator::Elevator(Robot * pRobot)
     this->pRobot = pRobot;
 
     //create new DoubleSolenoid//
-    hatchSolenoid = new frc::DoubleSolenoid(11,4,5);
-
     EleTilt = new frc::DoubleSolenoid(11,0,1);
 }
 
@@ -30,49 +28,65 @@ Elevator::Elevator(Robot * pRobot)
 
 void Elevator::ElevatorControl()
 {
-#if 0
-    if(pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand) > pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
-    {
-        ElevatorRight.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
-        ElevatorLeft.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kRightHand));
-    }
-    else 
-    {
-        ElevatorRight.Set(ControlMode::PercentOutput, -pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
-        ElevatorLeft.Set(ControlMode::PercentOutput, pRobot->Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand));
-    }
-#else
-        ElevatorRight.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
-        ElevatorLeft.Set(ControlMode::PercentOutput, -pRobot->DriverCmd.fElevatorUpDownSpeed());
-
-#endif
+    ElevatorUpDown.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
 }
 
 
 // ----------------------------------------------------------------------------
 // Master function that controls everything and goes into teleop 
-void Elevator::CoDriveControls()
+void Elevator::ElevatorControls()
 {
-    RollersControl();
-    RollerIn();
-    RollerOut();
-    RollerLeft();
-    RollerRight();
+    WristControl();
+    RollerControl();
+    ElevatorControl();
 }
 
 
 // ----------------------------------------------------------------------------
 
-void Elevator::RollersControl()
+void Elevator::WristControl() // 
 {
     // Figure out whether rollers should be up or down
+
+    // will be added when we have a pot on the wrist
     if (pRobot->DriverCmd.bRollersDown())
-        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kForward);
+    {
+        //will be added when we have a pot on the wrist
+        //Wrist.Set(ControlMode::Postion, DOWN);
+    }
     else
-        hatchSolenoid->Set(frc::DoubleSolenoid::Value::kReverse);
+    {
+        //Wrist.Set(ControlMode::Postion, UP);
+    }
 
-    // Motor control
+    Wrist.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));// testing until we get a pot on the wrist
 
+}
+
+
+void Elevator::RollerControl()
+{
+    if (pRobot->DriverCmd.bTestButton(0)) // when the A button is pressed turn the rollers in
+    {
+        RollerIn();
+    }
+    else if (pRobot->DriverCmd.bTestButton(3)) // when the Y button is pressed turn the rollers out
+    {
+        RollerOut();
+    }
+    else if (pRobot->DriverCmd.bTestButton(2)) // when the X button is pressed turn the rollers left
+    {
+        RollerLeft();
+    }
+    else if (pRobot->DriverCmd.bTestButton(1)) // when the B button is pressed turn the rollers right
+    {
+        RollerRight();
+    }
+    else
+    {
+        RightRoller.Set(ControlMode::PercentOutput, 0);
+        LeftRoller.Set(ControlMode::PercentOutput, 0);
+    }
 }
 
 
@@ -82,11 +96,8 @@ void Elevator::RollersControl()
 
 void Elevator::RollerIn()
 {
-    if (pRobot->DriverCmd.bTestButton(0))
-    {
-        RightRoller.Set(ControlMode::PercentOutput, speed);
-        LeftRoller.Set(ControlMode::PercentOutput, -speed);
-    }
+    RightRoller.Set(ControlMode::PercentOutput, speed);
+    LeftRoller.Set(ControlMode::PercentOutput, -speed);
 }
 
 
@@ -94,11 +105,8 @@ void Elevator::RollerIn()
 
 void Elevator::RollerOut()
 {
-    if (pRobot->DriverCmd.bTestButton(3))
-    {
-        RightRoller.Set(ControlMode::PercentOutput, -speed);
-        LeftRoller.Set(ControlMode::PercentOutput, speed);
-    }
+    RightRoller.Set(ControlMode::PercentOutput, -speed);
+    LeftRoller.Set(ControlMode::PercentOutput, speed);
 }
 
 
@@ -106,11 +114,8 @@ void Elevator::RollerOut()
 
 void Elevator::RollerLeft()
 {
-    if (pRobot->DriverCmd.bTestButton(2))
-    {
-        RightRoller.Set(ControlMode::PercentOutput, -speed);
-        LeftRoller.Set(ControlMode::PercentOutput, -speed);
-    }
+    RightRoller.Set(ControlMode::PercentOutput, -speed);
+    LeftRoller.Set(ControlMode::PercentOutput, -speed);
 }
 
 
@@ -118,22 +123,19 @@ void Elevator::RollerLeft()
 
 void Elevator::RollerRight()
 {
-    if (pRobot->DriverCmd.bTestButton(2))
-    {
-        RightRoller.Set(ControlMode::PercentOutput, speed);
-        LeftRoller.Set(ControlMode::PercentOutput, speed);
-    }
+    RightRoller.Set(ControlMode::PercentOutput, speed);
+    LeftRoller.Set(ControlMode::PercentOutput, speed);
 }
 
 void Elevator::ElevatorTilt()
 {
-    if (pRobot->DriverCmd.bTestButton(0))
-    {
-        EleTilt->Set(frc::DoubleSolenoid::Value::kForward);
-    }
-    else if (pRobot->DriverCmd.bTestButton(1))
+    if (pRobot->DriverCmd.bElevatorTilt()) // when the driver commands the elevator to tilt, retract the piston
     {
         EleTilt->Set(frc::DoubleSolenoid::Value::kReverse);
+    }
+    else if (!pRobot->DriverCmd.bElevatorTilt())
+    {
+        EleTilt->Set(frc::DoubleSolenoid::Value::kForward);
     }
     else
     {
