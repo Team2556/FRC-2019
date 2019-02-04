@@ -59,7 +59,7 @@ void Robot::AutonomousInit()
 {
   //Auto selector will go here and run the coresponding Auto's Init to select it
   //For now there is only one auto for testing purposes so its init will allways be called
-  Autos->Auto1Init();
+  Autos->Auto2Init();
 }
 
 // ----------------------------------------------------------------------------
@@ -68,7 +68,7 @@ void Robot::AutonomousPeriodic()
 {
   LineTracker.UpdateValues();
   LineTracker.UpdateBackValues();
-  Autos->Auto1();
+  Autos->Auto2();
 }
 
 // ----------------------------------------------------------------------------

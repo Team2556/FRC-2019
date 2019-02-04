@@ -21,7 +21,7 @@ class Elevator {
   void RollerLeft();
   void RollerRight();
 
-  void ElevatorTilt();
+  void ElevatorTilt(bool tiltUp);
   
   void CoDriveControls();
 

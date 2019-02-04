@@ -16,7 +16,7 @@
 
 DriverCommands::DriverCommands() 
 {
-    CurrDriveMode = DriveMode::Gyro;
+    CurrDriveMode = DriveMode::FieldOriented;
 }
 
 

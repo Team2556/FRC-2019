@@ -20,7 +20,8 @@ Elevator::Elevator(Robot * pRobot)
     //create new DoubleSolenoid//
     hatchSolenoid = new frc::DoubleSolenoid(11,4,5);
 
-    EleTilt = new frc::DoubleSolenoid(11,0,1);
+//!!!!!!!!!!!!!!!!!!!!!!!Need to Find PCM ports!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//
+    EleTilt = new frc::DoubleSolenoid(11,0,0);
 }
 
 
@@ -125,18 +126,14 @@ void Elevator::RollerRight()
     }
 }
 
-void Elevator::ElevatorTilt()
+void Elevator::ElevatorTilt(bool tiltUp)
 {
-    if (pRobot->DriverCmd.bTestButton(0))
-    {
-        EleTilt->Set(frc::DoubleSolenoid::Value::kForward);
-    }
-    else if (pRobot->DriverCmd.bTestButton(1))
+    if(tiltUp == true)
     {
         EleTilt->Set(frc::DoubleSolenoid::Value::kReverse);
     }
     else
     {
-        EleTilt->Set(frc::DoubleSolenoid::Value::kOff);
+        EleTilt->Set(frc::DoubleSolenoid::Value::kForward);
     }
 }

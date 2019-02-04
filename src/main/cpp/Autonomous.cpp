@@ -109,8 +109,8 @@ void Autonomous::Auto1()
 
         break;
 
-        case 50: // drive forward with the ultrasonic unitl the line is found
-            fForward = MecDrive->LimitFWDDrive(0, true, 14);
+        case 50: // drive fofForward = MecDrive->LimitFWDDrive(0, true, 14);rward with the ultrasonic unitl the line is found
+            
             fStrafe = pRobot->DriverCmd.GetAutoStrafe();
 
 
@@ -220,6 +220,131 @@ void Autonomous::Auto1()
 void Autonomous::Auto1Init()
 {
     AutoNumber = 1;
+    ActionNum  = 10;
+    AutoCounter = 0;
+    SectionStart = 0;
+    SmartDashboard::PutBoolean("Gyro Reset", false);
+}
+
+void Autonomous::Auto2()
+{
+        float fForward = 0.0;
+    float fStrafe  = 0.0;
+    float fRotate  = 0.0;
+
+
+
+    /*
+        Action Number will increment by 10 to allow for new ones in between current ones
+
+        10 - Drive Off of platform
+
+        20 - turn to 61.25 deg to face left of rocket
+
+        50 - drive forward with the ultrasonic until the line is detected
+
+        60 - line up on the rocket and place the hatch
+ 
+        70 - back away from the rocket
+
+        80 - 
+
+        90 - turn to face the player station
+
+        100 - drive forward until the line follower and ultrasonic are lined up on the player station
+    */
+
+    switch (ActionNum)
+    {
+        case 10: // Drive Off of platform
+            FieldOrientedDrive = true;
+            fForward = (AutoCounter - SectionStart) * .01;
+            fStrafe = 0;
+
+            // end section statement
+            if (AutoCounter - SectionStart >= 90)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 20;
+            }
+        break;
+
+        case 20: // Drive Back toward Cargo Ship
+            fForward = .65;
+            fStrafe = 0;
+
+            // end section statement
+            if (MecDrive->SideUltra(30))
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 30;
+            }
+        break;
+
+        case 30: // Turn toward the side face of the Rocket
+            fForward = .5;
+            fStrafe  = 0.0;
+
+            if (AutoCounter - SectionStart >= 25)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = -1;
+            }
+        break;
+
+        case 40: // Drive toward Rocket line
+        break;
+
+        case 50: // Start line and gyro function
+        break;
+
+        case 60: // Back up and turn toward HPS      
+        break;
+
+        case 70: // Drive toward the HPS          
+        break;
+
+        case 80: // Turn around from HPS
+        break;
+
+        case 90: // Drive toward the other Rocket Side
+  
+        break;
+
+        case 100: // Start Line Following and UltraSonic Function again
+        break;  
+
+        case -1: default:
+        fForward = 0.0;
+        fStrafe = 0.0;
+        break;
+    }  
+
+
+    if (AutoCounter == 0)
+    {
+
+        pRobot->Nav.ResetYaw();
+        SmartDashboard::PutBoolean("Gyro Reset", true);
+    }
+    fRotate = pRobot->Nav.GetRotate();
+    
+    if (!FieldOrientedDrive)
+    {
+        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0); 
+    }
+    else
+    {
+        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw())+180); 
+    }
+
+    SmartDashboard::PutNumber("Auto Section", ActionNum);
+    AutoCounter++;
+}
+
+void Autonomous::Auto2Init()
+{
+    AutoNumber = 2;
     ActionNum  = 10;
     AutoCounter = 0;
     SectionStart = 0;

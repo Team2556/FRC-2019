@@ -318,3 +318,16 @@ float FindClose(float Angle)
     SmartDashboard::PutNumber("Set Angle", Angles[closestIndex]);
     return Angles[closestIndex];
 }
+
+bool DriveBase::SideUltra(float distance)
+{
+    if(UltraLeft.GetRangeInches() < distance)
+    {
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+}

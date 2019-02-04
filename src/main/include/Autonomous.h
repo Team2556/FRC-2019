@@ -20,6 +20,8 @@ class Autonomous {
   // Auto Modes
   void Auto1();
   void Auto1Init();
+  void Auto2();
+  void Auto2Init();
 
   Robot * pRobot;
   DriveBase * MecDrive;

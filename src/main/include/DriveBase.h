@@ -16,7 +16,8 @@ class DriveBase {
 
   //Members
   Robot * pRobot;
-  frc::Ultrasonic   Ultra{8, 9,  frc::Ultrasonic::DistanceUnit::kInches};
+  frc::Ultrasonic   Ultra{DIO_US_RANGE_TRIGGER, DIO_US_RANGE_PULSE,  frc::Ultrasonic::DistanceUnit::kInches};
+  frc::Ultrasonic   UltraLeft{DIO_US_RANGE_TRIGGER_LEFT, DIO_US_RANGE_PULSE_LEFT,  frc::Ultrasonic::DistanceUnit::kInches};
 //  bool drivemode;
   int      stopHoldCounter = 0;
   bool     bRotatePrevious = false;
@@ -31,4 +32,5 @@ class DriveBase {
   void GyroTurningDrive();
   void Drive();
   float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
+  bool SideUltra(float distance);
 };
