@@ -29,6 +29,7 @@ class DriveBase {
   void FieldOrientedDrive();
   void OldFieldOrientedDrive();
   void GyroTurningDrive();
+  void DriveToTarget();
   void Drive();
   float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
 
