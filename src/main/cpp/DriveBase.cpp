@@ -248,6 +248,67 @@ void DriveBase::FieldOrientedDrive()
 
 // ----------------------------------------------------------------------------
 
+void DriveBase::DriveToTarget()
+    {
+    float 		fXStick;
+    float 		fYStick;
+    float		fRotate;
+    bool		bAllowRotate = false;
+    bool        bVisionTracked;
+    float       fVisionTrackErrorX, fVisionTrackErrorY;
+    float       fVisionTargetSizeX, fVisionTargetSizeY;
+    char        szVisionMsg[100];
+
+    // Get drive inputs
+    fXStick = pRobot->DriverCmd.fMoveForward();
+    fYStick = pRobot->DriverCmd.fMoveSideways();
+
+    // Get vision track status and track errors
+    pRobot->CameraTrk.GetTrackError(&bVisionTracked, &fVisionTrackErrorX, &fVisionTrackErrorY, &fVisionTargetSizeX, &fVisionTargetSizeY);
+
+    // Vision track mode
+    if (pRobot->DriverCmd.bTestButton(0))
+        if (bVisionTracked)
+            {
+            fRotate = fVisionTrackErrorX * 0.5;
+            pRobot->Nav.SetCommandYawToCurrent();
+            sprintf(szVisionMsg, "TRACK    %4.1f", fRotate);
+            }
+        else
+            {
+            fRotate = pRobot->Nav.GetRotate();
+            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
+            } // end if vision track
+
+    // Non-vision track mode
+    else 
+        {
+        // Manual rotate
+        if(pRobot->DriverCmd.bManualRotate())
+            {
+            fRotate = pRobot->DriverCmd.fRotate();
+            pRobot->Nav.SetCommandYawToCurrent();
+            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
+            }
+        // Gyro control rotate
+        else
+            {
+            fRotate = pRobot->Nav.GetRotate();
+            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
+            }
+        } // end if not vision track
+
+    frc::SmartDashboard::PutString("Vision Track", szVisionMsg);
+
+    // Drive the robot
+//    printf(" %s %5.2f\n", bVisionTracked?"TRACK   ":"NO TRACK", fRotate);
+    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, 0.0);
+
+    } // end DriveToTarget()
+
+
+// ----------------------------------------------------------------------------
+
 void DriveBase::Drive()
     {  
     switch (pRobot->DriverCmd.GetDriveMode())
@@ -264,7 +325,7 @@ void DriveBase::Drive()
 
             case DriverCommands::DriveMode::DriveToTarget :
                 frc::SmartDashboard::PutString("DriveMode", "Drive To Target");
-                // Call method here
+                this->DriveToTarget();
                 break;
 
             case DriverCommands::DriveMode::Normal :
@@ -276,6 +337,8 @@ void DriveBase::Drive()
     } // end Drive()
 
 
+
+// ----------------------------------------------------------------------------
 
 float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance)
 {
@@ -293,6 +356,9 @@ float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance
     SmartDashboard::PutNumber("Max Speed", MaxSpeed);
     return MaxSpeed;
 }
+
+
+// ----------------------------------------------------------------------------
 
 void DriveBase::Init()
 {

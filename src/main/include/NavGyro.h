@@ -18,7 +18,11 @@
 #include "frc/wpilib.h"
 #endif
 
-class NavGyro
+class NavGyroYawOutput;
+
+// ============================================================================
+
+class NavGyro : public frc::PIDSource
 {
 public:
     // Constructor / Destructor
@@ -28,31 +32,38 @@ public:
 private:
     // Data
 #ifdef NAVX
-    AHRS *  		pNavX;
+    AHRS                * pNavX;
 #endif
 #ifdef ADXRS_GYRO
     frc::ADXRS450_Gyro  * pADXRS;
 #endif
 
 public:
+    NavGyroYawOutput    * pYawPIDOutput;
+    PIDController       * pYawPID;
+
     float		fGyroCommandYaw;
-    bool		bPresetTurning;
+    float       fYawPIDValue;
+//    bool        bPIDEnabled;
+    bool		bPresetTurning; // GET RID OF THIS!!!!
 
     // Methods
-    void   Init();
-    void   UpdateValues();
-    void   SetCommandYaw(float fAngle);
-    void   SetCommandYawToCurrent();
-    bool   GetPresetTurning();
-    void   ResetYaw();
-    float  GetYaw();
-    float  GetYawError();
-	
-    float  CorrectRotate(float fRotateLess);
-    float  GetTilt();
-	
-    float  GetRotate(float fRotateMax = 0.5);
-	
+    void    Init(bool vPIDEnable = false);
+    void    UpdateValues();
+    void    SetCommandYaw(float fAngle);
+    void    SetCommandYawToCurrent();
+    bool    GetPresetTurning();
+    void    ResetYaw();
+    float   GetYaw();
+    float   GetYawError();
+		
+//    float  CorrectRotate(float fRotateLess);
+    float   GetTilt();
+    float   GetRotate(float fRotateMax = 0.5);
+
+    void    PIDEnable(bool bEnable);
+    double  PIDGet();
+
 #ifdef NAVX
     float	GetDisplacemetX();
     float	GetDisplacemetY();
@@ -60,5 +71,18 @@ public:
 #endif
     
 };
+
+// ============================================================================
+
+class NavGyroYawOutput : public frc::PIDOutput
+{
+public:
+    NavGyroYawOutput(float * pfYawPIDVar) : pfYawPID(pfYawPIDVar) {}
+
+    float       * pfYawPID;
+
+    void PIDWrite(double dOutput) { *pfYawPID = dOutput; }
+};
+
 
 #endif /* SRC_NAVGYRO_H_ */

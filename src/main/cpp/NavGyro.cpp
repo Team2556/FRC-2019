@@ -42,6 +42,13 @@ NavGyro::NavGyro()
     pADXRS = new frc::ADXRS450_Gyro(frc::SPI::Port::kOnboardCS0);
 #endif
 
+    pYawPIDOutput = new NavGyroYawOutput(&fYawPIDValue);
+    pYawPID       = new PIDController(0.05, 0.000, -0.00, this, pYawPIDOutput);
+//    pYawPID->SetInputRange(-1.0, 1.0);
+    pYawPID->SetOutputRange(-0.75, 0.75);
+    pYawPID->Disable();
+//    bPIDEnabled = false;
+
     }
 
 
@@ -56,7 +63,7 @@ NavGyro::~NavGyro()
 // Methods
 // ----------------------------------------------------------------------------
 
-void NavGyro::Init()
+void NavGyro::Init(bool bPIDEnableVal)
     {
     // Get the initial starting angle
 #ifdef NAVX
@@ -67,6 +74,10 @@ void NavGyro::Init()
 //    pADXRS->Calibrate();
     fGyroCommandYaw = pADXRS->GetAngle();
 #endif
+
+    pYawPID->Reset();
+    PIDEnable(bPIDEnableVal);
+
     }
 
 
@@ -75,10 +86,11 @@ void NavGyro::Init()
 #ifdef NAVX
 void NavGyro::UpdateValues()
 {
-	float fAccelX = pNavX->GetRawAccelX();
-	float fAccelY = pNavX->GetRawAccelY();
-	int UpdateRate = pNavX->GetRequestedUpdateRate();
-	bool bMoving = pNavX->IsMoving();
+	float fAccelX    = pNavX->GetRawAccelX();
+	float fAccelY    = pNavX->GetRawAccelY();
+	int   UpdateRate = pNavX->GetRequestedUpdateRate();
+	bool  bMoving    = pNavX->IsMoving();
+
 	SmartDashboard::PutNumber("Is Moving", bMoving);
 	pNavX->UpdateDisplacement(fAccelX,fAccelY,UpdateRate,true);
 }
@@ -105,7 +117,7 @@ void NavGyro::SetCommandYawToCurrent()
     }
 
 // ----------------------------------------------------------------------------
-
+#if 1
 bool NavGyro::GetPresetTurning()
 {
     if(fabs(this->GetYawError())<10)
@@ -117,7 +129,7 @@ bool NavGyro::GetPresetTurning()
         return true;
     }
 }
-
+#endif
 
 
 // ----------------------------------------------------------------------------
@@ -154,7 +166,7 @@ float  NavGyro::GetYawError()
 
 
 //-----------------------------------------------------------------------------
-
+#if 0
 float  NavGyro::CorrectRotate(float fRotateLess)
 {
 	if(fRotateLess >  0.5)
@@ -167,19 +179,26 @@ float  NavGyro::CorrectRotate(float fRotateLess)
 	}
 	return fRotateLess;
 }
-
+#endif
 
 //-----------------------------------------------------------------------------
 float  NavGyro::GetRotate(float fRotateMax)
 {
     float fRotateCmd;
 
-    // Calculate drive train rotate command value
-    fRotateCmd = this->GetYawError() * 0.05;
+    if (pYawPID->IsEnabled())
+        {
+        fRotateCmd = -fYawPIDValue;
+        }
+    else
+        {
+        // Calculate drive train rotate command value
+        fRotateCmd = this->GetYawError() * 0.05;
 
-    // Make use rotate command doesn't exceed max limits
-	if (fRotateCmd >  fRotateMax) fRotateCmd =  fRotateMax;
-	if (fRotateCmd < -fRotateMax) fRotateCmd = -fRotateMax;
+        // Make use rotate command doesn't exceed max limits
+        if (fRotateCmd >  fRotateMax) fRotateCmd =  fRotateMax;
+        if (fRotateCmd < -fRotateMax) fRotateCmd = -fRotateMax;
+        }
 
     return fRotateCmd;
 }
@@ -199,22 +218,63 @@ float NavGyro::GetTilt()
 //-----------------------------------------------------------------------------
 
 #if defined(NAVX)
+//-----------------------------------------------------------------------------
 
 float	NavGyro::GetDisplacemetX()
 {
-	return	pNavX->GetDisplacementX()*3.28084;
+    // Get X displacement and convert to feet
+	return	pNavX->GetDisplacementX() * 3.28084;
 }
+
+
+//-----------------------------------------------------------------------------
 
 float	NavGyro::GetDisplacemetY()
 {
-	return	pNavX->GetDisplacementY()*3.28084;
+    // Get X displacement and convert to feet
+	return	pNavX->GetDisplacementY() * 3.28084;
 }
 
-float	NavGyro::GetDisplacemetZ()
-{
+
+//-----------------------------------------------------------------------------
+
+float NavGyro::GetDisplacemetZ()
+    {
+    // Get Z displacement and convert to feet
 	return	pNavX->GetDisplacementZ()*3.28084;
-}
+    }
 #endif
+
+
+// ----------------------------------------------------------------------------
+
+void NavGyro::PIDEnable(bool bEnable)
+    {
+    if (bEnable)
+        {
+//        this->bPIDEnabled = true;
+        pYawPID->Enable();
+        }
+    else
+        {
+//        this->bPIDEnabled = false;
+        pYawPID->Reset();
+        pYawPID->Disable(); // PROBABLY DON'T NEED
+        }
+    }
+
+// ----------------------------------------------------------------------------
+
+// This overloads the virtual PIDGet in PIDSource. Necessary to use this
+// in a PIDController.
+double NavGyro::PIDGet()
+    {
+    float fYawError = GetYawError();
+    if (fYawError < -5.0) fYawError = -5.0;
+    if (fYawError >  5.0) fYawError =  5.0;
+    return fYawError;
+    }
+
 
 // ----------------------------------------------------------------------------
 // Utilities

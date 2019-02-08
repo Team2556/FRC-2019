@@ -5,6 +5,8 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include <thread>         // std::thread
+
 #include "frc/WPILib.h"
 
 #include "Robot.h"
@@ -22,19 +24,42 @@ Autonomous        * Autos;
 // ----------------------------------------------------------------------------
 
 void Robot::RobotInit() {
+    pPrefs = frc::Preferences::GetInstance();
 
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
   Autos             = new Autonomous(this, MecDrive);
   
-  Nav.Init();
+  Nav.Init(false);
   MecDrive->Init();
+<<<<<<< HEAD
 /*
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture();
   UsbCamera1.SetResolution(160, 120);
   UsbCamera1.SetFPS(20);
 */
+=======
+
+#ifdef USB_CAMERA
+  UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
+  UsbCamera1.SetResolution(160, 120);
+  UsbCamera1.SetFPS(20);
+#endif
+
+#ifdef AXIS_CAMERA
+  AxisCamera1 = frc::CameraServer::GetInstance()->AddAxisCamera("11.25.56.17");
+  AxisCamera1.SetResolution(320, 240);
+  AxisCamera1.SetFPS(10);
+#endif
+
+#ifdef CAMERA
+  CameraTrk.Init();
+  frc::SmartDashboard::PutNumber("Vision Display", CameraTrk.iDisplayFrame);
+  pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
+#endif
+
+>>>>>>> 42138cbee9d0e8c5beeb698ba600dbf9060b469d
   int timing = frc::SmartDashboard::GetNumber("Timing", 10);
   frc::SmartDashboard::PutNumber("Timing", timing);
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
@@ -50,7 +75,10 @@ void Robot::RobotInit() {
 
 void Robot::RobotPeriodic() 
 {
-
+#ifdef CAMERA
+    CameraTrk.iDisplayFrame = frc::SmartDashboard::GetNumber("Vision Display", 0);
+    pPrefs->PutInt("Display Frame", CameraTrk.iDisplayFrame);
+#endif
 }
 
 // ----------------------------------------------------------------------------
