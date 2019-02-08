@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Robot.h"
+#include "ElevatorPresets.h"
 
 class Elevator {
  public:
@@ -37,5 +38,8 @@ class Elevator {
 
   //Variables
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
+  DriverCommands::ElevatorHeight    CMDHeight;
+  DriverCommands::ElevatorMode      CMDMode;
+
 
 };

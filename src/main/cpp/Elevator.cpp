@@ -18,7 +18,7 @@ Elevator::Elevator(Robot * pRobot)
     this->pRobot = pRobot;
 
     //create new DoubleSolenoid//
-    EleTilt = new frc::DoubleSolenoid(11,0,1);
+    EleTilt = new frc::DoubleSolenoid(11,4,5);
 }
 
 
@@ -28,14 +28,81 @@ Elevator::Elevator(Robot * pRobot)
 
 void Elevator::ElevatorControl()
 {
-    ElevatorUpDown.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
-}
+    #define     MANUAL
+    
+    #ifdef MANUAL
 
+    ElevatorUpDown.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
+    #else
+    
+    if (pRobot->DriverCmd.fElevatorUpDownSpeed() > .05)
+    {
+        ElevatorUpDown.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
+    }
+    else
+    {
+        if (CMDMode == DriverCommands::ElevatorMode::Hatch)
+        {        
+            switch (CMDHeight)
+            {
+                case DriverCommands::ElevatorHeight::Low :
+                    ElevatorUpDown.Set(ControlMode::Position, LOW_HATCH);
+                break;
+
+                case DriverCommands::ElevatorHeight::Middle :
+                    ElevatorUpDown.Set(ControlMode::Position, MID_HATCH);
+                break;
+                
+                case DriverCommands::ElevatorHeight::High :
+                    ElevatorUpDown.Set(ControlMode::Position, TOP_HATCH);
+                break;
+
+                case DriverCommands::ElevatorHeight::Pickup :
+                    ElevatorUpDown.Set(ControlMode::Position, HATCH_PKUP);
+                break;
+
+                case DriverCommands::ElevatorHeight::GroundPickup :
+                    ElevatorUpDown.Set(ControlMode::Position, GND_HATCH_PKUP);
+                break;
+            }
+        }
+        else // elevator mode is cargo
+        {
+            switch (CMDHeight)
+            {
+                case DriverCommands::ElevatorHeight::Low :
+                    ElevatorUpDown.Set(ControlMode::Position, LOW_CARGO);
+                break;
+
+                case DriverCommands::ElevatorHeight::Middle :
+                    ElevatorUpDown.Set(ControlMode::Position, MID_CARGO);
+                break;
+                
+                case DriverCommands::ElevatorHeight::High :
+                    ElevatorUpDown.Set(ControlMode::Position, TOP_CARGO);
+                break;
+
+                case DriverCommands::ElevatorHeight::Pickup :
+                    ElevatorUpDown.Set(ControlMode::Position, CARGO_PICKUP);
+                break;
+
+                case DriverCommands::ElevatorHeight::GroundPickup :
+                    ElevatorUpDown.Set(ControlMode::Position, GND_CARGO_PKUP);
+                break;
+            }
+        }
+    }
+
+    #endif
+
+}
 
 // ----------------------------------------------------------------------------
 // Master function that controls everything and goes into teleop 
 void Elevator::ElevatorControls()
 {
+    CMDHeight = pRobot->DriverCmd.GetElevatorHeight();
+    CMDMode   = pRobot->DriverCmd.GetElevatorMode();
     WristControl();
     RollerControl();
     ElevatorControl();
@@ -52,11 +119,11 @@ void Elevator::WristControl() //
     if (pRobot->DriverCmd.bRollersDown())
     {
         //will be added when we have a pot on the wrist
-        //Wrist.Set(ControlMode::Postion, DOWN);
+        //Wrist.Set(ControlMode::Postion, WRIST_DOWN);
     }
     else
     {
-        //Wrist.Set(ControlMode::Postion, UP);
+        //Wrist.Set(ControlMode::Postion, WRIST_UP);
     }
 
     Wrist.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));// testing until we get a pot on the wrist
@@ -66,6 +133,7 @@ void Elevator::WristControl() //
 
 void Elevator::RollerControl()
 {
+    speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
     if (pRobot->DriverCmd.bTestButton(0)) // when the A button is pressed turn the rollers in
     {
         RollerIn();

@@ -30,11 +30,11 @@ void Robot::RobotInit() {
   
   Nav.Init();
   MecDrive->Init();
-
+/*
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture();
   UsbCamera1.SetResolution(160, 120);
   UsbCamera1.SetFPS(20);
-
+*/
   int timing = frc::SmartDashboard::GetNumber("Timing", 10);
   frc::SmartDashboard::PutNumber("Timing", timing);
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);

@@ -15,7 +15,7 @@ Climb::Climb(Robot * pRobot)
 {
     this->pRobot = pRobot;
     FrontClimb = new frc::DoubleSolenoid(11,0,1);
-    RearClimb  = new frc::DoubleSolenoid(11,2,3);
+    RearClimb  = new frc::DoubleSolenoid(11,2,6); // 6 is supposed to be 3 but the PCM on Proto is broken
     
 }
 
