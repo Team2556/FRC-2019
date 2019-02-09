@@ -33,13 +33,6 @@ void Robot::RobotInit() {
   
   Nav.Init(false);
   MecDrive->Init();
-<<<<<<< HEAD
-/*
-  UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture();
-  UsbCamera1.SetResolution(160, 120);
-  UsbCamera1.SetFPS(20);
-*/
-=======
 
 #ifdef USB_CAMERA
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
@@ -59,9 +52,6 @@ void Robot::RobotInit() {
   pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
 #endif
 
->>>>>>> 42138cbee9d0e8c5beeb698ba600dbf9060b469d
-  int timing = frc::SmartDashboard::GetNumber("Timing", 10);
-  frc::SmartDashboard::PutNumber("Timing", timing);
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
   frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
   int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
@@ -113,8 +103,8 @@ void Robot::TeleopPeriodic()
     //Teleop Functions
     MecDrive->Drive();
     LineTracker.UpdateValues();
-    ControlElevator->ElevatorControls();
-    //Climber->Climbing();
+    //ControlElevator->ElevatorControls();
+    Climber->Climbing();
     SmartDashboard::PutNumber("Angle", Nav.GetYaw());
   }
 

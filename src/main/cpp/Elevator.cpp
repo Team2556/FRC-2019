@@ -106,6 +106,7 @@ void Elevator::ElevatorControls()
     WristControl();
     RollerControl();
     ElevatorControl();
+    ElevatorTilt();
 }
 
 

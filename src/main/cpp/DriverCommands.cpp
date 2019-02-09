@@ -333,7 +333,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = Xbox2.GetXButton();
             break;
         case 3 :
-            bButtonValue = Xbox2.GetYButton();
+            bButtonValue = Xbox2.GetYButtonPressed();
             break;
         case 4 :
             bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kLeftHand);
