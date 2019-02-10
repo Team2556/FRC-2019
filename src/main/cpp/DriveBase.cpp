@@ -250,7 +250,6 @@ void DriveBase::FieldOrientedDrive()
 
 void DriveBase::Drive()
     {  
-    
     switch (pRobot->DriverCmd.GetDriveMode())
         {
             case DriverCommands::DriveMode::Gyro :
@@ -330,4 +329,12 @@ bool DriveBase::SideUltra(float distance)
     {
         return false;
     }
+}
+
+float DriveBase::EncoderTest()
+{
+    float position = pRobot->MotorControl_LR.GetSelectedSensorPosition();
+    SmartDashboard::PutNumber("Position", position);
+    pRobot->MotorControl_LR.Set(ControlMode::Position, 0);
+    //pRobot->MotorControl_LR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(0));
 }

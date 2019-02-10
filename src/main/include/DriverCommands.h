@@ -32,6 +32,9 @@ public:
   
   DriveMode   CurrDriveMode;
 
+  bool        RollersDown = false; // true if the rollers/wrist are down
+  bool        ElevatorTilted = false; // true if the elevator is tilted backwards
+
   // Moving commands
   float     fMoveForward();
   float     fMoveSideways();
@@ -47,6 +50,7 @@ public:
   // Elevator commands
   float     fElevatorUpDownSpeed();
   bool      bRollersDown();
+  bool      bElevatorTilt();
 
   // Climber commands
 

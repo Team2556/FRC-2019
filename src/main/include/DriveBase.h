@@ -33,4 +33,7 @@ class DriveBase {
   void Drive();
   float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
   bool SideUltra(float distance);
+
+  float EncoderTest();
+  
 };
