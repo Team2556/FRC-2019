@@ -1,3 +1,11 @@
+// Define which camera to use for vision
+//#define USB_CAMERA
+//#define AXIS_CAMERA
+#if defined(USB_CAMERA) || defined(AXIS_CAMERA)
+#define CAMERA
+#else
+#undef CAMERA
+#endif
 //Xbox Controllers
 #define         XBOX_ONE                0
 #define         XBOX_TWO                1

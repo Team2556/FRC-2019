@@ -7,6 +7,7 @@
 
 #pragma once
 #include "Robot.h"
+#include "ElevatorPresets.h"
 
 class Elevator {
  public:
@@ -21,13 +22,15 @@ class Elevator {
   void RollerOut();
   void RollerLeft();
   void RollerRight();
+  void RollerPistons();
 
-  void ElevatorTilt(bool tiltUp);
+  void ElevatorTilt();
   
   void ElevatorControls();
 
   //Created pointers
   frc::DoubleSolenoid   * EleTilt;
+  frc::DoubleSolenoid   * rollerPiston;
 
   WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER};
   WPI_TalonSRX          RightRoller{CAN_TALON_RIGHT_ROLLER};
@@ -37,5 +40,8 @@ class Elevator {
 
   //Variables
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
+  DriverCommands::ElevatorHeight    CMDHeight;
+  DriverCommands::ElevatorMode      CMDMode;
+
 
 };

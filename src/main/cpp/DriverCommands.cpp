@@ -16,7 +16,11 @@
 
 DriverCommands::DriverCommands() 
 {
-    CurrDriveMode = DriveMode::FieldOriented;
+    CurrDriveMode = DriveMode::Gyro;
+    CMDElevatorHeight = ElevatorHeight::Low;
+    frc::SmartDashboard::PutString("Height", "Low");
+    CMDElevatorMode = ElevatorMode::Hatch;
+    frc::SmartDashboard::PutString("Mode", "Hatch");
 }
 
 
@@ -63,7 +67,7 @@ float DriverCommands::fRotate()
 // Return true if player wants to rotate robot manually
 bool DriverCommands::bManualRotate()
     {
-        frc::SmartDashboard::PutNumber("Right X", this->fRotate());
+    frc::SmartDashboard::PutNumber("Right X", this->fRotate());
 #ifdef JOYSTICK
     return JStick1.GetTrigger();
 #else
@@ -125,7 +129,6 @@ DriverCommands::DriveMode DriverCommands::GetDriveMode()
 // ----------------------------------------------------------------------------
 bool DriverCommands::GetLineUpStrafe()
 {
-    frc::SmartDashboard::PutNumber("Left Trigger", Xbox1.GetTriggerAxis(frc::XboxController::kLeftHand));
     if(Xbox1.GetTriggerAxis(frc::XboxController::kLeftHand)> .5)
     {
         return true;
@@ -194,6 +197,126 @@ bool DriverCommands::bElevatorTilt()
     }
     return ElevatorTilted;
 }
+bool DriverCommands::bRollerPistons()
+{
+    if (Xbox2.GetBButtonPressed())
+    {
+        rollerBool = !rollerBool;
+    }
+
+    return ElevatorTilted;
+}
+
+// ----------------------------------------------------------------------------
+
+DriverCommands::ElevatorMode DriverCommands::GetElevatorMode()
+{
+    if (Xbox2.GetPOV() == 270)
+    {
+        CMDElevatorMode = Hatch;
+        frc::SmartDashboard::PutString("Mode", "Hatch");
+    }
+    if (Xbox2.GetPOV() == 90)
+    {
+        CMDElevatorMode = Cargo;
+        frc::SmartDashboard::PutString("Mode", "Cargo");
+    }
+    return CMDElevatorMode;
+}
+
+
+void DriverCommands::HeightIntEnum()
+{
+    switch (iElevatorHeight)
+    {
+        case 0 : // low
+            CMDElevatorHeight = DriverCommands::ElevatorHeight::Low;
+            frc::SmartDashboard::PutString("Height", "Low");
+        break;
+
+        case 1 : // Middle
+            CMDElevatorHeight = DriverCommands::ElevatorHeight::Middle;
+            frc::SmartDashboard::PutString("Height", "Middle");
+        break;
+
+        case 2 : // High
+            CMDElevatorHeight = DriverCommands::ElevatorHeight::High;
+            frc::SmartDashboard::PutString("Height", "High");
+        break;
+
+        case -2: // Ground Pickup
+            CMDElevatorHeight =  DriverCommands::ElevatorHeight::GroundPickup;
+            frc::SmartDashboard::PutString("Height", "Ground Pickup");
+        break;
+
+        case -1: // Pickup
+            CMDElevatorHeight = DriverCommands::ElevatorHeight::Pickup;
+            frc::SmartDashboard::PutString("Height", "Pickup");
+        break;
+    }
+}
+
+DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
+{
+    int POV = Xbox2.GetPOV();
+    frc::SmartDashboard::PutNumber("POV", POV);
+    static bool HeightChanged = false;
+    if (POV == -1)
+    {
+        HeightChanged = false;
+    }
+    
+
+    if (iElevatorHeight < 0)
+    {
+        printf("Here");
+        if (POV == 0)
+        {
+            iElevatorHeight  = 0;
+            HeightChanged = true;
+        }
+    }
+    else if (iElevatorHeight >= 0 && iElevatorHeight <= 2 && !HeightChanged) // ensures the elevator isnt in pickup mode
+    {
+        if(POV == 0)
+        {
+            iElevatorHeight++;
+            HeightChanged = true;
+        }
+        else if (POV == 180)
+        {
+            iElevatorHeight--;
+            HeightChanged = true;
+        }
+
+
+        if (iElevatorHeight < 0)
+        {
+            iElevatorHeight = 0;
+        }
+        else if (iElevatorHeight > 2)
+        {
+            iElevatorHeight = 2;
+        }
+    }
+    if(Xbox2.GetStickButtonPressed(frc::XboxController::kRightHand)) // when pressing the right stick down enable and disable pickup 
+    {
+         // enable pickup mode
+        
+        iElevatorHeight = -1;
+
+    }
+    if(Xbox2.GetStickButtonPressed(frc::XboxController::kLeftHand)) // when pressing the right stick down enable and disable ground pickup 
+    {
+         // enable pickup mode
+        iElevatorHeight = -2;
+    }
+    frc::SmartDashboard::PutNumber("Height Number", iElevatorHeight);
+    this->HeightIntEnum();
+    return CMDElevatorHeight;
+}
+
+
 // ----------------------------------------------------------------------------
 // Test commands
 // ----------------------------------------------------------------------------
@@ -219,7 +342,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = Xbox2.GetXButton();
             break;
         case 3 :
-            bButtonValue = Xbox2.GetYButton();
+            bButtonValue = Xbox2.GetYButtonPressed();
             break;
         case 4 :
             bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kLeftHand);

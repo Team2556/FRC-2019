@@ -17,22 +17,35 @@
 #include "ctre/Phoenix.h"
 #include "NavGyro.h"
 #include "DriverCommands.h"
+#include "CameraTrack.h"
 #include "LineTrack.h"
 
 
 class Robot : public frc::TimedRobot {
  public:
 
+#ifdef USB_CAMERA
+  cs::UsbCamera         UsbCamera1;
+#endif
+#ifdef AXIS_CAMERA
+  cs::AxisCamera        AxisCamera1{"AXIS FRONT", "10.25.56.17"};
+#endif
+#ifdef CAMERA
+  frc::CameraServer   * pCamServer;
+#endif
+
+  std::thread         * pVisionThread;
+  CameraTrack           CameraTrk;
   WPI_TalonSRX          MotorControl_LF{CAN_TALON_LF};
   WPI_TalonSRX          MotorControl_RF{CAN_TALON_RF};
   WPI_TalonSRX          MotorControl_LR{CAN_TALON_LR};
   WPI_TalonSRX          MotorControl_RR{CAN_TALON_RR};
 	frc::MecanumDrive     RobotDrive{MotorControl_LF, MotorControl_LR, MotorControl_RF, MotorControl_RR};
   NavGyro               Nav;
-  cs::UsbCamera		      UsbCamera1;
   DriverCommands        DriverCmd;
   ColorSens             LineTracker;
   
+  frc::Preferences   *  pPrefs;
     
   void RobotInit() override;
   void RobotPeriodic() override;
