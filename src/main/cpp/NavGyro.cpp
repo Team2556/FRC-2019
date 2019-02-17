@@ -5,6 +5,8 @@
  *      Author: team2556
  */
 
+// https://www.kauailabs.com/public_files/navx-mxp/apidocs/c++/class_a_h_r_s.html
+// http://first.wpi.edu/FRC/roborio/release/docs/cpp/classfrc_1_1ADXRS450__Gyro.html
 
 #include "frc/WPILib.h"
 
@@ -43,7 +45,7 @@ NavGyro::NavGyro()
 #endif
 
     pYawPIDOutput = new NavGyroYawOutput(&fYawPIDValue);
-    pYawPID       = new PIDController(0.05, 0.000, -0.00, this, pYawPIDOutput);
+    pYawPID       = new frc::PIDController(0.05, 0.000, -0.00, this, pYawPIDOutput);
 //    pYawPID->SetInputRange(-1.0, 1.0);
     pYawPID->SetOutputRange(-0.75, 0.75);
     pYawPID->Disable();

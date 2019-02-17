@@ -250,6 +250,7 @@ void DriveBase::FieldOrientedDrive()
 
 void DriveBase::DriveToTarget()
     {
+    static int  iDriveToTargetState = 0;
     float 		fXStick;
     float 		fYStick;
     float		fRotate;
@@ -259,6 +260,18 @@ void DriveBase::DriveToTarget()
     float       fVisionTargetSizeX, fVisionTargetSizeY;
     char        szVisionMsg[100];
 
+    bool        bDistanceGood;
+    float       fDistanceToTarget;
+    char        szPrint[100];
+
+    /* Drive States
+         0  Get ready to drive
+        10  Rotate based on vision target
+        20  Drive towards target until near
+        30  Final drive to deploy
+      1000  Done, manual control
+    */
+
     // Get drive inputs
     fXStick = pRobot->DriverCmd.fMoveForward();
     fYStick = pRobot->DriverCmd.fMoveSideways();
@@ -266,42 +279,96 @@ void DriveBase::DriveToTarget()
     // Get vision track status and track errors
     pRobot->CameraTrk.GetTrackError(&bVisionTracked, &fVisionTrackErrorX, &fVisionTrackErrorY, &fVisionTargetSizeX, &fVisionTargetSizeY);
 
-    // Vision track mode
-    if (pRobot->DriverCmd.bTestButton(0))
-        if (bVisionTracked)
-            {
-            fRotate = fVisionTrackErrorX * 0.5;
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "TRACK    %4.1f", fRotate);
-            }
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
-            } // end if vision track
+    // Get ultrasonic distance
+#if 1
+    fDistanceToTarget = 0.0;
+    fDistanceToTarget += Ultra.GetRangeInches();
+    fDistanceToTarget += Ultra.GetRangeInches();
+    fDistanceToTarget += Ultra.GetRangeInches();
+    fDistanceToTarget =  fDistanceToTarget / 3.0;
+#else
+    fDistanceToTarget = Ultra.GetRangeInches();
+#endif
+    bDistanceGood     =  Ultra.IsRangeValid();
+    frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
+    if (bDistanceGood) frc::SmartDashboard::PutNumber("Distance", fDistanceToTarget);
+    else               frc::SmartDashboard::PutString("Distance", " ");
 
-    // Non-vision track mode
+    // Get line track error
+
+
+    // Get default values for rotate
+    if(pRobot->DriverCmd.bManualRotate())
+        {
+        fRotate = pRobot->DriverCmd.fRotate();
+        pRobot->Nav.SetCommandYawToCurrent();
+//            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
+        }
+    // Gyro control rotate
+    else
+        {
+        fRotate = pRobot->Nav.GetRotate();
+//            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
+        }
+
+    // If auto-drive button not pressed then just manual control
+    // ---------------------------------------------------------
+    if (pRobot->DriverCmd.bTestButton(0) == false)
+        {
+        iDriveToTargetState = 0;
+        } // end if manual drive
+
+    // Auto-drive button pressed so, um.... auto-drive
+    // -----------------------------------------------
     else 
         {
-        // Manual rotate
-        if(pRobot->DriverCmd.bManualRotate())
+        switch (iDriveToTargetState)
             {
-            fRotate = pRobot->DriverCmd.fRotate();
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
-            }
-        // Gyro control rotate
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
-            }
-        } // end if not vision track
+            case 0 :
+                iDriveToTargetState = 10;
+                // No break!
 
-    frc::SmartDashboard::PutString("Vision Track", szVisionMsg);
+            case 10 :
+                // Rotate
+                if (bVisionTracked) 
+                    {
+                    fRotate = fVisionTrackErrorX * 0.5;
+                    pRobot->Nav.SetCommandYawToCurrent();
+                    }
+                // else default rotate value
+                
+                // Forward
+                if (bDistanceGood)
+                    {
+                    float fDistanceError = fDistanceToTarget - 12.0;
+                    fYStick = (fDistanceError / 100.0) + 0.05;
+                    if (fYStick >  0.5) fYStick =  0.4;
+                    if (fYStick < -0.5) fYStick = -0.4;
+                    }
+                // else fXStick stays from controller
+
+                // Strafe
+
+                // Exit to next state
+                if ((bDistanceGood == true) && (fDistanceToTarget < 12.0))
+                    iDriveToTargetState = 1000;
+
+                break;
+
+            case 1000 : // Done, manual control
+                break;
+
+            default :   // Unknown state, manual control
+                break;
+            } // end switch on drive state
+        } // end if auto-drive
+
+//            fRotate = pRobot->Nav.GetRotate();
+//            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
 
     // Drive the robot
-//    printf(" %s %5.2f\n", bVisionTracked?"TRACK   ":"NO TRACK", fRotate);
+    sprintf(szPrint, "%4d X %5.1f Y %5.1f R %5.1f\n", iDriveToTargetState, fXStick, fYStick, fRotate);
+    frc::SmartDashboard::PutString("Drive Controls", szPrint);
     pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, 0.0);
 
     } // end DriveToTarget()

@@ -10,6 +10,9 @@
 
 #include "DriverCommands.h"
 
+#define STICK_ROTATE_MODE
+#define STICK_ROTATE_THRESHOLD        0.2
+
 // ----------------------------------------------------------------------------
 // Constructor / Destructor
 // ----------------------------------------------------------------------------
@@ -56,7 +59,12 @@ float DriverCommands::fMoveSideways()
 float DriverCommands::fRotate()
     {
 #ifdef JOYSTICK
-    return JStick1.GetTwist();
+    float fRotate = JStick1.GetTwist();
+#ifdef STICK_ROTATE_MODE
+    if (fRotate > 0.0) fRotate -= STICK_ROTATE_THRESHOLD;
+    if (fRotate < 0.0) fRotate += STICK_ROTATE_THRESHOLD;
+#endif
+    return fRotate;
 #else
     return Xbox1.GetX(frc::XboxController::kRightHand);
 #endif
@@ -69,7 +77,15 @@ bool DriverCommands::bManualRotate()
     {
     frc::SmartDashboard::PutNumber("Right X", this->fRotate());
 #ifdef JOYSTICK
-    return JStick1.GetTrigger();
+#ifdef STICK_ROTATE_MODE
+    if ((fRotate() > STICK_ROTATE_THRESHOLD) || (fRotate() < -STICK_ROTATE_THRESHOLD))
+        return true;
+    else
+        return false;
+#else
+        return JStick1.GetTrigger();
+#endif
+
 #else
     switch (this->CurrDriveMode)
         {
@@ -106,7 +122,10 @@ int DriverCommands::POV()
 
 bool DriverCommands::bResetGyro()
     {
+#ifdef JOYSTICK
+#else
     return Xbox1.GetAButton();
+#endif
     }
 
 
@@ -115,6 +134,14 @@ bool DriverCommands::bResetGyro()
 // Check for changes to current drive mode and then return it
 DriverCommands::DriveMode DriverCommands::GetDriveMode()
     {
+#ifdef JOYSTICK
+   if (JStick1.GetRawButton(5))
+        CurrDriveMode = DriveMode::Gyro;
+
+   if (JStick1.GetRawButton(6))
+        CurrDriveMode = DriveMode::DriveToTarget;
+
+#else
    if (Xbox1.GetBButtonPressed())
         CurrDriveMode = DriveMode::Gyro;
 
@@ -122,6 +149,7 @@ DriverCommands::DriveMode DriverCommands::GetDriveMode()
         CurrDriveMode = DriveMode::FieldOriented;
    if (Xbox1.GetYButtonPressed())
         CurrDriveMode = DriveMode::Normal;
+#endif
 
     return CurrDriveMode;
     }
@@ -174,6 +202,8 @@ float DriverCommands::fElevatorUpDownSpeed()
 // Return true to command roller assembly down or a false to go up
 bool DriverCommands::bRollersDown()
 {
+    bool        RollersDown = false; // true if the rollers/wrist are down
+    
     if (Xbox2.GetBumper(frc::XboxController::kRightHand))
     {
         RollersDown = false;
@@ -187,6 +217,8 @@ bool DriverCommands::bRollersDown()
 
 bool DriverCommands::bElevatorTilt()
 {
+    bool        ElevatorTilted = false; // true if the elevator is tilted backwards
+
     if (Xbox2.GetStartButton())
     {
         ElevatorTilted = false;
@@ -330,6 +362,19 @@ bool DriverCommands::bTestButton(int iButton)
     if ((iButton < 0) || (iButton > 5))
         return false;
 
+#ifdef JOYSTICK
+    switch (iButton)
+        {
+        case 0  : bButtonValue = JStick1.GetRawButton( 2); break;   // Thumb
+        case 1  : bButtonValue = JStick1.GetRawButton(11); break;
+        case 2  : bButtonValue = JStick1.GetRawButton(12); break;
+        case 3  : bButtonValue = JStick1.GetRawButton( 9); break;
+        case 4  : bButtonValue = JStick1.GetRawButton(10); break;
+        case 5  : bButtonValue = JStick1.GetRawButton( 7); break;
+        default : bButtonValue = false;                    break;
+        }
+
+#else
     switch (iButton)
         {
         case 0 :
@@ -354,6 +399,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = false;
             break;
         }
+#endif
 
     return bButtonValue;
     }

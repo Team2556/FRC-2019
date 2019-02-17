@@ -36,5 +36,4 @@ class DriveBase {
   bool SideUltra(float distance);
 
   float EncoderTest();
-  
 };

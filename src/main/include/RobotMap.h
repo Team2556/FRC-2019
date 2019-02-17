@@ -34,7 +34,7 @@
 #define         DIO_LT_FRONT_5          4
 #define         DIO_LT_FRONT_6          5
 #define         DIO_LT_BACK_1           6
-#define         DIO_LT_BACK_2           
+#define         DIO_LT_BACK_2           7
 #endif
 
 

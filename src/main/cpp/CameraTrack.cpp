@@ -143,7 +143,7 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
         // Filter based on size
         double dArea = cv::contourArea(Contours[i]);
 //      printf(" Area %f ", dArea);
-        if (dArea < 100.0)
+        if (dArea < 50.0)
             continue;
 
         // Find the bounding rectangle
