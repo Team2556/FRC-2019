@@ -44,6 +44,8 @@ class Robot : public frc::TimedRobot {
   NavGyro               Nav;
   DriverCommands        DriverCmd;
   ColorSens             LineTracker;
+  Ultrasonic            UltraLF{DIO_US_RANGE_TRIGGER_LF, DIO_US_RANGE_PULSE_LF, Ultrasonic::DistanceUnit::kInches};
+  Ultrasonic            UltraRF{DIO_US_RANGE_TRIGGER_RF, DIO_US_RANGE_PULSE_RF, Ultrasonic::DistanceUnit::kInches};
   
   frc::Preferences   *  pPrefs;
     
@@ -55,9 +57,12 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override;
   void TestPeriodic() override;
 
+
  private:
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
-  std::string m_autoSelected;
+  frc::SendableChooser<std::string> AutoChooser;
+  
+  const std::string AutoTeleop = "Teleop";
+  const std::string Auto1 = "Left Rocket Front";
+  const std::string Auto2 = "Left Rocket Back";
+  std::string AutoMode;
 };

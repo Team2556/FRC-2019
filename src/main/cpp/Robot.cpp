@@ -32,7 +32,9 @@ void Robot::RobotInit() {
   Autos             = new Autonomous(this, MecDrive);
   
   Nav.Init(false);
-  MecDrive->Init();
+  UltraLF.SetAutomaticMode(true);
+  UltraRF.SetAutomaticMode(true);
+
 
 #ifdef USB_CAMERA
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
@@ -59,6 +61,10 @@ void Robot::RobotInit() {
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
   frc::SmartDashboard::PutNumber("Roller Speed", speed);
 
+    AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
+    AutoChooser.AddOption(Auto1, Auto1);
+    AutoChooser.AddOption(Auto2, Auto2);
+    frc::SmartDashboard::PutData("Auto Selector", &AutoChooser);
   }
 
 // ----------------------------------------------------------------------------
@@ -75,9 +81,7 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
-  //Auto selector will go here and run the coresponding Auto's Init to select it
-  //For now there is only one auto for testing purposes so its init will allways be called
-  Autos->Auto2Init();
+  AutoMode = AutoChooser.GetSelected();
 }
 
 // ----------------------------------------------------------------------------
@@ -86,7 +90,8 @@ void Robot::AutonomousPeriodic()
 {
   LineTracker.UpdateValues();
   LineTracker.UpdateBackValues();
-  Autos->Auto2();
+  Autos->Auto();
+  
 }
 
 // ----------------------------------------------------------------------------
@@ -103,8 +108,8 @@ void Robot::TeleopPeriodic()
     //Teleop Functions
     MecDrive->Drive();
     LineTracker.UpdateValues();
-    //ControlElevator->ElevatorControls();
-    Climber->Climbing();
+    ControlElevator->ElevatorControls();
+    //Climber->Climbing();
     SmartDashboard::PutNumber("Angle", Nav.GetYaw());
   }
 

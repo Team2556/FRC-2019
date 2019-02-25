@@ -228,7 +228,7 @@ void Autonomous::Auto1Init()
 
 void Autonomous::Auto2()
 {
-        float fForward = 0.0;
+    float fForward = 0.0;
     float fStrafe  = 0.0;
     float fRotate  = 0.0;
 
@@ -274,18 +274,20 @@ void Autonomous::Auto2()
             fStrafe = 0;
 
             // end section statement
-            if (MecDrive->SideUltra(30))
+            /*if (MecDrive->SideUltra(30))
             {
                 SectionStart = AutoCounter;
                 ActionNum = 30;
-            }
+            }*/
         break;
 
         case 30: // Turn toward the side face of the Rocket
-            fForward = .5;
-            fStrafe  = 0.0;
+            FieldOrientedDrive = true;
+            fForward = .8;
+            fStrafe  = -.6;
+            pRobot->Nav.SetCommandYaw(-151.25);
 
-            if (AutoCounter - SectionStart >= 25)
+            if (AutoCounter - SectionStart >= 90)
             {
                 SectionStart = AutoCounter;
                 ActionNum = -1;
@@ -335,7 +337,7 @@ void Autonomous::Auto2()
     }
     else
     {
-        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw())+180); 
+        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -pRobot->Nav.GetYaw()); 
     }
 
     SmartDashboard::PutNumber("Auto Section", ActionNum);
@@ -345,8 +347,28 @@ void Autonomous::Auto2()
 void Autonomous::Auto2Init()
 {
     AutoNumber = 2;
-    ActionNum  = 10;
+    ActionNum  = 30;
     AutoCounter = 0;
     SectionStart = 0;
     SmartDashboard::PutBoolean("Gyro Reset", false);
+}
+
+
+
+
+
+void Autonomous::Auto()
+{
+    switch (AutoNumber)
+    {
+        case 0: default:
+        //AutoTeleop();
+        break;
+        case 1:
+        Auto1();
+        break;
+        case 2:
+        Auto2();
+        break;
+    }
 }

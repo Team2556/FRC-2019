@@ -49,7 +49,7 @@ public:
   bool      bResetGyro();
   int       POV();
   DriveMode GetDriveMode();
-  bool      GetLineUpStrafe();\
+  bool      GetLineUp();
   bool      UltrasonicAllowed();
   double    GetAutoStrafe();
 
@@ -61,7 +61,8 @@ public:
   ElevatorMode    GetElevatorMode();
   ElevatorHeight  GetElevatorHeight();
   void            HeightIntEnum();// sets the elevator height enum based off the height int 
-  
+  bool            Intake();
+  bool            Outtake();
 
   // Climber commands
 

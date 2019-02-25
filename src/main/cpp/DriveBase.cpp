@@ -73,13 +73,18 @@ void DriveBase::GyroDrive()
     	fRotate = pRobot->Nav.GetRotate();
     }
 
+    fForward = fForward * 0.5;
+    fStrafe = fStrafe * 0.5;
+
     fForward = this->LimitFWDDrive(fForward, false, 12);
-    fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, pRobot->DriverCmd.GetLineUpStrafe());
-    if (pRobot->LineTracker.BackSensors.bLineFound && pRobot->DriverCmd.GetLineUpStrafe())
+    fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, pRobot->DriverCmd.GetLineUp());
+    if (pRobot->LineTracker.FrontSensors.bLineFound && pRobot->DriverCmd.GetLineUp())
     {
         float   fClosestAngle = FindClose(pRobot->Nav.GetYaw());
         pRobot->Nav.SetCommandYaw(fClosestAngle);
     }
+
+
     pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
 
 
@@ -87,6 +92,11 @@ void DriveBase::GyroDrive()
     {
         pRobot->Nav.ResetYaw();
     }
+    frc::SmartDashboard::PutNumber("Average Distance", (pRobot->UltraLF.GetRangeInches() + pRobot->UltraRF.GetRangeInches())/2);
+    frc::SmartDashboard::PutNumber("Left Distance", pRobot->UltraLF.GetRangeInches());
+    frc::SmartDashboard::PutNumber("Right Distance", pRobot->UltraRF.GetRangeInches());
+
+
 } // end GyroDrive()
 
 
@@ -96,8 +106,8 @@ void DriveBase::GyroDrive()
 void DriveBase::NormalDrive()
 {
     pRobot->RobotDrive.DriveCartesian(
-        pRobot->DriverCmd.fMoveForward(), 
         pRobot->DriverCmd.fMoveSideways(), 
+        pRobot->DriverCmd.fMoveForward(), 
         pRobot->DriverCmd.fRotate());
 }
 
@@ -250,8 +260,8 @@ void DriveBase::FieldOrientedDrive()
 
 void DriveBase::DriveToTarget()
     {
-    float 		fXStick;
-    float 		fYStick;
+    float 		fStrafe;
+    float 		fForward;
     float		fRotate;
     bool		bAllowRotate = false;
     bool        bVisionTracked;
@@ -260,49 +270,33 @@ void DriveBase::DriveToTarget()
     char        szVisionMsg[100];
 
     // Get drive inputs
-    fXStick = pRobot->DriverCmd.fMoveForward();
-    fYStick = pRobot->DriverCmd.fMoveSideways();
+    fForward = pRobot->DriverCmd.fMoveForward();
+    fStrafe = pRobot->DriverCmd.fMoveSideways();
 
     // Get vision track status and track errors
     pRobot->CameraTrk.GetTrackError(&bVisionTracked, &fVisionTrackErrorX, &fVisionTrackErrorY, &fVisionTargetSizeX, &fVisionTargetSizeY);
 
     // Vision track mode
-    if (pRobot->DriverCmd.bTestButton(0))
-        if (bVisionTracked)
-            {
-            fRotate = fVisionTrackErrorX * 0.5;
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "TRACK    %4.1f", fRotate);
-            }
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
-            } // end if vision track
-
-    // Non-vision track mode
-    else 
-        {
-        // Manual rotate
-        if(pRobot->DriverCmd.bManualRotate())
-            {
-            fRotate = pRobot->DriverCmd.fRotate();
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
-            }
-        // Gyro control rotate
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
-            }
-        } // end if not vision track
+    if (pRobot->LineTracker.FrontSensors.bLineFound)
+    {
+        fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, true);
+    }
+    else if (bVisionTracked)
+    {
+        fRotate = fVisionTrackErrorX * 0.5;
+        pRobot->Nav.SetCommandYawToCurrent();
+        sprintf(szVisionMsg, "TRACK    %4.1f", fRotate);
+    }
+    else
+    {
+        this->FieldOrientedDrive();
+    } // end if vision track
 
     frc::SmartDashboard::PutString("Vision Track", szVisionMsg);
 
     // Drive the robot
 //    printf(" %s %5.2f\n", bVisionTracked?"TRACK   ":"NO TRACK", fRotate);
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, 0.0);
+    pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
 
     } // end DriveToTarget()
 
@@ -310,29 +304,36 @@ void DriveBase::DriveToTarget()
 // ----------------------------------------------------------------------------
 
 void DriveBase::Drive()
-    {  
-    switch (pRobot->DriverCmd.GetDriveMode())
+    {
+        if (pRobot->DriverCmd.GetLineUp())
         {
-            case DriverCommands::DriveMode::Gyro :
-                frc::SmartDashboard::PutString("DriveMode", "Gyro");
-                this->GyroDrive();
-                break;
+            this->DriveToTarget();
+        }
+        else
+        {
+            switch (pRobot->DriverCmd.GetDriveMode())
+            {
+                case DriverCommands::DriveMode::Gyro :
+                    frc::SmartDashboard::PutString("DriveMode", "Gyro");
+                    this->GyroDrive();
+                    break;
 
-            case DriverCommands::DriveMode::FieldOriented :
-                frc::SmartDashboard::PutString("DriveMode", "Field Oriented");
-                this->FieldOrientedDrive();
-                break;
+                case DriverCommands::DriveMode::FieldOriented :
+                    frc::SmartDashboard::PutString("DriveMode", "Field Oriented");
+                    this->FieldOrientedDrive();
+                    break;
 
-            case DriverCommands::DriveMode::DriveToTarget :
-                frc::SmartDashboard::PutString("DriveMode", "Drive To Target");
-                this->DriveToTarget();
-                break;
+                case DriverCommands::DriveMode::DriveToTarget :
+                    frc::SmartDashboard::PutString("DriveMode", "Drive To Target");
+                    this->DriveToTarget();
+                    break;
 
-            case DriverCommands::DriveMode::Normal :
-            default :
-                frc::SmartDashboard::PutString("DriveMode", "Normal Drive");
-                this->NormalDrive();
-                break;
+                case DriverCommands::DriveMode::Normal :
+                default :
+                    frc::SmartDashboard::PutString("DriveMode", "Normal Drive");
+                    this->NormalDrive();
+                    break;
+            }
         }
     } // end Drive()
 
@@ -343,7 +344,7 @@ void DriveBase::Drive()
 float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance)
 {
 
-    float Distance = Ultra.GetRangeInches();
+    float Distance = (pRobot->UltraLF.GetRangeInches() + pRobot->UltraRF.GetRangeInches())/2;
     SmartDashboard::PutNumber("Distance", Distance);
     
     float Error = Distance - CommandDistance;
@@ -360,10 +361,7 @@ float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance
 
 // ----------------------------------------------------------------------------
 
-void DriveBase::Init()
-{
-    Ultra.SetAutomaticMode(true);
-}
+
 // ============================================================================
 // Local methods
 // ============================================================================
@@ -384,23 +382,11 @@ float FindClose(float Angle)
     return Angles[closestIndex];
 }
 
-bool DriveBase::SideUltra(float distance)
-{
-    if(UltraLeft.GetRangeInches() < distance)
-    {
-        return true;
-    }
-
-    else
-    {
-        return false;
-    }
-}
 
 float DriveBase::EncoderTest()
 {
-    float position = pRobot->MotorControl_LR.GetSelectedSensorPosition();
+    float position = pRobot->MotorControl_RR.GetSelectedSensorPosition();
     SmartDashboard::PutNumber("Position", position);
-    pRobot->MotorControl_LR.Set(ControlMode::Position, 0);
-    //pRobot->MotorControl_LR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(0));
+    
+    pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
 }

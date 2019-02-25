@@ -30,6 +30,7 @@ void ColorSens::UpdateValues()
     for(int i = 0; i < LT_SENSORS_FRONT; i++)
     {
         FrontSensors.Values[i] = RLSens[i].Get();
+        FrontSensors.Values[3] = false; // take out when color sensor is fixed
         if (FrontSensors.Values[i] == true)
             FrontSensors.bLineFound = true;
     }

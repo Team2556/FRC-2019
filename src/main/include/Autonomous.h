@@ -12,12 +12,12 @@
 class Autonomous {
  public:
   Autonomous(Robot * pRobot, DriveBase * MecDrive);
-  // Driving funcitons
-  void DriveToLine();
-  void DriveOffPlatform();
 
+  void Auto();
 
   // Auto Modes
+  void AutoTeleop();
+  void AutoTeleopInit();
   void Auto1();
   void Auto1Init();
   void Auto2();

@@ -14,15 +14,16 @@ class Elevator {
 
   Elevator(Robot * pRobot);
   //Functions
-  void ElevatorControl();
+  void ElevatorControl(int Offset);
   void WristControl();
+  float EncoderTest();
 
-  void RollerControl();
+  int IntakeOuttake();
   void RollerIn();
   void RollerOut();
   void RollerLeft();
   void RollerRight();
-  void RollerPistons();
+  void RollerPistons(bool bHatchOut);
 
   void ElevatorTilt();
   

@@ -75,13 +75,22 @@ bool DriverCommands::bManualRotate()
         {
         case DriveMode::FieldOriented :
             if ((this->fRotate() > 0.05) || (this->fRotate() < -0.05))
+            {
+                frc::SmartDashboard::PutBoolean("in function", true);
                 return true;
+            }
+            else
+            {
+                return false;
+            }
+                
             break;
         case DriveMode::Gyro :
             if (Xbox1.GetTriggerAxis(frc::XboxController::kRightHand) > 0.5)
                 return true;
             break;
         default :
+            frc::SmartDashboard::PutBoolean("in function", false);
             return false;
             break;
         }
@@ -127,9 +136,9 @@ DriverCommands::DriveMode DriverCommands::GetDriveMode()
     }
 
 // ----------------------------------------------------------------------------
-bool DriverCommands::GetLineUpStrafe()
+bool DriverCommands::GetLineUp()
 {
-    if(Xbox1.GetTriggerAxis(frc::XboxController::kLeftHand)> .5)
+    if(Xbox1.GetBumper(frc::XboxController::kLeftHand))
     {
         return true;
     }
@@ -199,12 +208,30 @@ bool DriverCommands::bElevatorTilt()
 }
 bool DriverCommands::bRollerPistons()
 {
-    if (Xbox2.GetBButtonPressed())
+    if (Xbox2.GetYButtonPressed())
     {
         rollerBool = !rollerBool;
     }
 
     return ElevatorTilted;
+}
+
+
+bool DriverCommands::Outtake()
+{
+    if(this->GetElevatorMode() == ElevatorMode::Hatch)
+    {
+        return this->bRollerPistons();
+    }
+    else
+    {
+        return Xbox2.GetYButton();
+    }
+}
+
+bool DriverCommands::Intake()
+{
+    return Xbox2.GetAButton();
 }
 
 // ----------------------------------------------------------------------------
@@ -225,7 +252,7 @@ DriverCommands::ElevatorMode DriverCommands::GetElevatorMode()
 }
 
 
-void DriverCommands::HeightIntEnum()
+void DriverCommands::HeightIntEnum() // converts the height int to the height enum
 {
     switch (iElevatorHeight)
     {
