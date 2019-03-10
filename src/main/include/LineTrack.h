@@ -22,7 +22,7 @@ class ColorSens {
 
   void    UpdateValues();
   void    UpdateBackValues();
-  double  GetStrafe(float InitStrafe, bool AllowStrafe);
+  double  GetStrafe(float InitStrafe);
   double  GetRotate(float InitRotate, bool AllowRotate);
   
   double Strafes[LT_SENSORS_FRONT] = {1.0, 0.66, 0.33, -0.33, -0.66, -1.0};

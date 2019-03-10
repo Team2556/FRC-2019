@@ -268,3 +268,10 @@ void Climb::test()
     }
 
 }
+
+
+void Climb::HoldIn()
+{
+    RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+    FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+}

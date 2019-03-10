@@ -10,6 +10,9 @@
 
 #include "DriverCommands.h"
 
+#define STICK_ROTATE_MODE
+#define STICK_ROTATE_THRESHOLD        0.2
+
 // ----------------------------------------------------------------------------
 // Constructor / Destructor
 // ----------------------------------------------------------------------------
@@ -17,8 +20,8 @@
 DriverCommands::DriverCommands() 
 {
     CurrDriveMode = DriveMode::Gyro;
-    CMDElevatorHeight = ElevatorHeight::Low;
-    frc::SmartDashboard::PutString("Height", "Low");
+    CMDElevatorHeight = ElevatorHeight::Middle;
+    frc::SmartDashboard::PutString("Height", "Middle");
     CMDElevatorMode = ElevatorMode::Hatch;
     frc::SmartDashboard::PutString("Mode", "Hatch");
 }
@@ -56,7 +59,12 @@ float DriverCommands::fMoveSideways()
 float DriverCommands::fRotate()
     {
 #ifdef JOYSTICK
-    return JStick1.GetTwist();
+    float fRotate = JStick1.GetTwist();
+#ifdef STICK_ROTATE_MODE
+    if (fRotate > 0.0) fRotate -= STICK_ROTATE_THRESHOLD;
+    if (fRotate < 0.0) fRotate += STICK_ROTATE_THRESHOLD;
+#endif
+    return fRotate;
 #else
     return Xbox1.GetX(frc::XboxController::kRightHand);
 #endif
@@ -67,32 +75,24 @@ float DriverCommands::fRotate()
 // Return true if player wants to rotate robot manually
 bool DriverCommands::bManualRotate()
     {
-    frc::SmartDashboard::PutNumber("Right X", this->fRotate());
 #ifdef JOYSTICK
-    return JStick1.GetTrigger();
+#ifdef STICK_ROTATE_MODE
+    if ((fRotate() > STICK_ROTATE_THRESHOLD) || (fRotate() < -STICK_ROTATE_THRESHOLD))
+        return true;
+    else
+        return false;
 #else
-    switch (this->CurrDriveMode)
+        return JStick1.GetTrigger();
+#endif
+
+#else
+        if ((this->fRotate() > 0.05) || (this->fRotate() < -0.05))
         {
-        case DriveMode::FieldOriented :
-            if ((this->fRotate() > 0.05) || (this->fRotate() < -0.05))
-            {
-                frc::SmartDashboard::PutBoolean("in function", true);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-                
-            break;
-        case DriveMode::Gyro :
-            if (Xbox1.GetTriggerAxis(frc::XboxController::kRightHand) > 0.5)
-                return true;
-            break;
-        default :
-            frc::SmartDashboard::PutBoolean("in function", false);
+            return true;
+        }
+        else
+        {
             return false;
-            break;
         }
 #endif
     }
@@ -115,7 +115,10 @@ int DriverCommands::POV()
 
 bool DriverCommands::bResetGyro()
     {
+#ifdef JOYSTICK
+#else
     return Xbox1.GetAButton();
+#endif
     }
 
 
@@ -124,6 +127,14 @@ bool DriverCommands::bResetGyro()
 // Check for changes to current drive mode and then return it
 DriverCommands::DriveMode DriverCommands::GetDriveMode()
     {
+#ifdef JOYSTICK
+   if (JStick1.GetRawButton(5))
+        CurrDriveMode = DriveMode::Gyro;
+
+   if (JStick1.GetRawButton(6))
+        CurrDriveMode = DriveMode::DriveToTarget;
+
+#else
    if (Xbox1.GetBButtonPressed())
         CurrDriveMode = DriveMode::Gyro;
 
@@ -131,6 +142,7 @@ DriverCommands::DriveMode DriverCommands::GetDriveMode()
         CurrDriveMode = DriveMode::FieldOriented;
    if (Xbox1.GetYButtonPressed())
         CurrDriveMode = DriveMode::Normal;
+#endif
 
     return CurrDriveMode;
     }
@@ -152,11 +164,11 @@ bool DriverCommands::UltrasonicAllowed()
 
 double DriverCommands::GetAutoStrafe()
 {
-    if (Xbox2.GetTriggerAxis(frc::XboxController::kRightHand) > Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
+    if (Xbox1.GetTriggerAxis(frc::XboxController::kRightHand) > Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand))
     {
         return Xbox2.GetTriggerAxis(frc::XboxController::kRightHand);
     }
-    return -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
+    return -Xbox1.GetTriggerAxis(frc::XboxController::kLeftHand);
 }
 
 
@@ -175,7 +187,7 @@ float DriverCommands::fElevatorUpDownSpeed()
     else 
         fUpDownSpeed = -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
 
-    return fUpDownSpeed;
+    return fUpDownSpeed/2;
     }
 
 
@@ -183,6 +195,8 @@ float DriverCommands::fElevatorUpDownSpeed()
 // Return true to command roller assembly down or a false to go up
 bool DriverCommands::bRollersDown()
 {
+    bool        RollersDown = false; // true if the rollers/wrist are down
+    
     if (Xbox2.GetBumper(frc::XboxController::kRightHand))
     {
         RollersDown = false;
@@ -219,14 +233,7 @@ bool DriverCommands::bRollerPistons()
 
 bool DriverCommands::Outtake()
 {
-    if(this->GetElevatorMode() == ElevatorMode::Hatch)
-    {
-        return this->bRollerPistons();
-    }
-    else
-    {
-        return Xbox2.GetYButton();
-    }
+    return Xbox2.GetYButton();
 }
 
 bool DriverCommands::Intake()
@@ -271,6 +278,11 @@ void DriverCommands::HeightIntEnum() // converts the height int to the height en
             frc::SmartDashboard::PutString("Height", "High");
         break;
 
+        case 3 : // Cargo Ship
+            CMDElevatorHeight = DriverCommands::ElevatorHeight::CargoShip;
+            frc::SmartDashboard::PutString("Height", "Cargo Ship");
+        break;
+
         case -2: // Ground Pickup
             CMDElevatorHeight =  DriverCommands::ElevatorHeight::GroundPickup;
             frc::SmartDashboard::PutString("Height", "Ground Pickup");
@@ -296,14 +308,13 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
 
     if (iElevatorHeight < 0)
     {
-        printf("Here");
         if (POV == 0)
         {
             iElevatorHeight  = 0;
             HeightChanged = true;
         }
     }
-    else if (iElevatorHeight >= 0 && iElevatorHeight <= 2 && !HeightChanged) // ensures the elevator isnt in pickup mode
+    else if (iElevatorHeight >= 0 && iElevatorHeight <= 3 && !HeightChanged) // ensures the elevator isnt in pickup mode
     {
         if(POV == 0)
         {
@@ -321,9 +332,9 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
         {
             iElevatorHeight = 0;
         }
-        else if (iElevatorHeight > 2)
+        else if (iElevatorHeight > 3)
         {
-            iElevatorHeight = 2;
+            iElevatorHeight = 3;
         }
     }
     if(Xbox2.GetStickButtonPressed(frc::XboxController::kRightHand)) // when pressing the right stick down enable and disable pickup 
@@ -357,6 +368,19 @@ bool DriverCommands::bTestButton(int iButton)
     if ((iButton < 0) || (iButton > 5))
         return false;
 
+#ifdef JOYSTICK
+    switch (iButton)
+        {
+        case 0  : bButtonValue = JStick1.GetRawButton( 2); break;   // Thumb
+        case 1  : bButtonValue = JStick1.GetRawButton(11); break;
+        case 2  : bButtonValue = JStick1.GetRawButton(12); break;
+        case 3  : bButtonValue = JStick1.GetRawButton( 9); break;
+        case 4  : bButtonValue = JStick1.GetRawButton(10); break;
+        case 5  : bButtonValue = JStick1.GetRawButton( 7); break;
+        default : bButtonValue = false;                    break;
+        }
+
+#else
     switch (iButton)
         {
         case 0 :
@@ -381,6 +405,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = false;
             break;
         }
+#endif
 
     return bButtonValue;
     }

@@ -7,10 +7,19 @@
 
 #include "Autonomous.h"
 
-Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive) 
+Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator) 
 {
     this->pRobot = pRobot;
     this->MecDrive = MecDrive;
+    this->ControlElevator = ControlElevator;
+}
+
+
+void Autonomous::AutoTeleop()
+{
+    pRobot->LineTracker.UpdateValues();
+    MecDrive->GyroDrive();
+    ControlElevator->ElevatorControls();
 }
 
 
@@ -45,10 +54,19 @@ void Autonomous::Auto1()
     switch (ActionNum)
     {
         case 10: // Drive Off of platform
+
+            // Drive Commands
             FieldOrientedDrive = false;
             fForward = (AutoCounter - SectionStart) * .005;
             fStrafe = 0;
 
+            #ifdef AUTO_ELE_ENABLED
+
+            // Elevator Commands
+            ControlElevator->ElevatorTilt(true); // keep the elevator tilted backwards as you drive off of the hab
+            
+
+            #endif
             // end section statement
             if (AutoCounter - SectionStart >= 90)
             {
@@ -100,6 +118,7 @@ void Autonomous::Auto1()
             
             pRobot->Nav.SetCommandYaw(-28.75);
 
+
             // end section statement
             if (!pRobot->Nav.GetPresetTurning())
             {
@@ -109,10 +128,20 @@ void Autonomous::Auto1()
 
         break;
 
-        case 50: // drive fofForward = MecDrive->LimitFWDDrive(0, true, 14);rward with the ultrasonic unitl the line is found
-            
+        case 50: // drive forward with the ultrasonic unitl the line is found
+            fForward = MecDrive->LimitFWDDrive(14);
             fStrafe = pRobot->DriverCmd.GetAutoStrafe();
 
+
+            #ifdef AUTO_ELE_ENABLED
+
+            ControlElevator->ElevatorTilt(false); //tilt the elevator forward
+            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Middle, DriverCommands::ElevatorMode::Hatch, 0);
+            ControlElevator->WristControl(DriverCommands::ElevatorHeight::Middle, DriverCommands::ElevatorMode::Hatch);
+            
+
+
+            #endif
 
             if (pRobot->LineTracker.FrontSensors.bLineFound)
             {
@@ -122,13 +151,23 @@ void Autonomous::Auto1()
         break;
 
         case 60: // Line up on the rocket and place the hatch
-            fForward = MecDrive->LimitFWDDrive(0, true, 20);
-            fStrafe = pRobot->LineTracker.GetStrafe(0, true);;
+            static int HatchOutCounter = 0;
+            fForward = MecDrive->LimitFWDDrive(20);
+            fStrafe = pRobot->LineTracker.GetStrafe(0);;
 
             // the hatch will be placed on the rocket here
+            #ifdef AUTO_ELE_ENABLED
+
+            if(pRobot->LineTracker.GetStrafe(0) <.1 && ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Middle, DriverCommands::ElevatorMode::Hatch, 0))
+            {
+                ControlElevator->RollerPistons(true);
+                HatchOutCounter++;
+            }
+
+            #endif
 
             // in the end this will be for when the hatch is placed
-            if(pRobot->DriverCmd.bTestButton(0))
+            if(HatchOutCounter>=3)
             {
                 ActionNum = 70;
                 SectionStart = AutoCounter;
@@ -140,6 +179,11 @@ void Autonomous::Auto1()
             fForward = -.5;
             fStrafe = 0.0;
 
+            #ifdef AUTO_ELE_ENABLED
+
+            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Pickup, DriverCommands::ElevatorMode::Hatch, 0);
+
+            #endif
 
             if (AutoCounter - SectionStart >= 20)
             {
@@ -154,6 +198,12 @@ void Autonomous::Auto1()
 
             pRobot->Nav.SetCommandYaw(180);
 
+            #ifdef AUTO_ELE_ENABLED
+
+            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Pickup, DriverCommands::ElevatorMode::Hatch, 0);
+
+            #endif
+
             // end section statement
             if (!pRobot->Nav.GetPresetTurning())
             {
@@ -164,8 +214,14 @@ void Autonomous::Auto1()
 
         case 90: // drive forward until the line follower and ultrasonic are lined up on the player station
             FieldOrientedDrive = false;
-            fForward = MecDrive->LimitFWDDrive(0, true, 10);
+            fForward = MecDrive->LimitFWDDrive(10);
             fStrafe = pRobot->DriverCmd.GetAutoStrafe();
+
+            #ifdef AUTO_ELE_ENABLED
+
+            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Pickup, DriverCommands::ElevatorMode::Hatch, 0);
+
+            #endif
 
 
             if (pRobot->LineTracker.FrontSensors.bLineFound)
@@ -176,8 +232,8 @@ void Autonomous::Auto1()
         break;
 
         case 100: // Line up on the player station
-            fForward = MecDrive->LimitFWDDrive(0, true, 20);
-            fStrafe = pRobot->LineTracker.GetStrafe(0, true);;
+            fForward = MecDrive->LimitFWDDrive(20);
+            fStrafe = pRobot->LineTracker.GetStrafe(0);
 
             // the hatch will be picked up here
 
@@ -362,7 +418,7 @@ void Autonomous::Auto()
     switch (AutoNumber)
     {
         case 0: default:
-        //AutoTeleop();
+        AutoTeleop();
         break;
         case 1:
         Auto1();

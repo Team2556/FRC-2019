@@ -30,7 +30,6 @@ void ColorSens::UpdateValues()
     for(int i = 0; i < LT_SENSORS_FRONT; i++)
     {
         FrontSensors.Values[i] = RLSens[i].Get();
-        FrontSensors.Values[3] = false; // take out when color sensor is fixed
         if (FrontSensors.Values[i] == true)
             FrontSensors.bLineFound = true;
     }
@@ -104,10 +103,10 @@ void ColorSens::UpdateBackValues()
 // ----------------------------------------------------------------------------
 
 // Return an error term from -1.0 to 1.0, or InitStrafe if line not found
-double ColorSens::GetStrafe(float InitStrafe, bool AllowStrafe)
+double ColorSens::GetStrafe(float InitStrafe)
 {
     this->UpdateValues();
-    if (FrontSensors.bLineFound && AllowStrafe)
+    if (FrontSensors.bLineFound)
     {
         return (Strafes[FrontSensors.iMinIndex] + Strafes[FrontSensors.iMaxIndex]) / 2.0;
     }

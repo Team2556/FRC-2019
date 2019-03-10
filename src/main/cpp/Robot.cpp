@@ -24,12 +24,12 @@ Autonomous        * Autos;
 // ----------------------------------------------------------------------------
 
 void Robot::RobotInit() {
-    pPrefs = frc::Preferences::GetInstance();
+  pPrefs = frc::Preferences::GetInstance();
 
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
-  Autos             = new Autonomous(this, MecDrive);
+  Autos             = new Autonomous(this, MecDrive, ControlElevator);
   
   Nav.Init(false);
   UltraLF.SetAutomaticMode(true);
@@ -38,8 +38,8 @@ void Robot::RobotInit() {
 
 #ifdef USB_CAMERA
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
-  UsbCamera1.SetResolution(160, 120);
-  UsbCamera1.SetFPS(20);
+  UsbCamera1.SetResolution(640, 480);
+  UsbCamera1.SetFPS(24);
 #endif
 
 #ifdef AXIS_CAMERA
@@ -58,7 +58,7 @@ void Robot::RobotInit() {
   frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
   int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
   frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
-  double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
+  double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   frc::SmartDashboard::PutNumber("Roller Speed", speed);
 
     AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
@@ -110,6 +110,7 @@ void Robot::TeleopPeriodic()
     LineTracker.UpdateValues();
     ControlElevator->ElevatorControls();
     //Climber->Climbing();
+    Climber->HoldIn();
     SmartDashboard::PutNumber("Angle", Nav.GetYaw());
   }
 

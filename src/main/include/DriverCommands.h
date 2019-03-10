@@ -29,8 +29,8 @@ public:
 
   // Variables
   enum DriveMode {Unknown, Normal, Gyro, FieldOriented, DriveToTarget};
-  enum ElevatorHeight {Low, Middle, High, Pickup, GroundPickup};
-  int  iElevatorHeight = 0; // 0 = low, 1 = middle, 2 = high, -1 is pickup, -2 is ground pickup
+  enum ElevatorHeight {Low, Middle, High, Pickup, GroundPickup, CargoShip};
+  int  iElevatorHeight = 0; // 0 = low, 1 = middle, 2 = high, 3 = Cargo Ship -1 is pickup, -2 is ground pickup
   enum ElevatorMode {Hatch, Cargo};
   
   DriveMode           CurrDriveMode;

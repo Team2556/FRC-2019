@@ -46,7 +46,10 @@ class Robot : public frc::TimedRobot {
   ColorSens             LineTracker;
   Ultrasonic            UltraLF{DIO_US_RANGE_TRIGGER_LF, DIO_US_RANGE_PULSE_LF, Ultrasonic::DistanceUnit::kInches};
   Ultrasonic            UltraRF{DIO_US_RANGE_TRIGGER_RF, DIO_US_RANGE_PULSE_RF, Ultrasonic::DistanceUnit::kInches};
-  
+  DigitalInput          HatchPickupLimitLeft{DIO_LS_HTCH_PKUP_LEFT};
+  DigitalInput          HatchPickupLimitRight{DIO_LS_HTCH_PKUP_RIGHT};
+
+
   frc::Preferences   *  pPrefs;
     
   void RobotInit() override;

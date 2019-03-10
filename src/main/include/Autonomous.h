@@ -5,13 +5,16 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+//#define AUTO_ELE_ENABLED
+
 #pragma once
 #include "Robot.h"
 #include "DriveBase.h"
+#include "Elevator.h"
 
 class Autonomous {
  public:
-  Autonomous(Robot * pRobot, DriveBase * MecDrive);
+  Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator);
 
   void Auto();
 
@@ -25,6 +28,8 @@ class Autonomous {
 
   Robot * pRobot;
   DriveBase * MecDrive;
+  Elevator * ControlElevator;
+
   int     AutoCounter = 0;
   int     SectionStart = 0;
   int     AutoNumber;

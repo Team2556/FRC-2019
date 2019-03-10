@@ -26,13 +26,12 @@ class DriveBase {
   void NormalDrive();
   void GyroDrive();
   void FieldOrientedDrive();
-  void OldFieldOrientedDrive();
+  void RealVision(float * fForward, float * fStrafe, float *fRotate);
   void GyroTurningDrive();
   void DriveToTarget();
   void Drive();
-  float LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance);
+  float LimitFWDDrive(float CommandDistance);
   bool SideUltra(float distance);
 
   float EncoderTest();
-  
 };
