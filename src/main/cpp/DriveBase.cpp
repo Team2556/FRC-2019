@@ -95,10 +95,7 @@ void DriveBase::GyroDrive()
 
 void DriveBase::NormalDrive()
 {
-    pRobot->RobotDrive.DriveCartesian(
-        pRobot->DriverCmd.fMoveForward(), 
-        pRobot->DriverCmd.fMoveSideways(), 
-        pRobot->DriverCmd.fRotate());
+    pRobot->RobotDrive.DriveCartesian(pRobot->DriverCmd.fMoveSideways(), pRobot->DriverCmd.fMoveForward(), pRobot->DriverCmd.fRotate());
 }
 
 
@@ -399,8 +396,9 @@ bool DriveBase::SideUltra(float distance)
 
 float DriveBase::EncoderTest()
 {
-    float position = pRobot->MotorControl_LR.GetSelectedSensorPosition();
+    int position = pRobot->MotorControl_LR.GetSelectedSensorPosition(0);
     SmartDashboard::PutNumber("Position", position);
-    pRobot->MotorControl_LR.Set(ControlMode::Position, 0);
+    int encoder  = frc::SmartDashboard::GetNumber("Encoder", 0);
+    pRobot->MotorControl_LR.Set(ControlMode::Position, encoder);
     //pRobot->MotorControl_LR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(0));
 }
