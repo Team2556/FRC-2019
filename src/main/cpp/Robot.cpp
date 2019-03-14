@@ -92,7 +92,6 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic() 
 {
   LineTracker.UpdateValues();
-  LineTracker.UpdateBackValues();
   Autos->Auto();
   
 }

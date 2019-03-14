@@ -40,10 +40,11 @@ bool Elevator::ElevatorControl(DriverCommands::ElevatorHeight Height, DriverComm
     }
     else
     {
-        int iHeight = 0;
 
-        
-        
+
+
+        int iHeight = 0;
+       
             if (Mode == DriverCommands::ElevatorMode::Hatch)
             {        
                 switch (Height)
@@ -106,7 +107,7 @@ bool Elevator::ElevatorControl(DriverCommands::ElevatorHeight Height, DriverComm
         ElevatorUpDown.Set(ControlMode::Position, iHeight);
         ElevatorUpDownB.Follow(ElevatorUpDown);
 
-        if(fabs(iHeight - ElevatorUpDown.GetSelectedSensorPosition()) < 20)
+        if(fabs(iHeight - ElevatorUpDown.GetSelectedSensorPosition()) < 8)
         {
             return true;
         }
