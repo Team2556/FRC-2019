@@ -15,11 +15,11 @@ class Elevator {
   Elevator(Robot * pRobot);
   //Functions
   bool ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode,int Offset); // returns whether the elevator is in position
-  void WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode);
+  bool WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode);
   float EncoderTest();
 
   int IntakeOuttake();
-  void RollerIn();
+  void RollerIn(float speed);
   void RollerOut();
   void RollerPistons(bool bHatchOut);
 
@@ -39,7 +39,7 @@ class Elevator {
   Robot * pRobot;
 
   //Variables
-  double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
+  float speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   DriverCommands::ElevatorHeight    CMDHeight;
   DriverCommands::ElevatorMode      CMDMode;
 

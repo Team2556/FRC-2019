@@ -28,6 +28,23 @@ DriverCommands::DriverCommands()
 
 
 // ----------------------------------------------------------------------------
+// General Commands
+// ----------------------------------------------------------------------------
+
+bool DriverCommands::GetClimbMode()
+{
+    if (Xbox1.GetStartButton())
+    {
+        ClimbMode = false;
+    }
+    if (Xbox1.GetBackButton())
+    {
+        ClimbMode = true;
+    }
+    return ClimbMode;
+}
+
+// ----------------------------------------------------------------------------
 // Moving commands
 // ----------------------------------------------------------------------------
 
@@ -399,7 +416,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kLeftHand);
             break;
         case 5 :
-            bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kRightHand);
+            bButtonValue = Xbox1.GetBumper(frc::XboxController::JoystickHand::kRightHand);
             break;
         default :
             bButtonValue = false;

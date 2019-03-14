@@ -45,8 +45,6 @@
 #define         DIO_LT_FRONT_2          11
 #define         DIO_LT_FRONT_3          12
 #define         DIO_LT_FRONT_4          13
-
-
 #define         DIO_LT_FRONT_5          18
 #define         DIO_LT_FRONT_6          19
 #define         DIO_LT_BACK_1           20

@@ -18,7 +18,7 @@ Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlE
 void Autonomous::AutoTeleop()
 {
     pRobot->LineTracker.UpdateValues();
-    MecDrive->GyroDrive();
+    //MecDrive->Drive();
     ControlElevator->ElevatorControls();
 }
 

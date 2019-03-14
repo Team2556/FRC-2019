@@ -135,94 +135,96 @@ void Elevator::ElevatorControls()
 
 // ----------------------------------------------------------------------------
 
-void Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode) // 
+bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode) // 
 {
     
-    #ifdef MANUAL_WRIST
-
+    if (!pRobot->DriverCmd.bTestButton(5))
+    {
     Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
-
-    #else
-    bool RollerPos; // true if up, false if down
-    // Figure out whether rollers should be up or down
-
-
-
-
-
-
-    if (Mode == DriverCommands::ElevatorMode::Hatch)
-    {        
-        switch (Height)
-        {
-            case DriverCommands::ElevatorHeight::Low :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::Middle :
-                RollerPos = true;
-            break;
-            
-            case DriverCommands::ElevatorHeight::High :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::Pickup :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::GroundPickup :
-                RollerPos = false;
-            break;
-
-            case DriverCommands::ElevatorHeight::CargoShip :
-                RollerPos = true;
-            break;
-        }
     }
-    else // elevator mode is cargo
-    {
-        switch (Height)
-        {
-            case DriverCommands::ElevatorHeight::Low :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::Middle :
-                RollerPos = true;
-            break;
-            
-            case DriverCommands::ElevatorHeight::High :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::Pickup :
-                RollerPos = true;
-            break;
-
-            case DriverCommands::ElevatorHeight::GroundPickup :
-                RollerPos = false;
-            break;
-
-            case DriverCommands::ElevatorHeight::CargoShip :
-                RollerPos = true;
-            break;
-        }
-    }
-
-
-
     
-    if (RollerPos)
+    else
     {
-        Wrist.Set(ControlMode::Position, WRIST_UP);
-    }
-    else if (!RollerPos)
-    {
-        Wrist.Set(ControlMode::Position, WRIST_DOWN);
-    }
+        bool RollerPos; // true if up, false if down
+        // Figure out whether rollers should be up or down
 
-    #endif
+
+
+
+
+
+        if (Mode == DriverCommands::ElevatorMode::Hatch)
+        {        
+            switch (Height)
+            {
+                case DriverCommands::ElevatorHeight::Low :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::Middle :
+                    RollerPos = true;
+                break;
+                
+                case DriverCommands::ElevatorHeight::High :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::Pickup :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::GroundPickup :
+                    RollerPos = false;
+                break;
+
+                case DriverCommands::ElevatorHeight::CargoShip :
+                    RollerPos = true;
+                break;
+            }
+        }
+        else // elevator mode is cargo
+        {
+            switch (Height)
+            {
+                case DriverCommands::ElevatorHeight::Low :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::Middle :
+                    RollerPos = true;
+                break;
+                
+                case DriverCommands::ElevatorHeight::High :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::Pickup :
+                    RollerPos = true;
+                break;
+
+                case DriverCommands::ElevatorHeight::GroundPickup :
+                    RollerPos = false;
+                break;
+
+                case DriverCommands::ElevatorHeight::CargoShip :
+                    RollerPos = true;
+                break;
+            }
+        }
+
+
+
+        
+        if (RollerPos)
+        {
+            Wrist.Set(ControlMode::Position, WRIST_UP);
+        }
+        else if (!RollerPos)
+        {
+            Wrist.Set(ControlMode::Position, WRIST_DOWN);
+        }
+
+    }
 
 }
 
@@ -234,6 +236,15 @@ int Elevator::IntakeOuttake()
     {
         //outtake
         RollerPistons(pRobot->DriverCmd.Outtake());
+        if (pRobot->DriverCmd.Outtake())
+        {
+            //RollerIn(.3);
+        }
+        else
+        {
+            RightRoller.Set(ControlMode::PercentOutput, 0);
+            LeftRoller.Set(ControlMode::PercentOutput, 0);
+        }
 
         //intake
         if (CMDHeight == DriverCommands::ElevatorHeight::GroundPickup)
@@ -249,13 +260,9 @@ int Elevator::IntakeOuttake()
             
         }
 
-        //turn off rollers
-        RightRoller.Set(ControlMode::PercentOutput, 0);
-        LeftRoller.Set(ControlMode::PercentOutput, 0);
     }
     else // cargo mode
     {
-        
         speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
         if (pRobot->DriverCmd.Intake()) // when the A button is pressed turn the rollers in
         {
@@ -263,7 +270,7 @@ int Elevator::IntakeOuttake()
             {
                 ElevatorOffset = GND_CARGO_OFFSET;
             }
-            RollerIn();
+            RollerIn(speed);
         }
         else if (pRobot->DriverCmd.Outtake()) // when the Y button is pressed turn the rollers out
         {
@@ -311,10 +318,10 @@ int Elevator::IntakeOuttake()
 //  Basic Functions to control the rollers in sync
 // ----------------------------------------------------------------------------
 
-void Elevator::RollerIn()
+void Elevator::RollerIn(float Speed)
 {
-    RightRoller.Set(ControlMode::PercentOutput, speed);
-    LeftRoller.Set(ControlMode::PercentOutput, -speed);
+    RightRoller.Set(ControlMode::PercentOutput, Speed);
+    LeftRoller.Set(ControlMode::PercentOutput, -Speed);
 }
 
 

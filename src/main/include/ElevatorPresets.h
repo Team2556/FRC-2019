@@ -4,7 +4,7 @@
 // Hatch Values
 #define         TOP_HATCH           1111
 #define         MID_HATCH           554
-#define         LOW_HATCH           0
+#define         LOW_HATCH           20
 #define         CGOSHP_HATCH        0 //cargo ship hatch
 
 

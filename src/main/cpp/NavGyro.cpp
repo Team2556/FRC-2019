@@ -137,15 +137,11 @@ bool NavGyro::GetPresetTurning()
 // ----------------------------------------------------------------------------
 
 float NavGyro::GetYaw()
-    {
-#if defined(NAVX)
+{
+
     return pNavX->GetYaw(); 
-#elif defined(ADXRS_GYRO)
-    return pADXRS->GetAngle();
-#else
-    return 0.0;
-#endif
-    }
+
+}
 
 
 // ----------------------------------------------------------------------------

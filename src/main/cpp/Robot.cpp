@@ -14,12 +14,14 @@
 #include "Elevator.h"
 #include "Climb.h"
 #include "Autonomous.h"
+#include "TeleopControl.h"
 
 // Objects and variable for this file only
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
 Climb             * Climber;
 Autonomous        * Autos;
+TeleopControl     * TeleopMain;
 
 // ----------------------------------------------------------------------------
 
@@ -30,6 +32,7 @@ void Robot::RobotInit() {
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
   Autos             = new Autonomous(this, MecDrive, ControlElevator);
+  TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
   
   Nav.Init(false);
   UltraLF.SetAutomaticMode(true);
@@ -104,15 +107,9 @@ void Robot::TeleopInit()
 // ----------------------------------------------------------------------------
 
 void Robot::TeleopPeriodic() 
-  {
-    //Teleop Functions
-    MecDrive->Drive();
-    LineTracker.UpdateValues();
-    ControlElevator->ElevatorControls();
-    //Climber->Climbing();
-    Climber->HoldIn();
-    SmartDashboard::PutNumber("Angle", Nav.GetYaw());
-  }
+{
+    TeleopMain->TeleopMain();
+}
 
 // ============================================================================
 

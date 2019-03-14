@@ -13,6 +13,7 @@
 #include "RobotMap.h"
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/PowerDistributionPanel.h>
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
 #include "NavGyro.h"
@@ -48,6 +49,10 @@ class Robot : public frc::TimedRobot {
   Ultrasonic            UltraRF{DIO_US_RANGE_TRIGGER_RF, DIO_US_RANGE_PULSE_RF, Ultrasonic::DistanceUnit::kInches};
   DigitalInput          HatchPickupLimitLeft{DIO_LS_HTCH_PKUP_LEFT};
   DigitalInput          HatchPickupLimitRight{DIO_LS_HTCH_PKUP_RIGHT};
+
+
+
+  PowerDistributionPanel    PDP{0};
 
 
   frc::Preferences   *  pPrefs;

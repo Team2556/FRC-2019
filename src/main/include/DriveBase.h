@@ -18,20 +18,22 @@ class DriveBase {
   Robot * pRobot;
 //  bool drivemode;
   int      stopHoldCounter = 0;
+  int      State = 0;
   bool     bRotatePrevious = false;
 
 
   //Functions
   void Init();
-  void NormalDrive();
-  void GyroDrive();
-  void FieldOrientedDrive();
+  void NormalDrive(float * fForward, float * fStrafe, float *fRotate);
+  void GyroDrive(float * fForward, float * fStrafe, float *fRotate);
+  void FieldOrientedDrive(float * fForward, float * fStrafe, float *fRotate, bool *bFOD);
   void RealVision(float * fForward, float * fStrafe, float *fRotate);
   void GyroTurningDrive();
   void DriveToTarget();
-  void Drive();
+  void Drive(float fForward, float fStrafe, float fRotate, bool bFOD);
   float LimitFWDDrive(float CommandDistance);
   bool SideUltra(float distance);
+  float FindClose(float Angle);
 
   float EncoderTest();
 };
