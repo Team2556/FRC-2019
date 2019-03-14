@@ -502,84 +502,42 @@ double HumanplayerAngles[]= {180};
     int closestIndex3 = 0;
     for (int i = 0; i < 4; i++)
     {
-        if(DriverCommands::ElevatorMode() == 0)
+        if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch
+        && pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Low 
+        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Middle 
+        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::High)
         {
-            if (fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex1]))
+            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex1]))
             {
-                closestIndex1 = i;
+                closestIndex = i;
             }
-            if (fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex2]))
-            {
-                 closestIndex2 = i;
-            }
-            if  (fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex3]))
-            {
-                 closestIndex3 = i;
-            }
-
-            if (closestIndex1 < closestIndex2)
-            {
-                if(closestIndex1 < closestIndex3)
-                {
-                    closestIndex = closestIndex1;
-                }
-                else
-                {
-                    closestIndex= closestIndex3;
-                }
-            }
-            else
-            {
-                if(closestIndex2 < closestIndex3)
-                {
-                    closestIndex= closestIndex2;
-                }
-                else
-                {
-                    closestIndex= closestIndex3;
-                }
-            }
-
         }
-        else if(DriverCommands::ElevatorMode() == 1)
+        else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo
+        && pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Low 
+        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Middle 
+        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::High)
         {
-            if (fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex1]))
+            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex1]))
             {
-                closestIndex1 = i;
+                closestIndex = i;
             }
-            if (fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex2]))
-            {
-                 closestIndex2 = i;
-            }
-            if  (fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex3]))
-            {
-                 closestIndex3 = i;
-            }
-
-            if (closestIndex1 < closestIndex2)
-            {
-                if(closestIndex1 < closestIndex3)
-                {
-                    closestIndex = closestIndex1;
-                }
-                else
-                {
-                    closestIndex= closestIndex3;
-                }
-            }
-            else
-            {
-                if(closestIndex2 < closestIndex3)
-                {
-                    closestIndex= closestIndex2;
-                }
-                else
-                {
-                    closestIndex= closestIndex3;
-                }
-            }
-
         }
+        else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::CargoShip)
+        {
+            if(fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex1]))
+            {
+                closestIndex = i;
+            }
+        }
+        else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Pickup)
+        {
+            if(fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex1]))
+            {
+                closestIndex = i;
+            }
+        }
+
+        
        
         
     }
