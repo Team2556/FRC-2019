@@ -9,6 +9,7 @@
 
 #include <thread>
 #include <mutex>
+#include <math.h>
 
 #include "frc/WPILib.h"
 #include "frc/Preferences.h"
@@ -143,7 +144,7 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
         // Filter based on size
         double dArea = cv::contourArea(Contours[i]);
 //      printf(" Area %f ", dArea);
-        if (dArea < 100.0)
+        if (dArea < 50.0)
             continue;
 
         // Find the bounding rectangle
@@ -165,7 +166,7 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
     iMatchesFound = 0;
 
     if (FiltContours.size() >= 2)
-        {
+    {
         unsigned int     iIdx1, iIdx2;
         for (iIdx1 = 0; iIdx1 < FiltContours.size() - 1; iIdx1++)
             for (iIdx2 = iIdx1+1; iIdx2 < FiltContours.size(); iIdx2++)
@@ -186,13 +187,13 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
 //                    printf("FALSE");
                     }
                 }
-        } // end if at least two targets
+    } // end if at least two targets
 
     // Only calculate a target if one and only one rectangle pair was found. In the future it would be
     // nice to save all the target pairs and attempt to pick the best one.
 //    if (iMatchesFound > 1) printf ("Matches %1 ", iMatchesFound);
     if (iMatchesFound == 1)
-        {
+    {
         // Find the center of the target in screen coordinates
         // Left = 0  Top = 0
         iCenterX = (BoundingRects[iRect1].center.x + BoundingRects[iRect2].center.x) / 2;
@@ -213,15 +214,20 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
                              ((float)FrameThreshold.rows * 2.0);
         bTargetTracked = true;
 //        printf("TRACK %5.2f %5.2f %5.2f %5.2f\n", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
-        }
+
+        frc::SmartDashboard::PutNumber("Average width", (BoundingRects[iRect1].size.width + BoundingRects[iRect2].size.width)/2 );
+        frc::SmartDashboard::PutNumber("Left Width", BoundingRects[iRect1].size.width);
+        frc::SmartDashboard::PutNumber("Right Width", BoundingRects[iRect2].size.width);
+        frc::SmartDashboard::PutNumber("Error Angle", acos((BoundingRects[iRect2].size.width)/(BoundingRects[iRect1].size.width))*100);
+    }
     else
-        {
+    {
         // No track so zero out the error just to be safe
         *pfTrackErrorX = 0.0;
         *pfTrackErrorY = 0.0;
         bTargetTracked = false;
 //        printf("NO TRACK\n", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
-        }
+    }
 
 //    printf("%s %5.2f %5.2f %5.2f %5.2f ", bMatchFound ? "TRACK   " : "NO TRACK", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
 
@@ -249,7 +255,13 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
             if (!FrameThreshold.empty()) cvVidOut.PutFrame(FrameThreshold);
             break;
         case 3 :
-            if (!FrameDraw.empty()) cvVidOut.PutFrame(FrameDraw);
+            if (!FrameCam.empty()) 
+                {
+                // Overlay status on camera image
+                FrameCamStatus = FrameDraw;
+                DrawTrackStatus(FrameCamStatus, bTargetTracked);
+                cvVidOut.PutFrame(FrameCamStatus);
+                }
             break;
         case 4 :
             if (!FrameCam.empty()) 

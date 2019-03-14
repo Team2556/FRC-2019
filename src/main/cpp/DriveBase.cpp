@@ -27,154 +27,15 @@ DriveBase::DriveBase(Robot * pRobot)
 // Methods
 // ----------------------------------------------------------------------------
 
-void DriveBase::GyroDrive()
+void DriveBase::GyroDrive(float * fForward, float * fStrafe, float *fRotate)
 {
-    float 			fForward = 0.0;
-    float 			fStrafe = 0.0;
-    float			fRotate = 0.0;
     bool			bAllowRotate = false;
 
     // Get joystick inputs
-    fForward = pRobot->DriverCmd.fMoveForward();;
-    fStrafe = pRobot->DriverCmd.fMoveSideways();
-    fRotate = pRobot->DriverCmd.fRotate();
+    *fForward = pRobot->DriverCmd.fMoveForward();
+    *fStrafe = pRobot->DriverCmd.fMoveSideways();
+    *fRotate = pRobot->DriverCmd.fRotate();
 
-    if ((pRobot->DriverCmd.POV() > -1) && (pRobot->Nav.bPresetTurning == false))
-    {
-    	pRobot->Nav.fGyroCommandYaw = pRobot->Nav.fGyroCommandYaw + pRobot->DriverCmd.POV();
-    	pRobot->Nav.bPresetTurning = true;
-    }
-
-    // If small pointing error then 
-    if (fabs(pRobot->Nav.GetYawError()) < 10.0)
-    {
-    	pRobot->Nav.bPresetTurning = false;
-    }
-
-    // If the right trigger is pressed then rotate is controlled by right stick
-    bAllowRotate = pRobot->DriverCmd.bManualRotate();
-    
-    if (bAllowRotate)
-	{
-        // Get rotation rate from the right stick
-        fRotate = pRobot->DriverCmd.fRotate();
-#if 0
-        fRotate = pRobot->Nav.CorrectRotate(fRotate);
-#else
-        if (fRotate >  0.5) fRotate =  0.5;
-        if (fRotate < -0.5) fRotate = -0.5;
-#endif
-        // Set commanded angle to whatever the current angle is
-        pRobot->Nav.SetCommandYawToCurrent();
-	}
-    else
-    {
-        // Calculate a rotation rate from robot angle error
-    	fRotate = pRobot->Nav.GetRotate();
-    }
-
-    fForward = this->LimitFWDDrive(fForward, false, 12);
-    fStrafe = pRobot->LineTracker.GetStrafe(fStrafe, pRobot->DriverCmd.GetLineUpStrafe());
-    if (pRobot->LineTracker.BackSensors.bLineFound && pRobot->DriverCmd.GetLineUpStrafe())
-    {
-        float   fClosestAngle = FindClose(pRobot->Nav.GetYaw());
-        pRobot->Nav.SetCommandYaw(fClosestAngle);
-    }
-    pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
-
-
-    if(pRobot->DriverCmd.bResetGyro())
-    {
-        pRobot->Nav.ResetYaw();
-    }
-} // end GyroDrive()
-
-
-// ----------------------------------------------------------------------------
-
-
-void DriveBase::NormalDrive()
-{
-    pRobot->RobotDrive.DriveCartesian(pRobot->DriverCmd.fMoveSideways(), pRobot->DriverCmd.fMoveForward(), pRobot->DriverCmd.fRotate());
-}
-
-
-// ----------------------------------------------------------------------------
-#if 0
-void DriveBase::OldFieldOrientedDrive()
-{
-    //define variables for the drive function
-    float 			fXStick = 0.0;
-    float 			fYStick = 0.0;
-    float			fRotate = 0.0;
-    bool			bAllowRotate = false;
-
-
-    //get values from the controller
-    fXStick = pRobot->DriverCmd.fMoveForward();
-    fYStick = pRobot->DriverCmd.fMoveSideways();
-    fRotate = pRobot->DriverCmd.fRotate();
-
-
-    // deterime when to start turns based on d-pad
-    if((pRobot->DriverCmd.POV() > -1) && (pRobot->Nav.bPresetTurning == false))
-    {
-    	pRobot->Nav.fGyroCommandYaw = pRobot->DriverCmd.POV();
-    	pRobot->Nav.bPresetTurning = true;
-    }
-    //determine when to end the gyro turn
-    if(fabs(pRobot->Nav.GetYawError())<10)
-    {
-    	pRobot->Nav.bPresetTurning = false;
-    }
-
-    //if((pRobot->Xbox1.GetX(frc::XboxController::kRightHand)>0.05) || (pRobot->Xbox1.GetX(frc::XboxController::kRightHand) < -0.05))
-    //{
-    //    bAllowRotate = true;
-    //}
-    //determine if the robot is allowed to rotate
-    frc::SmartDashboard::PutNumber("X-Axis", pRobot->DriverCmd.fRotate());
-    bAllowRotate = pRobot->DriverCmd.bManualRotate();
-
-    //determine whether to get rotate values from gyro or controller
-    if (bAllowRotate)
-	{
-        fRotate = pRobot->DriverCmd.fRotate();
-        if (fRotate >  0.0) fRotate -= 0.05;
-        if (fRotate <  0.0) fRotate += 0.05;
-        if (fRotate >  0.5) fRotate  =  0.5;
-        if (fRotate < -0.5) fRotate  = -0.5;
-
-        pRobot->Nav.SetCommandYawToCurrent();
-	}
-    else
-    {
-        // Calculate a rotation rate from robot angle error
-    	fRotate = pRobot->Nav.GetRotate();
-    }
-
-    //plug values into drive function
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, -(pRobot->Nav.GetYaw()));
-
-    //reset gyro
-    if(pRobot->DriverCmd.bResetGyro())
-    {
-        pRobot->Nav.ResetYaw();
-    }
-} // end FieldOrientedDrive()
-
-#endif
-// ----------------------------------------------------------------------------
-
-void DriveBase::FieldOrientedDrive()
-{
-    float 		fForward = 0.0;
-    float 		fStrafe = 0.0;
-    float		fRotate = 0.0;
-    bool		bAllowRotate = false;
-
-    fForward = pRobot->DriverCmd.fMoveForward();;
-    fStrafe = pRobot->DriverCmd.fMoveSideways();
 
     if(pRobot->DriverCmd.bManualRotate())
     {
@@ -214,12 +75,12 @@ void DriveBase::FieldOrientedDrive()
 
     if (bRotatePrevious)
 	{
-        fRotate = pRobot->DriverCmd.fRotate();
+        *fRotate = pRobot->DriverCmd.fRotate();
 
-        if (fRotate >  0.0) fRotate -= 0.05;
-        if (fRotate <  0.0) fRotate += 0.05;
-        if (fRotate >  0.5) fRotate  =  0.5;
-        if (fRotate < -0.5) fRotate  = -0.5;
+        if (*fRotate >  0.0) *fRotate -= 0.05;
+        if (*fRotate <  0.0) *fRotate += 0.05;
+        if (*fRotate >  0.5) *fRotate  =  0.5;
+        if (*fRotate < -0.5) *fRotate  = -0.5;
 
         pRobot->Nav.SetCommandYawToCurrent();
         frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
@@ -227,14 +88,104 @@ void DriveBase::FieldOrientedDrive()
     else
     {
         // Calculate a rotation rate from robot angle error
-    	fRotate = pRobot->Nav.GetRotate();
+    	*fRotate = pRobot->Nav.GetRotate();
         frc::SmartDashboard::PutBoolean("Gryo Enabled", true);
     }
-    frc::SmartDashboard::PutNumber("Counter", stopHoldCounter);
-    frc::SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
-    frc::SmartDashboard::PutBoolean("Rotate Previous", bRotatePrevious);
 
-    pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
+
+
+    if(pRobot->DriverCmd.bResetGyro())
+    {
+        pRobot->Nav.ResetYaw();
+    }
+    
+
+
+} // end GyroDrive()
+
+
+// ----------------------------------------------------------------------------
+
+
+void DriveBase::NormalDrive(float * fForward, float * fStrafe, float *fRotate)
+{
+    
+    pRobot->RobotDrive.DriveCartesian(
+        pRobot->DriverCmd.fMoveSideways(), 
+        pRobot->DriverCmd.fMoveForward(), 
+        pRobot->DriverCmd.fRotate());
+}
+
+// ----------------------------------------------------------------------------
+
+void DriveBase::FieldOrientedDrive(float * fForward, float * fStrafe, float *fRotate, bool * bFOD)
+{
+    *bFOD = true;
+    bool		bAllowRotate = false;
+
+    *fForward = pRobot->DriverCmd.fMoveForward();;
+    *fStrafe = pRobot->DriverCmd.fMoveSideways();
+
+    if(pRobot->DriverCmd.bManualRotate())
+    {
+        bAllowRotate = true;
+    }
+
+    if((pRobot->DriverCmd.POV() > -1) && (pRobot->Nav.bPresetTurning == false))
+    {
+    	pRobot->Nav.fGyroCommandYaw = pRobot->DriverCmd.POV();
+    	pRobot->Nav.bPresetTurning = true;
+        bAllowRotate = false;
+    }
+    if(fabs(pRobot->Nav.GetYawError())<10)
+    {
+    	pRobot->Nav.bPresetTurning = false;
+    }
+    else if(pRobot->Nav.bPresetTurning == true)
+    {
+        bAllowRotate = false;
+    }
+
+    if(bAllowRotate == true)
+    {
+        bRotatePrevious = true;
+    }
+
+    if((bAllowRotate == false) && (bRotatePrevious == true) && (stopHoldCounter < 5))
+    {
+        stopHoldCounter++;
+    }
+    else if((bAllowRotate == false) && (bRotatePrevious == true) && (stopHoldCounter >= 5))
+    {
+        stopHoldCounter = 0;
+        bRotatePrevious = false;
+    }
+
+
+    if (bRotatePrevious)
+	{
+        *fRotate = pRobot->DriverCmd.fRotate();
+
+        if (*fRotate >  0.0) *fRotate -= 0.05;
+        if (*fRotate <  0.0) *fRotate += 0.05;
+        if (*fRotate >  0.5) *fRotate  =  0.5;
+        if (*fRotate < -0.5) *fRotate  = -0.5;
+
+        pRobot->Nav.SetCommandYawToCurrent();
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
+	}
+    else
+    {
+        // Calculate a rotation rate from robot angle error
+    	*fRotate = pRobot->Nav.GetRotate();
+        frc::SmartDashboard::PutBoolean("Gryo Enabled", true);
+    }
+
+
+    frc::SmartDashboard::PutBoolean("Allow Rotate", bAllowRotate);
+
+
+    //pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
 
     if(pRobot->DriverCmd.bResetGyro())
     {
@@ -247,8 +198,9 @@ void DriveBase::FieldOrientedDrive()
 
 void DriveBase::DriveToTarget()
     {
-    float 		fXStick;
-    float 		fYStick;
+    static int  iDriveToTargetState = 0;
+    float 		fStrafe;
+    float 		fForward;
     float		fRotate;
     bool		bAllowRotate = false;
     bool        bVisionTracked;
@@ -256,100 +208,274 @@ void DriveBase::DriveToTarget()
     float       fVisionTargetSizeX, fVisionTargetSizeY;
     char        szVisionMsg[100];
 
+    bool        bDistanceGood;
+    float       fDistanceToTarget;
+    char        szPrint[100];
+
+    /* Drive States
+         0  Get ready to drive
+        10  Rotate based on vision target
+        20  Drive towards target until near
+        30  Final drive to deploy
+      1000  Done, manual control
+    */
+
     // Get drive inputs
-    fXStick = pRobot->DriverCmd.fMoveForward();
-    fYStick = pRobot->DriverCmd.fMoveSideways();
+    fForward = pRobot->DriverCmd.fMoveForward();
+    fStrafe = pRobot->DriverCmd.fMoveSideways();
 
     // Get vision track status and track errors
     pRobot->CameraTrk.GetTrackError(&bVisionTracked, &fVisionTrackErrorX, &fVisionTrackErrorY, &fVisionTargetSizeX, &fVisionTargetSizeY);
 
-    // Vision track mode
-    if (pRobot->DriverCmd.bTestButton(0))
-        if (bVisionTracked)
-            {
-            fRotate = fVisionTrackErrorX * 0.5;
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "TRACK    %4.1f", fRotate);
-            }
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
-            } // end if vision track
+    // Get ultrasonic distance
+#if 1
+    fDistanceToTarget = 0.0;
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget =  fDistanceToTarget / 3.0;
+#else
+    fDistanceToTarget = Ultra.GetRangeInches();
+#endif
+    bDistanceGood     =  pRobot->UltraLF.IsRangeValid();
+    frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
+    if (bDistanceGood) frc::SmartDashboard::PutNumber("Distance", fDistanceToTarget);
+    else               frc::SmartDashboard::PutString("Distance", " ");
 
-    // Non-vision track mode
+    // Get line track error
+    
+
+    // Get default values for rotate
+    if(pRobot->DriverCmd.bManualRotate())
+        {
+        fRotate = pRobot->DriverCmd.fRotate();
+        pRobot->Nav.SetCommandYawToCurrent();
+//            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
+        }
+    // Gyro control rotate
+    else
+        {
+        fRotate = pRobot->Nav.GetRotate();
+//            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
+        }
+
+    // If auto-drive button not pressed then just manual control
+    // ---------------------------------------------------------
+    if (pRobot->DriverCmd.bTestButton(0) == false)
+        {
+        iDriveToTargetState = 0;
+        } // end if manual drive
+
+    // Auto-drive button pressed so, um.... auto-drive
+    // -----------------------------------------------
     else 
         {
-        // Manual rotate
-        if(pRobot->DriverCmd.bManualRotate())
+        switch (iDriveToTargetState)
             {
-            fRotate = pRobot->DriverCmd.fRotate();
-            pRobot->Nav.SetCommandYawToCurrent();
-            sprintf(szVisionMsg, "MANUAL  %4.1f", fRotate);
-            }
-        // Gyro control rotate
-        else
-            {
-            fRotate = pRobot->Nav.GetRotate();
-            sprintf(szVisionMsg, "GYRO    %4.1f", fRotate);
-            }
-        } // end if not vision track
+            case 0 :
+                iDriveToTargetState = 10;
+                // No break!
 
-    frc::SmartDashboard::PutString("Vision Track", szVisionMsg);
+            case 10 :
+                // Rotate
+                if (bVisionTracked) 
+                {
+                fRotate = fVisionTrackErrorX * 0.5;
+                pRobot->Nav.SetCommandYawToCurrent();
+                }
+                // else default rotate value
+                
+                // Forward
+                if (bDistanceGood)
+                {
+                float fDistanceError = fDistanceToTarget - 12.0;
+                fForward = (fDistanceError / 100.0) + 0.05;
+                if (fForward >  0.5) fForward =  0.4;
+                if (fForward < -0.5) fForward = -0.4;
+                }
+                // else fXStick stays from controller
+
+                // Strafe
+
+                // Exit to next state
+                if ((bDistanceGood == true) && (fDistanceToTarget < 12.0))
+                    iDriveToTargetState = 1000;
+
+                break;
+
+            case 1000 : // Done, manual control
+                break;
+
+            default :   // Unknown state, manual control
+                break;
+            } // end switch on drive state
+        } // end if auto-drive
+
+//            fRotate = pRobot->Nav.GetRotate();
+//            sprintf(szVisionMsg, "NO TRACK %4.1f", fRotate);
 
     // Drive the robot
-//    printf(" %s %5.2f\n", bVisionTracked?"TRACK   ":"NO TRACK", fRotate);
-    pRobot->RobotDrive.DriveCartesian(fXStick, fYStick, fRotate, 0.0);
+    sprintf(szPrint, "%4d X %5.1f Y %5.1f R %5.1f\n", iDriveToTargetState, fStrafe, fForward, fRotate);
+    frc::SmartDashboard::PutString("Drive Controls", szPrint);
+    pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
 
     } // end DriveToTarget()
 
 
 // ----------------------------------------------------------------------------
 
-void DriveBase::Drive()
-    {  
-    switch (pRobot->DriverCmd.GetDriveMode())
-        {
-            case DriverCommands::DriveMode::Gyro :
-                frc::SmartDashboard::PutString("DriveMode", "Gyro");
-                this->GyroDrive();
-                break;
+void DriveBase::RealVision(float * fForward, float * fStrafe, float *fRotate)
+{
+    static int StopCounter = 0;
+    bool        bVisionTracked;
+    float       fVisionTrackErrorX, fVisionTrackErrorY;
+    float       fVisionTargetSizeX, fVisionTargetSizeY;
 
-            case DriverCommands::DriveMode::FieldOriented :
-                frc::SmartDashboard::PutString("DriveMode", "Field Oriented");
-                this->FieldOrientedDrive();
-                break;
 
-            case DriverCommands::DriveMode::DriveToTarget :
-                frc::SmartDashboard::PutString("DriveMode", "Drive To Target");
-                this->DriveToTarget();
-                break;
+    bool        bDistanceGood;
+    float       fDistanceToTarget;
 
-            case DriverCommands::DriveMode::Normal :
-            default :
-                frc::SmartDashboard::PutString("DriveMode", "Normal Drive");
-                this->NormalDrive();
-                break;
-        }
-    } // end Drive()
+    pRobot->CameraTrk.GetTrackError(&bVisionTracked, &fVisionTrackErrorX, &fVisionTrackErrorY, &fVisionTargetSizeX, &fVisionTargetSizeY);
+
+
+    fDistanceToTarget = 0.0;
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
+    fDistanceToTarget =  fDistanceToTarget / 3.0;
+
+    bDistanceGood     =  pRobot->UltraLF.IsRangeValid();
+    
+    if (!bVisionTracked && !pRobot->LineTracker.FrontSensors.bLineFound)
+    {
+        State = 0;
+    }
+
+
+    switch (State)
+    {
+        case 0 : // pre state
+
+            if (bVisionTracked)
+            {
+                State = 10;
+            }
+            else if (pRobot->LineTracker.FrontSensors.bLineFound)
+            {
+                State = 20;
+            }
+
+        break;
+
+        case 10 :
+
+            if (bVisionTracked) 
+            {
+                *fRotate = fVisionTrackErrorX * 0.35;
+                pRobot->Nav.SetCommandYawToCurrent();
+            }
+            if (bDistanceGood)
+            {
+                *fForward = this ->LimitFWDDrive(18);
+            }
+
+            if(pRobot->LineTracker.FrontSensors.bLineFound)
+            {
+                State = 15;
+            }
+        break;
+
+        case 15 :
+
+            *fForward = -.1;
+            *fStrafe = .05;
+
+            StopCounter++;
+
+            if (StopCounter >= 3)
+            {
+                State = 17;
+                StopCounter = 0;
+            }
+        break;
+
+        case 17 :
+            *fForward = 0;
+            *fStrafe = 0;
+            pRobot->Nav.SetCommandYaw(FindClose(pRobot->Nav.GetYaw()));
+
+            if (fabs(pRobot->Nav.GetYawError()) < 4)
+            {
+                State = 20;
+            }
+        break;
+
+        case 20 : 
+            *fForward = this->LimitFWDDrive(18);
+            *fStrafe = pRobot->LineTracker.GetStrafe(*fStrafe);
+
+            
+            
+
+            if (pRobot->LineTracker.GetStrafe(*fStrafe) == 0)
+            {
+                StopCounter++;
+            }
+            else 
+            {
+                StopCounter = 0;
+            }
+
+            if (StopCounter >= 5)
+            {
+                State = 30;
+                StopCounter = 0;
+            }
+        break;
+
+        case 30 :
+            *fForward = this->LimitFWDDrive(9);
+            *fStrafe = 0;
+        break;
+
+
+    }
+    SmartDashboard::PutNumber("State", State);
+}
+
 
 
 
 // ----------------------------------------------------------------------------
 
-float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance)
+void DriveBase::Drive(float fForward, float fStrafe, float fRotate, bool bFOD)
+{
+    if (bFOD)// field oriented drive is enabled
+    {
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
+    }
+    else // field oriented drive is disabled
+    {   
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
+    }
+} // end Drive()
+
+
+
+// ----------------------------------------------------------------------------
+
+float DriveBase::LimitFWDDrive(float CommandDistance)
 {
 
-    float Distance = Ultra.GetRangeInches();
+    float Distance = pRobot->UltraLF.GetRangeInches();
     SmartDashboard::PutNumber("Distance", Distance);
     
     float Error = Distance - CommandDistance;
 
-    if(!(pRobot->DriverCmd.UltrasonicAllowed()) && !Auto)
-    {
-        return InitDrive;
-    }
-    float MaxSpeed = (Error / 100) +.05;
+    float MaxSpeed = (Error / 70) +(.03* (Error/fabs(Error)));
+
+    if (MaxSpeed > .3) MaxSpeed = .3;
+    if (MaxSpeed < -.3) MaxSpeed = -.3;
     SmartDashboard::PutNumber("Max Speed", MaxSpeed);
     return MaxSpeed;
 }
@@ -357,20 +483,18 @@ float DriveBase::LimitFWDDrive(float InitDrive, bool Auto, float CommandDistance
 
 // ----------------------------------------------------------------------------
 
-void DriveBase::Init()
-{
-    Ultra.SetAutomaticMode(true);
-}
+
 // ============================================================================
 // Local methods
 // ============================================================================
 
-float FindClose(float Angle)
+float DriveBase::FindClose(float Angle)
 {
-    double Angles[8] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, 0.0};
+
+    double Angles[9] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, -28.75, -151.25};
 
     int closestIndex = 0;
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         if (fabs(Angle-Angles[i])<fabs(Angle-Angles[closestIndex]))
         {
@@ -381,24 +505,11 @@ float FindClose(float Angle)
     return Angles[closestIndex];
 }
 
-bool DriveBase::SideUltra(float distance)
-{
-    if(UltraLeft.GetRangeInches() < distance)
-    {
-        return true;
-    }
-
-    else
-    {
-        return false;
-    }
-}
 
 float DriveBase::EncoderTest()
 {
-    int position = pRobot->MotorControl_LR.GetSelectedSensorPosition(0);
+    float position = pRobot->MotorControl_RR.GetSelectedSensorPosition();
     SmartDashboard::PutNumber("Position", position);
-    int encoder  = frc::SmartDashboard::GetNumber("Encoder", 0);
-    pRobot->MotorControl_LR.Set(ControlMode::Position, encoder);
-    //pRobot->MotorControl_LR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(0));
+    
+    pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
 }

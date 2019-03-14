@@ -1,5 +1,5 @@
 // Define which camera to use for vision
-//#define USB_CAMERA
+#define USB_CAMERA
 //#define AXIS_CAMERA
 #if defined(USB_CAMERA) || defined(AXIS_CAMERA)
 #define CAMERA
@@ -12,14 +12,15 @@
 
 // CAN BUS IDs
 #define         CAN_PDP                 0
-#define         CAN_TALON_LF            3
-#define         CAN_TALON_RF            4
-#define         CAN_TALON_LR            1
-#define         CAN_TALON_RR            2
+#define         CAN_TALON_LF            1
+#define         CAN_TALON_RF            2
+#define         CAN_TALON_LR            3
+#define         CAN_TALON_RR            4
 #define         CAN_TALON_LEFT_ROLLER   6
 #define         CAN_TALON_RIGHT_ROLLER  8
-#define         CAN_TALON_ELEV          5
-#define         CAN_TALON_WRIST         7
+#define         CAN_TALON_ELEVA         5 // slave
+#define         CAN_TALON_ELEVB         7 // master
+#define         CAN_TALON_WRIST         9
 #define         CAN_PCM                 11
 
 // DIO Channels
@@ -34,7 +35,7 @@
 #define         DIO_LT_FRONT_5          4
 #define         DIO_LT_FRONT_6          5
 #define         DIO_LT_BACK_1           6
-#define         DIO_LT_BACK_2           
+#define         DIO_LT_BACK_2           7
 #endif
 
 
@@ -50,7 +51,10 @@
 #define         DIO_LT_BACK_2           21
 #endif
 
-#define         DIO_US_RANGE_TRIGGER        8
-#define         DIO_US_RANGE_PULSE          9
-#define         DIO_US_RANGE_TRIGGER_LEFT   6
-#define         DIO_US_RANGE_PULSE_LEFT     7
+#define         DIO_US_RANGE_TRIGGER_LF 0
+#define         DIO_US_RANGE_PULSE_LF   1
+#define         DIO_US_RANGE_TRIGGER_RF 3
+#define         DIO_US_RANGE_PULSE_RF   2
+
+#define         DIO_LS_HTCH_PKUP_LEFT   8
+#define         DIO_LS_HTCH_PKUP_RIGHT  9

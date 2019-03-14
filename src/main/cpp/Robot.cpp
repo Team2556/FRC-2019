@@ -14,30 +14,35 @@
 #include "Elevator.h"
 #include "Climb.h"
 #include "Autonomous.h"
+#include "TeleopControl.h"
 
 // Objects and variable for this file only
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
 Climb             * Climber;
 Autonomous        * Autos;
+TeleopControl     * TeleopMain;
 
 // ----------------------------------------------------------------------------
 
 void Robot::RobotInit() {
-    pPrefs = frc::Preferences::GetInstance();
+  pPrefs = frc::Preferences::GetInstance();
 
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
-  Autos             = new Autonomous(this, MecDrive);
+  Autos             = new Autonomous(this, MecDrive, ControlElevator);
+  TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
   
   Nav.Init(false);
-  MecDrive->Init();
+  UltraLF.SetAutomaticMode(true);
+  UltraRF.SetAutomaticMode(true);
+
 
 #ifdef USB_CAMERA
   UsbCamera1 = frc::CameraServer::GetInstance()->StartAutomaticCapture(0);
-  UsbCamera1.SetResolution(160, 120);
-  UsbCamera1.SetFPS(20);
+  UsbCamera1.SetResolution(640, 480);
+  UsbCamera1.SetFPS(24);
 #endif
 
 #ifdef AXIS_CAMERA
@@ -56,9 +61,13 @@ void Robot::RobotInit() {
   frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
   int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
   frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
-  double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
+  double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   frc::SmartDashboard::PutNumber("Roller Speed", speed);
 
+    AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
+    AutoChooser.AddOption(Auto1, Auto1);
+    AutoChooser.AddOption(Auto2, Auto2);
+    frc::SmartDashboard::PutData("Auto Selector", &AutoChooser);
   }
 
 // ----------------------------------------------------------------------------
@@ -75,9 +84,7 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
-  //Auto selector will go here and run the coresponding Auto's Init to select it
-  //For now there is only one auto for testing purposes so its init will allways be called
-  Autos->Auto2Init();
+  AutoMode = AutoChooser.GetSelected();
 }
 
 // ----------------------------------------------------------------------------
@@ -86,7 +93,8 @@ void Robot::AutonomousPeriodic()
 {
   LineTracker.UpdateValues();
   LineTracker.UpdateBackValues();
-  Autos->Auto2();
+  Autos->Auto();
+  
 }
 
 // ----------------------------------------------------------------------------
@@ -99,6 +107,7 @@ void Robot::TeleopInit()
 // ----------------------------------------------------------------------------
 
 void Robot::TeleopPeriodic() 
+<<<<<<< HEAD
   {
     //Teleop Functions
     MecDrive->Drive();
@@ -107,6 +116,11 @@ void Robot::TeleopPeriodic()
     //Climber->Climbing();
     SmartDashboard::PutNumber("Angle", Nav.GetYaw());
   }
+=======
+{
+    TeleopMain->TeleopMain();
+}
+>>>>>>> 1d2d86eca58366be314eb77a3e2c8f975be69023
 
 // ============================================================================
 

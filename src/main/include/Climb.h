@@ -30,5 +30,6 @@ class Climb {
   void Oscillation(int Side);// 0 is the front and 1 is the back
   void test();
   void ShuffleForward();
+  void HoldIn();
 
 };

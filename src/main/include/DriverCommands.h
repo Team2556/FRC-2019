@@ -29,8 +29,8 @@ public:
 
   // Variables
   enum DriveMode {Unknown, Normal, Gyro, FieldOriented, DriveToTarget};
-  enum ElevatorHeight {Low, Middle, High, Pickup, GroundPickup};
-  int  iElevatorHeight = 0; // 0 = low, 1 = middle, 2 = high, -1 is pickup, -2 is ground pickup
+  enum ElevatorHeight {Low, Middle, High, Pickup, GroundPickup, CargoShip};
+  int  iElevatorHeight = 0; // 0 = low, 1 = middle, 2 = high, 3 = Cargo Ship -1 is pickup, -2 is ground pickup
   enum ElevatorMode {Hatch, Cargo};
   
   DriveMode           CurrDriveMode;
@@ -40,6 +40,10 @@ public:
   bool        RollersDown = false; // true if the rollers/wrist are down
   bool        ElevatorTilted = false; // true if the elevator is tilted backwards
   bool        rollerBool = false;//true if roller pistons pushed out
+  bool        ClimbMode  = false; // false normally, true when climbing
+
+  // General Commands
+  bool      GetClimbMode();
 
   // Moving commands
   float     fMoveForward();
@@ -49,7 +53,7 @@ public:
   bool      bResetGyro();
   int       POV();
   DriveMode GetDriveMode();
-  bool      GetLineUpStrafe();\
+  bool      GetLineUp();
   bool      UltrasonicAllowed();
   double    GetAutoStrafe();
 
@@ -61,7 +65,8 @@ public:
   ElevatorMode    GetElevatorMode();
   ElevatorHeight  GetElevatorHeight();
   void            HeightIntEnum();// sets the elevator height enum based off the height int 
-  
+  bool            Intake();
+  bool            Outtake();
 
   // Climber commands
 

@@ -15,11 +15,11 @@ Climb::Climb(Robot * pRobot)
 {
     this->pRobot = pRobot;
     FrontClimb = new frc::DoubleSolenoid(11,0,1);
-    RearClimb  = new frc::DoubleSolenoid(11,2,6); // 6 is supposed to be 3 but the PCM on Proto is broken
+    RearClimb  = new frc::DoubleSolenoid(11,2,3); 
     int timing = frc::SmartDashboard::GetNumber("Timing", 3);
     frc::SmartDashboard::PutNumber("Timing", timing);
-    int FrontDelay = frc::SmartDashboard::GetNumber("Delay", 5);
-    frc::SmartDashboard::PutNumber("Delay", FrontDelay);
+    int RearDelay = frc::SmartDashboard::GetNumber("Delay", 5);
+    frc::SmartDashboard::PutNumber("Delay", RearDelay);
 }
 
 
@@ -116,7 +116,7 @@ void Climb::ShuffleForward()
 
 void Climb::Climbing()
 {
-    static int FrontDelay = 0;
+    static int RearDelay = 0;
     static int Oscillating = 0;
     frc::SmartDashboard::PutNumber("Tilt", pRobot->Nav.GetTilt());
     frc::SmartDashboard::PutNumber("Difference", fInitPitch - pRobot->Nav.GetTilt());
@@ -133,12 +133,12 @@ void Climb::Climbing()
     if(pRobot->DriverCmd.bTestButton(2)) // X
     {
         isClimbing = 2;// front in
-        FrontDelay = 0;
+        RearDelay = 0;
     }
     if(pRobot->DriverCmd.bTestButton(3)) // Y
     {
         isClimbing = 3;// back in
-        FrontDelay = 0;
+        RearDelay = 0;
     }
 
 
@@ -205,16 +205,16 @@ void Climb::Climbing()
     {
         frc::SmartDashboard::PutBoolean("Is Shuffling", false);
         int Delay = frc::SmartDashboard::GetNumber("Delay", 10);
-        if (FrontDelay > Delay)
+        if (RearDelay > Delay)
         {
-            FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
+            RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
         }
         else
         {
-            FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+            RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
         }
-        RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
-        FrontDelay++;
+        FrontClimb->Set (frc::DoubleSolenoid::Value::kForward);
+        RearDelay++;
     }
     if(pRobot->DriverCmd.bTestButton(4)) // Left bumper
     {
@@ -267,4 +267,11 @@ void Climb::test()
         RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
     }
 
+}
+
+
+void Climb::HoldIn()
+{
+    RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+    FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
 }

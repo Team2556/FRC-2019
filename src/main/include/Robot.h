@@ -13,6 +13,7 @@
 #include "RobotMap.h"
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
+#include <frc/PowerDistributionPanel.h>
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
 #include "NavGyro.h"
@@ -44,7 +45,16 @@ class Robot : public frc::TimedRobot {
   NavGyro               Nav;
   DriverCommands        DriverCmd;
   ColorSens             LineTracker;
-  
+  Ultrasonic            UltraLF{DIO_US_RANGE_TRIGGER_LF, DIO_US_RANGE_PULSE_LF, Ultrasonic::DistanceUnit::kInches};
+  Ultrasonic            UltraRF{DIO_US_RANGE_TRIGGER_RF, DIO_US_RANGE_PULSE_RF, Ultrasonic::DistanceUnit::kInches};
+  DigitalInput          HatchPickupLimitLeft{DIO_LS_HTCH_PKUP_LEFT};
+  DigitalInput          HatchPickupLimitRight{DIO_LS_HTCH_PKUP_RIGHT};
+
+
+
+  PowerDistributionPanel    PDP{0};
+
+
   frc::Preferences   *  pPrefs;
     
   void RobotInit() override;
@@ -55,9 +65,12 @@ class Robot : public frc::TimedRobot {
   void TeleopPeriodic() override;
   void TestPeriodic() override;
 
+
  private:
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
-  std::string m_autoSelected;
+  frc::SendableChooser<std::string> AutoChooser;
+  
+  const std::string AutoTeleop = "Teleop";
+  const std::string Auto1 = "Left Rocket Front";
+  const std::string Auto2 = "Left Rocket Back";
+  std::string AutoMode;
 };

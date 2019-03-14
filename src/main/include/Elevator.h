@@ -14,17 +14,16 @@ class Elevator {
 
   Elevator(Robot * pRobot);
   //Functions
-  void ElevatorControl();
-  void WristControl();
+  bool ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode,int Offset); // returns whether the elevator is in position
+  bool WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode);
+  float EncoderTest();
 
-  void RollerControl();
-  void RollerIn();
+  int IntakeOuttake();
+  void RollerIn(float speed);
   void RollerOut();
-  void RollerLeft();
-  void RollerRight();
-  void RollerPistons();
+  void RollerPistons(bool bHatchOut);
 
-  void ElevatorTilt();
+  void ElevatorTilt(bool Position);// false if forward true if pulled back
   
   void ElevatorControls();
 
@@ -34,12 +33,13 @@ class Elevator {
 
   WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER};
   WPI_TalonSRX          RightRoller{CAN_TALON_RIGHT_ROLLER};
-  WPI_TalonSRX          ElevatorUpDown{CAN_TALON_ELEV}; 
+  WPI_TalonSRX          ElevatorUpDown{CAN_TALON_ELEVB};
+  WPI_TalonSRX          ElevatorUpDownB{CAN_TALON_ELEVA}; 
   WPI_TalonSRX          Wrist{CAN_TALON_WRIST};
   Robot * pRobot;
 
   //Variables
-  double speed = frc::SmartDashboard::GetNumber("Roller Speed", 1);
+  float speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   DriverCommands::ElevatorHeight    CMDHeight;
   DriverCommands::ElevatorMode      CMDMode;
 

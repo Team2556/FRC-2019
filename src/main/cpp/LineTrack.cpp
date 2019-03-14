@@ -103,10 +103,10 @@ void ColorSens::UpdateBackValues()
 // ----------------------------------------------------------------------------
 
 // Return an error term from -1.0 to 1.0, or InitStrafe if line not found
-double ColorSens::GetStrafe(float InitStrafe, bool AllowStrafe)
+double ColorSens::GetStrafe(float InitStrafe)
 {
     this->UpdateValues();
-    if (FrontSensors.bLineFound && AllowStrafe)
+    if (FrontSensors.bLineFound)
     {
         return (Strafes[FrontSensors.iMinIndex] + Strafes[FrontSensors.iMaxIndex]) / 2.0;
     }

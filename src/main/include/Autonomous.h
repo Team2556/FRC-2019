@@ -5,19 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+//#define AUTO_ELE_ENABLED
+
 #pragma once
 #include "Robot.h"
 #include "DriveBase.h"
+#include "Elevator.h"
 
 class Autonomous {
  public:
-  Autonomous(Robot * pRobot, DriveBase * MecDrive);
-  // Driving funcitons
-  void DriveToLine();
-  void DriveOffPlatform();
+  Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator);
 
+  void Auto();
 
   // Auto Modes
+  void AutoTeleop();
+  void AutoTeleopInit();
   void Auto1();
   void Auto1Init();
   void Auto2();
@@ -25,6 +28,8 @@ class Autonomous {
 
   Robot * pRobot;
   DriveBase * MecDrive;
+  Elevator * ControlElevator;
+
   int     AutoCounter = 0;
   int     SectionStart = 0;
   int     AutoNumber;
