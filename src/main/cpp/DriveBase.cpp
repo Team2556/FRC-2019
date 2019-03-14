@@ -490,8 +490,8 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
 float DriveBase::FindClose(float Angle)
 {
-
-    double Angles[9] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, -28.75, -151.25};
+double Angles[9] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, -28.75, -151.25};
+    
 
     int closestIndex = 0;
     for (int i = 0; i < 9; i++)
