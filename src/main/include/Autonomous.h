@@ -11,10 +11,11 @@
 #include "Robot.h"
 #include "DriveBase.h"
 #include "Elevator.h"
+#include "TeleopControl.h"
 
 class Autonomous {
  public:
-  Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator);
+  Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator, TeleopControl * TeleopAuto);
 
   void Auto();
 
@@ -29,6 +30,7 @@ class Autonomous {
   Robot * pRobot;
   DriveBase * MecDrive;
   Elevator * ControlElevator;
+  TeleopControl * TeleopAuto;
 
   int     AutoCounter = 0;
   int     SectionStart = 0;

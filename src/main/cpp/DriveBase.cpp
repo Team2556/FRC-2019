@@ -490,19 +490,102 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
 float DriveBase::FindClose(float Angle)
 {
-double Angles[9] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, -28.75, -151.25};
+double RocketHatchAngles[] = {-28.75, -151.25, 28.75, 151.25};
+double RocketCargoAngles[] = {90, -90};
+double CargoshipAngles[] = {90, -90, 0};
+double HumanplayerAngles[]= {180};
     
 
     int closestIndex = 0;
-    for (int i = 0; i < 9; i++)
+    int closestIndex1 = 0;
+    int closestIndex2 = 0;
+    int closestIndex3 = 0;
+    for (int i = 0; i < 4; i++)
     {
-        if (fabs(Angle-Angles[i])<fabs(Angle-Angles[closestIndex]))
+        if(DriverCommands::ElevatorMode() == 0)
         {
-            closestIndex = i;
+            if (fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex1]))
+            {
+                closestIndex1 = i;
+            }
+            if (fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex2]))
+            {
+                 closestIndex2 = i;
+            }
+            if  (fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex3]))
+            {
+                 closestIndex3 = i;
+            }
+
+            if (closestIndex1 < closestIndex2)
+            {
+                if(closestIndex1 < closestIndex3)
+                {
+                    closestIndex = closestIndex1;
+                }
+                else
+                {
+                    closestIndex= closestIndex3;
+                }
+            }
+            else
+            {
+                if(closestIndex2 < closestIndex3)
+                {
+                    closestIndex= closestIndex2;
+                }
+                else
+                {
+                    closestIndex= closestIndex3;
+                }
+            }
+
         }
+        else if(DriverCommands::ElevatorMode() == 1)
+        {
+            if (fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex1]))
+            {
+                closestIndex1 = i;
+            }
+            if (fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex2]))
+            {
+                 closestIndex2 = i;
+            }
+            if  (fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex3]))
+            {
+                 closestIndex3 = i;
+            }
+
+            if (closestIndex1 < closestIndex2)
+            {
+                if(closestIndex1 < closestIndex3)
+                {
+                    closestIndex = closestIndex1;
+                }
+                else
+                {
+                    closestIndex= closestIndex3;
+                }
+            }
+            else
+            {
+                if(closestIndex2 < closestIndex3)
+                {
+                    closestIndex= closestIndex2;
+                }
+                else
+                {
+                    closestIndex= closestIndex3;
+                }
+            }
+
+        }
+       
+        
     }
-    SmartDashboard::PutNumber("Set Angle", Angles[closestIndex]);
-    return Angles[closestIndex];
+     
+    return closestIndex;
+    //SmartDashboard::PutNumber("Set Angle", );
 }
 
 

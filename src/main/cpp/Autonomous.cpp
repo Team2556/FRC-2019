@@ -7,19 +7,22 @@
 
 #include "Autonomous.h"
 
-Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator) 
+Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator, TeleopControl  * TeleopAuto) 
 {
     this->pRobot = pRobot;
     this->MecDrive = MecDrive;
     this->ControlElevator = ControlElevator;
+    this->TeleopAuto = TeleopAuto;
 }
 
 
 void Autonomous::AutoTeleop()
 {
-    pRobot->LineTracker.UpdateValues();
+   /* pRobot->LineTracker.UpdateValues();
     //MecDrive->Drive();
-    ControlElevator->ElevatorControls();
+    ControlElevator->ElevatorControls();*/
+    
+    TeleopAuto->TeleopMain();
 }
 
 

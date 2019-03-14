@@ -31,8 +31,8 @@ void Robot::RobotInit() {
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
-  Autos             = new Autonomous(this, MecDrive, ControlElevator);
   TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
+  Autos             = new Autonomous(this, MecDrive, ControlElevator, TeleopMain);
   
   Nav.Init(false);
   UltraLF.SetAutomaticMode(true);
@@ -106,20 +106,9 @@ void Robot::TeleopInit()
 // ----------------------------------------------------------------------------
 
 void Robot::TeleopPeriodic() 
-<<<<<<< HEAD
-  {
-    //Teleop Functions
-    MecDrive->Drive();
-    LineTracker.UpdateValues();
-    ControlElevator->ElevatorControls();
-    //Climber->Climbing();
-    SmartDashboard::PutNumber("Angle", Nav.GetYaw());
-  }
-=======
 {
     TeleopMain->TeleopMain();
 }
->>>>>>> 1d2d86eca58366be314eb77a3e2c8f975be69023
 
 // ============================================================================
 
