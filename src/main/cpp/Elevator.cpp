@@ -19,10 +19,9 @@ Elevator::Elevator(Robot * pRobot)
     this->pRobot = pRobot;
     
 
-
     //create new DoubleSolenoid//
-    EleTilt = new frc::DoubleSolenoid(11,4,5);
-    rollerPiston = new frc::DoubleSolenoid(11,6,7);
+    EleTilt = new frc::DoubleSolenoid(11,5,6);
+    rollerPiston = new frc::DoubleSolenoid(11,2,3);
 }
 
 
@@ -139,7 +138,7 @@ void Elevator::ElevatorControls()
 bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode) // 
 {
     
-    if (!pRobot->DriverCmd.bTestButton(5))
+    if (!pRobot->DriverCmd.bTestButton(4))
     {
     Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
     }

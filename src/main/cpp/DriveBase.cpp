@@ -452,11 +452,11 @@ void DriveBase::Drive(float fForward, float fStrafe, float fRotate, bool bFOD)
 {
     if (bFOD)// field oriented drive is enabled
     {
-        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
     }
     else // field oriented drive is disabled
     {   
-        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
     }
 } // end Drive()
 
@@ -494,56 +494,57 @@ double RocketHatchAngles[] = {-28.75, -151.25, 28.75, 151.25};
 double RocketCargoAngles[] = {90, -90};
 double CargoshipAngles[] = {90, -90, 0};
 double HumanplayerAngles[]= {180};
-    
+
+double Aglet = Angle;
 
     int closestIndex = 0;
-    int closestIndex1 = 0;
-    int closestIndex2 = 0;
-    int closestIndex3 = 0;
+
+
     for (int i = 0; i < 4; i++)
     {
         if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch
-        && pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Low 
-        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Middle 
-        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::High)
+        && (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Low 
+        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Middle 
+        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::High))
         {
-            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex1]))
+            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex]))
             {
                 closestIndex = i;
+                Aglet = RocketHatchAngles[i];
             }
         }
         else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo
-        && pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Low 
-        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Middle 
-        || pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::High)
+        && (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Low 
+        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Middle 
+        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::High))
         {
-            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex1]))
+            if(fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex]))
             {
                 closestIndex = i;
+                Aglet = RocketCargoAngles[i];
             }
         }
         else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::CargoShip)
         {
-            if(fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex1]))
+            if(fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex]))
             {
                 closestIndex = i;
+                Aglet = CargoshipAngles[i];
             }
         }
         else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Pickup)
         {
-            if(fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex1]))
+            if(fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex]))
             {
                 closestIndex = i;
+                Aglet = HumanplayerAngles[i];
             }
-        }
-
-        
-       
-        
+        } 
     }
      
-    return closestIndex;
-    //SmartDashboard::PutNumber("Set Angle", );
+    return Aglet;
+    
+    SmartDashboard::PutNumber("Set Angle", Aglet);
 }
 
 

@@ -84,13 +84,17 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
+  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::Gyro;
   AutoMode = AutoChooser.GetSelected();
+  //set the elevator up
+  DriverCmd.ElevatorTilted = false;
 }
 
 // ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() 
 {
+  
   LineTracker.UpdateValues();
   Autos->Auto();
   
@@ -100,6 +104,7 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
+  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::FieldOriented;
   Nav.SetCommandYawToCurrent();
 }
 

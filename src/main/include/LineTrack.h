@@ -25,7 +25,7 @@ class ColorSens {
   double  GetStrafe(float InitStrafe);
   double  GetRotate(float InitRotate, bool AllowRotate);
   
-  double Strafes[LT_SENSORS_FRONT] = {-1.0, -0.66, -0.5, 0.5, 0.66, 1.0};
+  double Strafes[LT_SENSORS_FRONT] = {.5, 0.25, 0.15, -0.15, -0.25, -.5};
   double Rotates[LT_SENSORS_BACK]  = {-0.1, 0.1};
 
   // Map sensor DIO inputs to sensor array

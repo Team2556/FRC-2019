@@ -412,7 +412,25 @@ void Autonomous::Auto2Init()
     SmartDashboard::PutBoolean("Gyro Reset", false);
 }
 
+bool Autonomous::RollersSet()
+{
+    static int EncoderValue = -1;
+    static bool EncoderDown = false;
 
+    if(ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() == 0 && EncoderDown == true)
+    {
+        return false;
+    }
+    else if(EncoderDown == false && ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() < -50)
+    {
+        EncoderDown = true;
+    }
+    else
+    {
+        ControlElevator->ElevatorUpDown.Set(ControlMode::PercentOutput, -0.25);
+        ControlElevator->ElevatorUpDownB.Follow(ControlElevator->ElevatorUpDown);
+    }
+}
 
 
 

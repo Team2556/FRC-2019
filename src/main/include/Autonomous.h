@@ -12,6 +12,7 @@
 #include "DriveBase.h"
 #include "Elevator.h"
 #include "TeleopControl.h"
+#include "DriverCommands.h"
 
 class Autonomous {
  public:
@@ -26,11 +27,13 @@ class Autonomous {
   void Auto1Init();
   void Auto2();
   void Auto2Init();
+  bool RollersSet();
 
   Robot * pRobot;
   DriveBase * MecDrive;
   Elevator * ControlElevator;
   TeleopControl * TeleopAuto;
+
 
   int     AutoCounter = 0;
   int     SectionStart = 0;
