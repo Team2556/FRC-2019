@@ -26,6 +26,7 @@ class TeleopControl
 
   void TeleopMain();
   void TeleopDrive();
+  void TeleopElevator();
   void AutoLineUp(float * fForward, float * fStrafe, float *fRotate);
   
 

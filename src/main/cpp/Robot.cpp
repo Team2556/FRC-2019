@@ -113,6 +113,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
+    SmartDashboard::PutNumber("Close Angle", MecDrive->FindClose(Nav.GetYaw()));
 }
 
 // ============================================================================

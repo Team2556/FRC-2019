@@ -29,13 +29,12 @@ Elevator::Elevator(Robot * pRobot)
 // Methods
 // ----------------------------------------------------------------------------
 
-bool Elevator::ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, int Offset = 0)
+void Elevator::ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic)
 {
-    if (!pRobot->DriverCmd.bTestButton(4))
+    if (!Automatic)
     {
         ElevatorUpDown.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fElevatorUpDownSpeed());
         ElevatorUpDownB.Follow(ElevatorUpDown);
-        return false;
     }
     else
     {
@@ -106,26 +105,89 @@ bool Elevator::ElevatorControl(DriverCommands::ElevatorHeight Height, DriverComm
         ElevatorUpDown.Set(ControlMode::Position, iHeight);
         ElevatorUpDownB.Follow(ElevatorUpDown);
 
-        if(fabs(iHeight - ElevatorUpDown.GetSelectedSensorPosition()) < 8)
-        {
-            return true;
-        }
-        else 
-        {
-            return false;
-        }
     }
 }
 
+bool Elevator::ElevatorInPos(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode)
+{
+    int iHeight = 0;
+       
+    if (Mode == DriverCommands::ElevatorMode::Hatch)
+    {        
+        switch (Height)
+        {
+            case DriverCommands::ElevatorHeight::Low :
+                iHeight = LOW_HATCH;
+            break;
+
+            case DriverCommands::ElevatorHeight::Middle :
+                iHeight = MID_HATCH;
+            break;
+            
+            case DriverCommands::ElevatorHeight::High :
+                iHeight = TOP_HATCH;
+            break;
+
+            case DriverCommands::ElevatorHeight::Pickup :
+                iHeight = HATCH_PKUP;
+            break;
+
+            case DriverCommands::ElevatorHeight::GroundPickup :
+                iHeight = GND_HATCH_PKUP;
+            break;
+
+            case DriverCommands::ElevatorHeight::CargoShip :
+                iHeight = CGOSHP_HATCH;
+            break;
+        }
+    }
+    else // elevator mode is cargo
+    {
+        switch (Height)
+        {
+            case DriverCommands::ElevatorHeight::Low :
+                iHeight = LOW_CARGO;
+            break;
+
+            case DriverCommands::ElevatorHeight::Middle :
+                iHeight = MID_CARGO;
+            break;
+            
+            case DriverCommands::ElevatorHeight::High :
+                iHeight = TOP_CARGO;
+            break;
+
+            case DriverCommands::ElevatorHeight::Pickup :
+                iHeight = CARGO_PICKUP;
+            break;
+
+            case DriverCommands::ElevatorHeight::GroundPickup :
+                iHeight = GND_CARGO_PKUP;
+            break;
+
+            case DriverCommands::ElevatorHeight::CargoShip :
+                iHeight = CGOSHP_CARGO;
+            break;
+        }
+    }
+    if(fabs(iHeight - ElevatorUpDown.GetSelectedSensorPosition()) < 8)
+    {
+        return true;
+    }
+    else 
+    {
+        return false;
+    }
+}
 // ----------------------------------------------------------------------------
 // Master function that controls everything and goes into teleop 
 void Elevator::ElevatorControls()
 {
     CMDHeight = pRobot->DriverCmd.GetElevatorHeight();
     CMDMode   = pRobot->DriverCmd.GetElevatorMode();
-    WristControl(CMDHeight, CMDMode);
+    WristControl(CMDHeight, CMDMode, pRobot->DriverCmd.bAutomaticElevator());
     int ElevatorOffset = IntakeOuttake();
-    ElevatorControl(CMDHeight, CMDMode, ElevatorOffset);
+    ElevatorControl(CMDHeight, CMDMode, pRobot->DriverCmd.bAutomaticElevator());
     ElevatorTilt(pRobot->DriverCmd.bElevatorTilt());
 
     frc::SmartDashboard::PutNumber("Elevator Encoder", ElevatorUpDown.GetSelectedSensorPosition());
@@ -135,10 +197,10 @@ void Elevator::ElevatorControls()
 
 // ----------------------------------------------------------------------------
 
-bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode) // 
+bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic) // 
 {
     
-    if (!pRobot->DriverCmd.bTestButton(4))
+    if (!Automatic)
     {
     Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
     }

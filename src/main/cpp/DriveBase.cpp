@@ -472,7 +472,7 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
     
     float Error = Distance - CommandDistance;
 
-    float MaxSpeed = (Error / 70) +(.03* (Error/fabs(Error)));
+    float MaxSpeed = (Error / 90) +(.03* (Error/fabs(Error)));
 
     if (MaxSpeed > .3) MaxSpeed = .3;
     if (MaxSpeed < -.3) MaxSpeed = -.3;
@@ -495,53 +495,60 @@ double RocketCargoAngles[] = {90, -90};
 double CargoshipAngles[] = {90, -90, 0};
 double HumanplayerAngles[]= {180};
 
-double Aglet = Angle;
+double Aglet; //= Angle;
 
-    int closestIndex = 0;
+int closestIndex = 0;
 
 
-    for (int i = 0; i < 4; i++)
+    if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::CargoShip)
     {
-        if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch
-        && (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Low 
-        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Middle 
-        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::High))
-        {
-            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex]))
-            {
-                closestIndex = i;
-                Aglet = RocketHatchAngles[i];
-            }
-        }
-        else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo
-        && (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Low 
-        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Middle 
-        || pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::High))
-        {
-            if(fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex]))
-            {
-                closestIndex = i;
-                Aglet = RocketCargoAngles[i];
-            }
-        }
-        else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::CargoShip)
+        for (int i = 0; i < 3; i++)
         {
             if(fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex]))
             {
                 closestIndex = i;
-                Aglet = CargoshipAngles[i];
             }
         }
-        else if (pRobot->DriverCmd.CMDElevatorHeight == DriverCommands::ElevatorHeight::Pickup)
-        {
+        Aglet = CargoshipAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Cargo Ship");
+    }
+    else if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Pickup)
+    {
+        for (int i = 0; i < 1; i++)
+        {   
             if(fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex]))
             {
                 closestIndex = i;
-                Aglet = HumanplayerAngles[i];
             }
-        } 
+        }
+        Aglet = HumanplayerAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Pickup");
     }
-     
+    else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo &&  pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if(fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
+        }
+        Aglet = RocketCargoAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Cargo");
+    }
+    else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch && pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
+        }
+        Aglet = RocketHatchAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Hatch");
+    }
+            
     return Aglet;
     
     SmartDashboard::PutNumber("Set Angle", Aglet);
