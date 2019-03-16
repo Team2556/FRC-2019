@@ -26,8 +26,12 @@ class Robot : public frc::TimedRobot {
  public:
 
 #ifdef USB_CAMERA
-  cs::UsbCamera         UsbCamera1;
+cs::UsbCamera         UsbCamera1;
+cs::UsbCamera         UsbCamera2;
 #endif
+
+
+
 #ifdef AXIS_CAMERA
   cs::AxisCamera        AxisCamera1{"AXIS FRONT", "10.25.56.17"};
 #endif

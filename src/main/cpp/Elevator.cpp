@@ -13,11 +13,10 @@
 // Constructor
 // ----------------------------------------------------------------------------
 
-Elevator::Elevator(Robot * pRobot, DriverCommands * OI) 
+Elevator::Elevator(Robot * pRobot) 
 {
     
     this->pRobot = pRobot;
-    this->OI  = OI;
     
 
     //create new DoubleSolenoid//
@@ -200,11 +199,10 @@ void Elevator::ElevatorControls()
 
 bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic) // 
 {
-    Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
-/*
+    
     if (!Automatic)
     {
-        Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
+    Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
     }
     
     else
@@ -289,7 +287,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
         }
 
     }
-*/
+
 }
 
 
@@ -299,8 +297,7 @@ int Elevator::IntakeOuttake()
     if(CMDMode == DriverCommands::ElevatorMode::Hatch)
     {
         //outtake
-        //Stop when held
-        //RollerPistons(pRobot->DriverCmd.Outtake());
+        RollerPistons(pRobot->DriverCmd.Outtake());
         if (pRobot->DriverCmd.Outtake())
         {
             //RollerIn(.3);
@@ -413,14 +410,8 @@ void Elevator::ElevatorTilt(bool Position)
     }
 }
 
-void Elevator::HatchIntake()
+void Elevator::RollerPistons(bool bHatchOut)
 {
-    bool bHatchOut = true;
-
-    if(OI->Outtake())
-    {
-        bHatchOut = !bHatchOut;
-    }
     if (bHatchOut) // when the driver commands the elevator to tilt, retract the piston
     {
         rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
@@ -430,6 +421,7 @@ void Elevator::HatchIntake()
         rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
     }
 }
+
 
 
 float Elevator::EncoderTest()

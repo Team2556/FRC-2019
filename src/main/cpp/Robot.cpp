@@ -22,7 +22,6 @@ Elevator          * ControlElevator;
 Climb             * Climber;
 Autonomous        * Autos;
 TeleopControl     * TeleopMain;
-DriverCommands    * OI;
 
 // ----------------------------------------------------------------------------
 
@@ -30,7 +29,7 @@ void Robot::RobotInit() {
   pPrefs = frc::Preferences::GetInstance();
 
   MecDrive          = new DriveBase(this);
-  ControlElevator   = new Elevator(this, OI);
+  ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
   TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
   Autos             = new Autonomous(this, MecDrive, ControlElevator, TeleopMain);
@@ -45,6 +44,7 @@ void Robot::RobotInit() {
   UsbCamera1.SetResolution(640, 480);
   UsbCamera1.SetFPS(24);
 #endif
+
 
 #ifdef AXIS_CAMERA
   AxisCamera1 = frc::CameraServer::GetInstance()->AddAxisCamera("11.25.56.17");
@@ -107,7 +107,6 @@ void Robot::TeleopInit()
 {
   DriverCmd.CurrDriveMode = DriverCommands::DriveMode::FieldOriented;
   Nav.SetCommandYawToCurrent();
-
 }
 
 // ----------------------------------------------------------------------------

@@ -250,7 +250,7 @@ bool DriverCommands::bRollerPistons()
 
 bool DriverCommands::Outtake()
 {
-    return Xbox2.GetYButtonPressed();
+    return Xbox2.GetYButton();
 }
 
 bool DriverCommands::Intake()

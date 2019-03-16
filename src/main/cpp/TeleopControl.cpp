@@ -25,10 +25,12 @@ void TeleopControl::TeleopMain()
         pRobot->LineTracker.UpdateValues();
         this->TeleopElevator();
         Climber->HoldIn();
+        frc::SmartDashboard::PutString("Climb Mode", "Disabled");
     }
     else
     {
         Climber->Climbing();
+        frc::SmartDashboard::PutString("Climb Mode", "Enabled");
     }
     frc::SmartDashboard::PutNumber("Angle", pRobot->Nav.GetYaw());
     frc::SmartDashboard::PutNumber("Distance", pRobot->UltraLF.GetRangeInches());
@@ -222,7 +224,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
         case 40 :
             if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch)
             {
-                ControlElevator->HatchIntake(); // extend the pistons
+                ControlElevator->RollerPistons(true); // extend the pistons
             }
             else if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo)
             {
