@@ -8,11 +8,15 @@
 #pragma once
 #include "Robot.h"
 #include "ElevatorPresets.h"
+#include "DriverCommands.h"
 
 class Elevator {
  public:
 
-  Elevator(Robot * pRobot);
+  Elevator(Robot * pRobot,  DriverCommands * OI);
+
+    DriverCommands * OI;
+
   //Functions
   void ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic);
   bool ElevatorInPos(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode); // returns whether the elevator is in position
@@ -22,7 +26,7 @@ class Elevator {
   int IntakeOuttake();
   void RollerIn(float speed);
   void RollerOut();
-  void RollerPistons(bool bHatchOut);
+  void HatchIntake();
 
   void ElevatorTilt(bool Position);// false if forward true if pulled back
   

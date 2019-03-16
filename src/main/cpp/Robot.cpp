@@ -22,6 +22,7 @@ Elevator          * ControlElevator;
 Climb             * Climber;
 Autonomous        * Autos;
 TeleopControl     * TeleopMain;
+DriverCommands    * OI;
 
 // ----------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@ void Robot::RobotInit() {
   pPrefs = frc::Preferences::GetInstance();
 
   MecDrive          = new DriveBase(this);
-  ControlElevator   = new Elevator(this);
+  ControlElevator   = new Elevator(this, OI);
   Climber           = new Climb(this);
   TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
   Autos             = new Autonomous(this, MecDrive, ControlElevator, TeleopMain);
@@ -87,7 +88,7 @@ void Robot::AutonomousInit()
   DriverCmd.CurrDriveMode = DriverCommands::DriveMode::Gyro;
   AutoMode = AutoChooser.GetSelected();
   //set the elevator up
-  DriverCmd.ElevatorTilted = false;
+  DriverCmd.ElevatorTilted = true;
 }
 
 // ----------------------------------------------------------------------------
@@ -106,6 +107,7 @@ void Robot::TeleopInit()
 {
   DriverCmd.CurrDriveMode = DriverCommands::DriveMode::FieldOriented;
   Nav.SetCommandYawToCurrent();
+
 }
 
 // ----------------------------------------------------------------------------

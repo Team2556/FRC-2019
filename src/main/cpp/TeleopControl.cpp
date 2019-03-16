@@ -222,7 +222,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
         case 40 :
             if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch)
             {
-                ControlElevator->RollerPistons(true); // extend the pistons
+                ControlElevator->HatchIntake(); // extend the pistons
             }
             else if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo)
             {
