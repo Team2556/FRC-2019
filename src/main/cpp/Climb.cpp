@@ -18,8 +18,8 @@ Climb::Climb(Robot * pRobot)
     RearClimb  = new frc::DoubleSolenoid(11,2,3); 
     int timing = frc::SmartDashboard::GetNumber("Timing", 3);
     frc::SmartDashboard::PutNumber("Timing", timing);
-    int RearDelay = frc::SmartDashboard::GetNumber("Delay", 5);
-    frc::SmartDashboard::PutNumber("Delay", RearDelay);
+    int FrontDelay = frc::SmartDashboard::GetNumber("Delay", 5);
+    frc::SmartDashboard::PutNumber("Delay", FrontDelay);
 }
 
 
@@ -114,9 +114,9 @@ void Climb::ShuffleForward()
 
 // ----------------------------------------------------------------------------
 
-void Climb::Climbing()
+/*void Climb::Climbing()
 {
-    static int RearDelay = 0;
+    static int FrontDelay = 0;
     static int Oscillating = 0;
     frc::SmartDashboard::PutNumber("Tilt", pRobot->Nav.GetTilt());
     frc::SmartDashboard::PutNumber("Difference", fInitPitch - pRobot->Nav.GetTilt());
@@ -133,12 +133,12 @@ void Climb::Climbing()
     if(pRobot->DriverCmd.bTestButton(2)) // X
     {
         isClimbing = 2;// front in
-        RearDelay = 0;
+        FrontDelay = 0;
     }
     if(pRobot->DriverCmd.bTestButton(3)) // Y
     {
         isClimbing = 3;// back in
-        RearDelay = 0;
+        FrontDelay = 0;
     }
 
 
@@ -205,21 +205,38 @@ void Climb::Climbing()
     {
         frc::SmartDashboard::PutBoolean("Is Shuffling", false);
         int Delay = frc::SmartDashboard::GetNumber("Delay", 10);
-        if (RearDelay > Delay)
+        if (FrontDelay > Delay)
         {
-            RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+            FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
         }
         else
         {
-            RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+            FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
         }
-        FrontClimb->Set (frc::DoubleSolenoid::Value::kForward);
-        RearDelay++;
+        RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+        FrontDelay++;
     }
     if(pRobot->DriverCmd.bTestButton(4)) // Left bumper
     {
         fInitPitch = pRobot->Nav.GetTilt(); // reset tilt
     }
+    SmartDashboard::PutNumber("Climb State", isClimbing);
+}*/
+
+void Climb::Working()
+{
+    if(pRobot->DriverCmd.bTestButton(1))
+    {
+        RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+        FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
+    }
+    else
+    {
+        RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+        FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+
+    }
+
 }
 
 

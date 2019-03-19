@@ -19,7 +19,8 @@ TeleopControl::TeleopControl(Robot * pRobot, DriveBase * MecDrive, Elevator * Co
 
 void TeleopControl::TeleopMain()
 {
-    if (!pRobot->DriverCmd.GetClimbMode())
+    
+if (!pRobot->DriverCmd.GetClimbMode())
     {
         this->TeleopDrive();
         pRobot->LineTracker.UpdateValues();
@@ -29,7 +30,8 @@ void TeleopControl::TeleopMain()
     }
     else
     {
-        Climber->Climbing();
+        //Climber->Climbing();
+        Climber->Working();
         frc::SmartDashboard::PutString("Climb Mode", "Enabled");
     }
     frc::SmartDashboard::PutNumber("Angle", pRobot->Nav.GetYaw());

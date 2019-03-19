@@ -54,6 +54,7 @@ public:
   int       POV();
   DriveMode GetDriveMode();
   bool      GetLineUp();
+  bool      GetCargoLineUp();
   bool      UltrasonicAllowed();
   double    GetAutoStrafe();
 

@@ -562,3 +562,22 @@ float DriveBase::EncoderTest()
     
     pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
 }
+
+void DriveBase::CargoLineUp(bool button)
+{
+    int cState = 0;
+    bool        bVisionTracked;
+
+    if(button)
+    {
+        switch (cState)
+        {
+            case 0:
+                if(bVisionTracked)    
+            break;
+        
+            default:
+                break;
+        }
+    }
+}
