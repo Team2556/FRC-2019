@@ -21,7 +21,7 @@ Elevator::Elevator(Robot * pRobot)
 
     //create new DoubleSolenoid//
     EleTilt = new frc::DoubleSolenoid(11,5,6);
-    //rollerPiston = new frc::DoubleSolenoid(11,2,3);
+    rollerPiston = new frc::DoubleSolenoid(11,2,3);
 }
 
 
@@ -414,11 +414,11 @@ void Elevator::RollerPistons(bool bHatchOut)
 {
     if (bHatchOut) // when the driver commands the elevator to tilt, retract the piston
     {
-        //rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
+        rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
     }
     else if (!bHatchOut)
     {
-       // rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
+        rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
     }
 }
 

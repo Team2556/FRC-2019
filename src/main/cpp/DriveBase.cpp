@@ -368,20 +368,25 @@ void DriveBase::RealVision(float * fForward, float * fStrafe, float *fRotate)
         break;
 
         case 10 :
-
-            if (bVisionTracked) 
+            if(!bVisionTracked || bVisionTracked)
             {
                 *fRotate = fVisionTrackErrorX * 0.35;
                 pRobot->Nav.SetCommandYawToCurrent();
-            }
-            if (bDistanceGood)
+            
+            if (fDistanceToTarget > 18.5)
             {
                 *fForward = this ->LimitFWDDrive(18);
+            
             }
-
             if(pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 State = 15;
+            }
+
+            if(fDistanceToTarget < 18.25)
+            {
+                State = 0;
+            }
             }
         break;
 
@@ -474,8 +479,8 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
     float MaxSpeed = (Error / 90) +(.03* (Error/fabs(Error)));
 
-    if (MaxSpeed > .3) MaxSpeed = .3;
-    if (MaxSpeed < -.3) MaxSpeed = -.3;
+    if (MaxSpeed > .6) MaxSpeed = .6;
+    if (MaxSpeed < -.6) MaxSpeed = -.6;
     SmartDashboard::PutNumber("Max Speed", MaxSpeed);
     return MaxSpeed;
 }
@@ -561,23 +566,4 @@ float DriveBase::EncoderTest()
     SmartDashboard::PutNumber("Position", position);
     
     pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
-}
-
-void DriveBase::CargoLineUp(bool button)
-{
-    int cState = 0;
-    bool        bVisionTracked;
-
-    if(button)
-    {
-        switch (cState)
-        {
-            case 0:
-                if(bVisionTracked)    
-            break;
-        
-            default:
-                break;
-        }
-    }
 }

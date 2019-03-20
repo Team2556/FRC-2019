@@ -26,11 +26,10 @@ class Climb {
   int                     Timer = 0;
 
   // Methods
-  //void Climbing();
+  void Climbing();
   void Oscillation(int Side);// 0 is the front and 1 is the back
   void test();
   void ShuffleForward();
   void HoldIn();
-  void Working();
 
 };

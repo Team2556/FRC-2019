@@ -174,17 +174,6 @@ bool DriverCommands::GetLineUp()
     return false;
 }
 
-bool DriverCommands::GetCargoLineUp()
-{
-
-    if(Xbox1.GetBumper(frc::XboxController::kRightHand))
-    {
-        return true;
-    }
-    return false;
-
-}
-
 bool DriverCommands::UltrasonicAllowed()
 {
     return Xbox1.GetBumper(frc::XboxController::kLeftHand);

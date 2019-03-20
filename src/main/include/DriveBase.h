@@ -34,7 +34,6 @@ class DriveBase {
   float LimitFWDDrive(float CommandDistance);
   bool SideUltra(float distance);
   float FindClose(float Angle);
-  void CargoLineUp(bool button);
 
   float EncoderTest();
 };
