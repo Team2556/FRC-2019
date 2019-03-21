@@ -170,6 +170,10 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
         break;
 
         case 17 :
+            AutoLineUpState = 20;
+        break;
+
+        case 20 : 
             *fForward = 0;
             *fStrafe = 0;
             pRobot->Nav.SetCommandYaw( MecDrive->FindClose( pRobot->Nav.GetYaw()));
@@ -178,9 +182,6 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
             {
                 AutoLineUpState = 20;
             }
-        break;
-
-        case 20 : 
             *fForward = MecDrive->LimitFWDDrive(11); // ** might cause the robot to drive into the rocket
             *fStrafe = pRobot->LineTracker.GetStrafe(*fStrafe);
 
