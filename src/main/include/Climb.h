@@ -15,15 +15,23 @@ class Climb {
   // Constructor
   Climb(Robot * pRobot);
 
-  // Variables
+  // Pointers
   Robot                 * pRobot;
   frc::DoubleSolenoid   * FrontClimb;
   frc::DoubleSolenoid   * RearClimb;
+  WPI_TalonSRX            ClimbMotor{CAN_TALON_CLIMBA};
+  WPI_TalonSRX            ClimbMotorB{CAN_TALON_CLIMBB};
+
+
+  // Variables
   int                     isClimbing = 0;
   float                   fInitPitch = 0;
   int                     ClimbCounter = 0;
   float                   initBadTilt = 0.0;
   int                     Timer = 0;
+
+
+
 
   // Methods
   void Climbing();
@@ -31,5 +39,6 @@ class Climb {
   void test();
   void ShuffleForward();
   void HoldIn();
+  void NewClimbing();
 
 };

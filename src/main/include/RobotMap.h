@@ -21,6 +21,8 @@
 #define         CAN_TALON_ELEVA         5 // slave
 #define         CAN_TALON_ELEVB         7 // master
 #define         CAN_TALON_WRIST         9
+#define         CAN_TALON_CLIMBA        10 // master
+#define         CAN_TALON_CLIMBB        12 // slave
 #define         CAN_PCM                 11
 
 // DIO Channels

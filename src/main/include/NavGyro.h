@@ -44,6 +44,7 @@ public:
 
     float		fGyroCommandYaw;
     float       fYawPIDValue;
+    float       fCommandTilt;
 //    bool        bPIDEnabled;
     bool		bPresetTurning; // GET RID OF THIS!!!!
 
@@ -56,6 +57,8 @@ public:
     void    ResetYaw();
     float   GetYaw();
     float   GetYawError();
+    float   GetTiltError();
+    void    ResetTilt();
 		
 //    float  CorrectRotate(float fRotateLess);
     float   GetTilt();

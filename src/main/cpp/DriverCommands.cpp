@@ -31,7 +31,7 @@ DriverCommands::DriverCommands()
 // General Commands
 // ----------------------------------------------------------------------------
 
-bool DriverCommands::GetClimbMode()
+bool DriverCommands::GetClimbMode() // this determines whether we are in the process of climbing at the moment
 {
     if (Xbox1.GetStartButton())
     {
@@ -382,6 +382,23 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
 bool DriverCommands::bAutomaticElevator()
 {
     return Xbox2.GetBumper(frc::XboxController::kLeftHand);
+}
+
+
+
+// ----------------------------------------------------------------------------
+// Climb Commands
+// ----------------------------------------------------------------------------
+
+bool DriverCommands::bCurrentlyClimbing()
+{
+    if (Xbox2.GetAButtonPressed())
+    {
+        CurrentlyClimbing = !CurrentlyClimbing; // switches everytime the 'A' button is pressed on Co-Drivers controller 
+    }
+    
+
+    return CurrentlyClimbing;
 }
 
 

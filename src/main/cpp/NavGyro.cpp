@@ -213,6 +213,16 @@ float NavGyro::GetTilt()
 #endif
 }
 
+float NavGyro::GetTiltError()
+{
+    return fCommandTilt - this->GetTilt();
+}
+
+
+void NavGyro::ResetTilt()
+{
+    fCommandTilt = this->GetTilt();
+}
 //-----------------------------------------------------------------------------
 
 #if defined(NAVX)

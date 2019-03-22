@@ -42,6 +42,7 @@ public:
   bool        rollerBool = false;//true if roller pistons pushed out
   bool        ClimbMode  = false; // false normally, true when climbing
   bool        PrevReset = false; // true if prev reset was facing forward
+  bool        CurrentlyClimbing = false; // true while we are lifting, false normally
 
   // General Commands
   bool      GetClimbMode();
@@ -72,7 +73,7 @@ public:
 
   // Climber commands
 
-
+  bool            bCurrentlyClimbing();// determines whether we are actively raising the robot to climnb
   // Test commands
   bool      bTestButton(int iButton);
   float     fTestValue(int iControl);

@@ -20,8 +20,8 @@ Elevator::Elevator(Robot * pRobot)
     
 
     //create new DoubleSolenoid//
-    EleTilt = new frc::DoubleSolenoid(11,5,6);
-    rollerPiston = new frc::DoubleSolenoid(11,2,3);
+    EleTilt = new frc::DoubleSolenoid(CAN_PCM,5,6);
+    rollerPiston = new frc::DoubleSolenoid(CAN_PCM,2,3);
 }
 
 
