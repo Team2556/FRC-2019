@@ -132,10 +132,18 @@ int DriverCommands::POV()
 
 bool DriverCommands::bResetGyro()
     {
-#ifdef JOYSTICK
-#else
-    return Xbox1.GetAButton();
-#endif
+        if (Xbox1.GetAButton())
+        {
+            return true;
+        }
+        else if (Xbox1.GetBumper(frc::XboxController::kRightHand))
+        {
+            return true;
+        }
+        else 
+        {
+            return false;
+        }
     }
 
 
@@ -416,7 +424,7 @@ bool DriverCommands::bTestButton(int iButton)
             bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kLeftHand);
             break;
         case 5 :
-            bButtonValue = Xbox1.GetBumper(frc::XboxController::JoystickHand::kRightHand);
+            bButtonValue = Xbox2.GetBumper(frc::XboxController::JoystickHand::kRightHand);
             break;
         default :
             bButtonValue = false;

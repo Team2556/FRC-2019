@@ -21,8 +21,8 @@ Elevator::Elevator(Robot * pRobot)
 
 
     //create new DoubleSolenoid//
-    EleTilt = new frc::DoubleSolenoid(11,4,5);
-    rollerPiston = new frc::DoubleSolenoid(11,6,7);
+    EleTilt = new frc::DoubleSolenoid(11,6,5);
+rollerPiston = new frc::DoubleSolenoid(11,2,3);
 }
 
 

@@ -41,6 +41,7 @@ public:
   bool        ElevatorTilted = false; // true if the elevator is tilted backwards
   bool        rollerBool = false;//true if roller pistons pushed out
   bool        ClimbMode  = false; // false normally, true when climbing
+  bool        PrevReset = false; // true if prev reset was facing forward
 
   // General Commands
   bool      GetClimbMode();
