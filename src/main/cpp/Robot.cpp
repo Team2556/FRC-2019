@@ -31,8 +31,8 @@ void Robot::RobotInit() {
   MecDrive          = new DriveBase(this);
   ControlElevator   = new Elevator(this);
   Climber           = new Climb(this);
-  Autos             = new Autonomous(this, MecDrive, ControlElevator);
   TeleopMain        = new TeleopControl(this, MecDrive, ControlElevator, Climber);
+  Autos             = new Autonomous(this, MecDrive, ControlElevator, TeleopMain);
   
   Nav.Init(false);
   UltraLF.SetAutomaticMode(true);
@@ -44,6 +44,7 @@ void Robot::RobotInit() {
   UsbCamera1.SetResolution(640, 480);
   UsbCamera1.SetFPS(24);
 #endif
+
 
 #ifdef AXIS_CAMERA
   AxisCamera1 = frc::CameraServer::GetInstance()->AddAxisCamera("11.25.56.17");
@@ -84,13 +85,17 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
+  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::Gyro;
   AutoMode = AutoChooser.GetSelected();
+  //set the elevator up
+  DriverCmd.ElevatorTilted = true;
 }
 
 // ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() 
 {
+  
   LineTracker.UpdateValues();
   Autos->Auto();
   
@@ -100,6 +105,7 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() 
 {
+  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::FieldOriented;
   Nav.SetCommandYawToCurrent();
 }
 
@@ -108,6 +114,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
+    SmartDashboard::PutNumber("Close Angle", MecDrive->FindClose(Nav.GetYaw()));
 }
 
 // ============================================================================

@@ -23,7 +23,7 @@ void TeleopControl::TeleopMain()
     {
         this->TeleopDrive();
         pRobot->LineTracker.UpdateValues();
-        ControlElevator->ElevatorControls();
+        this->TeleopElevator();
         Climber->HoldIn();
     }
     else
@@ -77,9 +77,14 @@ void TeleopControl::TeleopDrive()
         SmartDashboard::PutBoolean("Auto Line Up", false);
     }
 
+    SmartDashboard::PutNumber("AutoLineUpAutoLineUpState", AutoLineUpState);
 
+    frc::SmartDashboard::PutNumber("Forward", fForward);
+    frc::SmartDashboard::PutNumber("Strafe", fStrafe);
+    frc::SmartDashboard::PutNumber("Rotate", fRotate);
 
     MecDrive->Drive(fForward, fStrafe, fRotate, bFOD);
+
 
 }
 
@@ -107,53 +112,57 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
     frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
 
     
-    if (!bVisionTracked && !pRobot->LineTracker.FrontSensors.bLineFound)
+    /*if (!bVisionTracked && !pRobot->LineTracker.FrontSensors.bLineFound)
     {
         AutoLineUpState = 0;
-    }
+    }*/
 
 
     switch (AutoLineUpState)
     {
         case 0 : // pre AutoLineUpState
 
-            if (bVisionTracked)
+            if (pRobot->LineTracker.FrontSensors.bLineFound)
+            {
+                AutoLineUpState = 15;
+            }
+            else
             {
                 AutoLineUpState = 10;
-            }
-            else if (pRobot->LineTracker.FrontSensors.bLineFound)
-            {
-                AutoLineUpState = 20;
             }
 
         break;
 
         case 10 :
-
-            if (bVisionTracked) 
+           if(bVisionTracked)
             {
                 *fRotate = fVisionTrackErrorX * 0.35;
                 pRobot->Nav.SetCommandYawToCurrent();
             }
-            if (bDistanceGood)
+            if (fDistanceToTarget > 11.3)
             {
-                *fForward = MecDrive->LimitFWDDrive(18);
+                *fForward = MecDrive ->LimitFWDDrive(11);
+            
             }
-
             if(pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 AutoLineUpState = 15;
+            }
+            if(fDistanceToTarget < 10.9)
+            {
+                AutoLineUpState = 0;
             }
         break;
 
         case 15 :
 
-            *fForward = -.1;
-            *fStrafe = .05;
+            *fForward = -.05;
+            *fStrafe = .001;
+            
 
             StopCounter++;
 
-            if (StopCounter >= 3)
+            if (StopCounter >= 2.5)
             {
                 AutoLineUpState = 17;
                 StopCounter = 0;
@@ -161,24 +170,25 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
         break;
 
         case 17 :
+            AutoLineUpState = 20;
+        break;
+
+        case 20 : 
             *fForward = 0;
             *fStrafe = 0;
-            pRobot->Nav.SetCommandYaw(MecDrive->FindClose(pRobot->Nav.GetYaw()));
+            pRobot->Nav.SetCommandYaw( MecDrive->FindClose( pRobot->Nav.GetYaw()));
 
             if (fabs(pRobot->Nav.GetYawError()) < 4)
             {
                 AutoLineUpState = 20;
             }
-        break;
-
-        case 20 : 
-            *fForward = MecDrive->LimitFWDDrive(18);
+            *fForward = MecDrive->LimitFWDDrive(11); // ** might cause the robot to drive into the rocket
             *fStrafe = pRobot->LineTracker.GetStrafe(*fStrafe);
 
             
             
 
-            if (pRobot->LineTracker.GetStrafe(*fStrafe) == 0)
+            if (pRobot->LineTracker.GetStrafe(*fStrafe) == 0 && pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 StopCounter++;
             }
@@ -189,20 +199,80 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
 
             if (StopCounter >= 5)
             {
-                AutoLineUpState = 30;
+                AutoLineUpState = 25;
                 StopCounter = 0;
+            }
+        break;
+
+        case 25 :
+            
+            
+            if (ControlElevator->ElevatorInPos(pRobot->DriverCmd.GetElevatorHeight(), pRobot->DriverCmd.GetElevatorMode()))
+            {
+                AutoLineUpState = 30;
             }
         break;
 
         case 30 :
             *fForward = MecDrive->LimitFWDDrive(9);
             *fStrafe = 0;
+
+            if (false) // navx accelerometer
+            {
+                AutoLineUpState = 40;
+            }
         break;
 
+        case 40 :
+            if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch)
+            {
+                ControlElevator->RollerPistons(true); // extend the pistons
+            }
+            else if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo)
+            {
+                ControlElevator->RollerOut();
+                
+            }
+            StopCounter++;
 
+            if (StopCounter >= 5)
+            {
+                AutoLineUpState = -1;
+                StopCounter = 0;
+            }
+        break;
+
+        case 50 :
+            *fForward = MecDrive->LimitFWDDrive(19);
+
+
+        break;
+
+        case -1:
+        default:
+            *fForward = 0;
+            *fStrafe = 0;
+        break;
     }
-    SmartDashboard::PutNumber("AutoLineUpAutoLineUpState", AutoLineUpState);
+    
 }
 
-
-
+void TeleopControl::TeleopElevator()
+{
+    if (pRobot->DriverCmd.GetLineUp())
+    {
+        if (!(AutoLineUpState > 25))
+        {
+            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Low, DriverCommands::ElevatorMode::Hatch, true);
+        }
+        else
+        {
+            ControlElevator->ElevatorControl(pRobot->DriverCmd.GetElevatorHeight(), pRobot->DriverCmd.GetElevatorMode(), true);
+        }
+        
+    }
+    else
+    {
+        ControlElevator->ElevatorControls();
+    }
+}

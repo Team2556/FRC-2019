@@ -14,8 +14,9 @@ class Elevator {
 
   Elevator(Robot * pRobot);
   //Functions
-  bool ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode,int Offset); // returns whether the elevator is in position
-  bool WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode);
+  void ElevatorControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic);
+  bool ElevatorInPos(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode); // returns whether the elevator is in position
+  bool WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic);
   float EncoderTest();
 
   int IntakeOuttake();

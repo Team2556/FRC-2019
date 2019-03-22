@@ -7,19 +7,22 @@
 
 #include "Autonomous.h"
 
-Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator) 
+Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator, TeleopControl  * TeleopAuto) 
 {
     this->pRobot = pRobot;
     this->MecDrive = MecDrive;
     this->ControlElevator = ControlElevator;
+    this->TeleopAuto = TeleopAuto;
 }
 
 
 void Autonomous::AutoTeleop()
 {
-    pRobot->LineTracker.UpdateValues();
+   /* pRobot->LineTracker.UpdateValues();
     //MecDrive->Drive();
-    ControlElevator->ElevatorControls();
+    ControlElevator->ElevatorControls();*/
+    
+    TeleopAuto->TeleopMain();
 }
 
 
@@ -409,7 +412,25 @@ void Autonomous::Auto2Init()
     SmartDashboard::PutBoolean("Gyro Reset", false);
 }
 
+bool Autonomous::RollersSet()
+{
+    static int EncoderValue = -1;
+    static bool EncoderDown = false;
 
+    if(ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() == 0 && EncoderDown == true)
+    {
+        return false;
+    }
+    else if(EncoderDown == false && ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() < -50)
+    {
+        EncoderDown = true;
+    }
+    else
+    {
+        ControlElevator->ElevatorUpDown.Set(ControlMode::PercentOutput, -0.25);
+        ControlElevator->ElevatorUpDownB.Follow(ControlElevator->ElevatorUpDown);
+    }
+}
 
 
 

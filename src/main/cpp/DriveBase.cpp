@@ -368,20 +368,25 @@ void DriveBase::RealVision(float * fForward, float * fStrafe, float *fRotate)
         break;
 
         case 10 :
-
-            if (bVisionTracked) 
+            if(!bVisionTracked || bVisionTracked)
             {
                 *fRotate = fVisionTrackErrorX * 0.35;
                 pRobot->Nav.SetCommandYawToCurrent();
-            }
-            if (bDistanceGood)
+            
+            if (fDistanceToTarget > 18.5)
             {
                 *fForward = this ->LimitFWDDrive(18);
+            
             }
-
             if(pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 State = 15;
+            }
+
+            if(fDistanceToTarget < 18.25)
+            {
+                State = 0;
+            }
             }
         break;
 
@@ -452,11 +457,11 @@ void DriveBase::Drive(float fForward, float fStrafe, float fRotate, bool bFOD)
 {
     if (bFOD)// field oriented drive is enabled
     {
-        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
     }
     else // field oriented drive is disabled
     {   
-        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw()));
+        pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0);
     }
 } // end Drive()
 
@@ -472,10 +477,10 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
     
     float Error = Distance - CommandDistance;
 
-    float MaxSpeed = (Error / 70) +(.03* (Error/fabs(Error)));
+    float MaxSpeed = (Error / 90) +(.03* (Error/fabs(Error)));
 
-    if (MaxSpeed > .3) MaxSpeed = .3;
-    if (MaxSpeed < -.3) MaxSpeed = -.3;
+    if (MaxSpeed > .6) MaxSpeed = .6;
+    if (MaxSpeed < -.6) MaxSpeed = -.6;
     SmartDashboard::PutNumber("Max Speed", MaxSpeed);
     return MaxSpeed;
 }
@@ -490,19 +495,68 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
 float DriveBase::FindClose(float Angle)
 {
-double Angles[9] = {61.25, 118.75, 90.0, -90.0, -118.75, -61.25, 180.0, -28.75, -151.25};
-    
+double RocketHatchAngles[] = {-28.75, -151.25, 28.75, 151.25};
+double RocketCargoAngles[] = {90, -90};
+double CargoshipAngles[] = {90, -90, 0};
+double HumanplayerAngles[]= {180};
 
-    int closestIndex = 0;
-    for (int i = 0; i < 9; i++)
+double Aglet; //= Angle;
+
+int closestIndex = 0;
+
+
+    if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::CargoShip)
     {
-        if (fabs(Angle-Angles[i])<fabs(Angle-Angles[closestIndex]))
+        for (int i = 0; i < 3; i++)
         {
-            closestIndex = i;
+            if(fabs(Angle-CargoshipAngles[i])<fabs(Angle-CargoshipAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
         }
+        Aglet = CargoshipAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Cargo Ship");
     }
-    SmartDashboard::PutNumber("Set Angle", Angles[closestIndex]);
-    return Angles[closestIndex];
+    else if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Pickup)
+    {
+        for (int i = 0; i < 1; i++)
+        {   
+            if(fabs(Angle-HumanplayerAngles[i])<fabs(Angle-HumanplayerAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
+        }
+        Aglet = HumanplayerAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Pickup");
+    }
+    else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo &&  pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            if(fabs(Angle-RocketCargoAngles[i])<fabs(Angle-RocketCargoAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
+        }
+        Aglet = RocketCargoAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Cargo");
+    }
+    else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch && pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if(fabs(Angle-RocketHatchAngles[i])<fabs(Angle-RocketHatchAngles[closestIndex]))
+            {
+                closestIndex = i;
+            }
+        }
+        Aglet = RocketHatchAngles[closestIndex];
+        frc::SmartDashboard::PutString("Array", "Hatch");
+    }
+            
+    return Aglet;
+    
+    SmartDashboard::PutNumber("Set Angle", Aglet);
 }
 
 

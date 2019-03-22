@@ -379,6 +379,11 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
     return CMDElevatorHeight;
 }
 
+bool DriverCommands::bAutomaticElevator()
+{
+    return Xbox2.GetBumper(frc::XboxController::kLeftHand);
+}
+
 
 // ----------------------------------------------------------------------------
 // Test commands

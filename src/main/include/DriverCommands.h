@@ -68,6 +68,7 @@ public:
   void            HeightIntEnum();// sets the elevator height enum based off the height int 
   bool            Intake();
   bool            Outtake();
+  bool            bAutomaticElevator();
 
   // Climber commands
 
