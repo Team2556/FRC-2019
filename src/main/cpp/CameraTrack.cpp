@@ -455,7 +455,7 @@ bool bMatchPair(cv::RotatedRect Rectangle1, cv::RotatedRect Rectangle2)
     // Check verticle alignment
 //    printf(" Center Diff %d ", fYDiff);
     float   fYDiff = fabs(Rectangle1.center.y - Rectangle2.center.y);
-    if (fYDiff > 10.0)
+    if (fYDiff > 30.0)
          return false;
 
     // Check relative areas
