@@ -1,6 +1,6 @@
 // Define which camera to use for vision
-#define USB_CAMERA
-//#define AXIS_CAMERA
+//#define USB_CAMERA
+#define AXIS_CAMERA
 #if defined(USB_CAMERA) || defined(AXIS_CAMERA)
 #define CAMERA
 #else
