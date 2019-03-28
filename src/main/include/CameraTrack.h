@@ -36,6 +36,7 @@ public:
     std::mutex          TrackUpdateMutex;
 
 protected:
+    // Note that fTrackErrorX = 0.5 corresponds to an angle error of about 13 degrees.
     float               fTrackErrorX, fTrackErrorY;
     float               fTargetSizeX, fTargetSizeY;
     bool                bTargetTracked;

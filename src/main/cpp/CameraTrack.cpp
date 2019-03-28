@@ -9,7 +9,6 @@
 
 #include <thread>
 #include <mutex>
-#include <math.h>
 
 #include "frc/WPILib.h"
 #include "frc/Preferences.h"
@@ -149,6 +148,12 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
 
         // Find the bounding rectangle
         cv::RotatedRect BRect = cv::minAreaRect(Contours[i]);
+
+        // Reject a rectangle that is too low or too high
+        // if ((BRect.center.y < (FrameThreshold.rows * 0.25)) ||
+        //     (BRect.center.y > (FrameThreshold.rows * 0.75)))
+        //     continue;
+
         float fBRAspect = (float)BRect.size.height / (float)BRect.size.width;
 //        printf("I%2.2d h %f w %f Asp %4.1f Ang %5.1f ", i, BRect.size.height, BRect.size.width, fBRAspect, BRect.angle);
 
@@ -161,12 +166,11 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
     } // end for all contours
 
     // Find two bounding rectangles that seem to be a good match
-//    printf("%d - ", FiltContours.size());
-    int    iRect1, iRect2;
+    float fTrackError = 1000000.0;
     iMatchesFound = 0;
 
     if (FiltContours.size() >= 2)
-    {
+        {
         unsigned int     iIdx1, iIdx2;
         for (iIdx1 = 0; iIdx1 < FiltContours.size() - 1; iIdx1++)
             for (iIdx2 = iIdx1+1; iIdx2 < FiltContours.size(); iIdx2++)
@@ -174,12 +178,40 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
 //                printf("  %d-%d ", iIdx1, iIdx2);
                 if (bMatchPair(BoundingRects[iIdx1], BoundingRects[iIdx2]))
                     {
-                    iRect1 = iIdx1;
-                    iRect2 = iIdx2;
                     iMatchesFound++;
-                    // printf("(%3.0f %3.0f %5.1f, %3.0f %3.0f %5.1f) ", 
-                    //     BoundingRects[iIdx1].center.x, BoundingRects[iIdx1].center.y, BoundingRects[iIdx1].angle, 
-                    //     BoundingRects[iIdx2].center.x, BoundingRects[iIdx2].center.y, BoundingRects[iIdx2].angle);
+
+                    // Find the center of the target in screen coordinates
+                    // Left = 0  Top = 0
+                    iCenterX = (BoundingRects[iIdx1].center.x + BoundingRects[iIdx2].center.x) / 2;
+                    iCenterY = (BoundingRects[iIdx1].center.y + BoundingRects[iIdx2].center.y) / 2;
+
+                    // Now scale the position to +1.0 to -1.0
+                    // Left = -1.0  Right  = +1.0
+                    // Top  = +1.0  Bottom = -1.0
+                    float fTrackErrorX =  (2.0 * (float)iCenterX / FrameThreshold.cols) - 1.0;
+                    float fTrackErrorY = -(2.0 * (float)iCenterY / FrameThreshold.rows) + 1.0;
+                    float fTrackErrorTemp = sqrt(fTrackErrorX*fTrackErrorX + fTrackErrorY*fTrackErrorY);
+
+                    // Keep the track error for the target that is closest to the track point.
+                    // The default track point is the center of the video frame but can be set
+                    // to some other position on the screen with SetTrackPoint(). 
+                    if (fTrackErrorTemp < fTrackError)
+                        {
+                        fTrackError    = fTrackErrorTemp;
+                        *pfTrackErrorX = fTrackErrorX;
+                        *pfTrackErrorY = fTrackErrorY;
+
+                        // Calcualte the target size
+                        *pfTargetSizeX = fabs((BoundingRects[iIdx1].center.x - 
+                                               BoundingRects[iIdx2].center.x   ) / 
+                                                (float)FrameThreshold.cols);
+                        *pfTargetSizeY = (BoundingRects[iIdx1].size.height + 
+                                          BoundingRects[iIdx2].size.height   ) /
+                                            ((float)FrameThreshold.rows * 2.0);
+                        bTargetTracked = true;
+                        }
+
+//                    printf("TRACK %5.2f %5.2f %5.2f %5.2f\n", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
 //                    printf("TRUE ");
                     }
                 else
@@ -187,49 +219,30 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
 //                    printf("FALSE");
                     }
                 }
-    } // end if at least two targets
+//        printf("\n");
+        } // end if at least two targets
 
-    // Only calculate a target if one and only one rectangle pair was found. In the future it would be
-    // nice to save all the target pairs and attempt to pick the best one.
+    // If no target found then zero out the track errors just to be safe.
 //    if (iMatchesFound > 1) printf ("Matches %1 ", iMatchesFound);
-    if (iMatchesFound == 1)
-    {
-        // Find the center of the target in screen coordinates
-        // Left = 0  Top = 0
-        iCenterX = (BoundingRects[iRect1].center.x + BoundingRects[iRect2].center.x) / 2;
-        iCenterY = (BoundingRects[iRect1].center.y + BoundingRects[iRect2].center.y) / 2;
-
-        // Now scale the position to +1.0 to -1.0
-        // Left = -1.0  Right  = +1.0
-        // Top  = +1.0  Bottom = -1.0
-        *pfTrackErrorX =  (2.0 * (float)iCenterX / FrameThreshold.cols) - 1.0;
-        *pfTrackErrorY = -(2.0 * (float)iCenterY / FrameThreshold.rows) + 1.0;
-
-        // Calcualte the target size
-        *pfTargetSizeX = fabs((BoundingRects[iRect1].center.x - 
-                               BoundingRects[iRect2].center.x   ) / 
-                                   (float)FrameThreshold.cols);
-        *pfTargetSizeY = (BoundingRects[iRect1].size.height + 
-                          BoundingRects[iRect2].size.height   ) /
-                             ((float)FrameThreshold.rows * 2.0);
-        bTargetTracked = true;
-//        printf("TRACK %5.2f %5.2f %5.2f %5.2f\n", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
-
+    if (iMatchesFound >= 1)
+        {
+#if 0
         frc::SmartDashboard::PutNumber("Average width", (BoundingRects[iRect1].size.width + BoundingRects[iRect2].size.width)/2 );
-        frc::SmartDashboard::PutNumber("Left Width", BoundingRects[iRect1].size.width);
-        frc::SmartDashboard::PutNumber("Right Width", BoundingRects[iRect2].size.width);
+        frc::SmartDashboard::PutNumber("Left Width",     BoundingRects[iRect1].size.width);
+        frc::SmartDashboard::PutNumber("Right Width",    BoundingRects[iRect2].size.width);
         frc::SmartDashboard::PutNumber("Error Angle", acos((BoundingRects[iRect2].size.width)/(BoundingRects[iRect1].size.width))*100);
-    }
+#endif
+        }
     else
-    {
+        {
         // No track so zero out the error just to be safe
         *pfTrackErrorX = 0.0;
         *pfTrackErrorY = 0.0;
         bTargetTracked = false;
 //        printf("NO TRACK\n", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
-    }
+        }
 
-//    printf("%s %5.2f %5.2f %5.2f %5.2f ", bMatchFound ? "TRACK   " : "NO TRACK", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
+//    printf("%s %5.2f %5.2f %5.2f %5.2f ", bTargetTracked ? "TRACK   " : "NO TRACK", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
 
     // Draw contours
     FrameDraw = cv::Mat::zeros(FrameCam.size(), CV_8UC3);
@@ -274,7 +287,9 @@ bool CameraTrack::CalcTrackError(float * pfTrackErrorX, float * pfTrackErrorY, f
             break;
         } // end switch on frame to display
 
-    return bTargetTracked;
+//   printf("%s %5.2f %5.2f %5.2f %5.2f ", bTargetTracked ? "TRACK   " : "NO TRACK", *pfTrackErrorX, *pfTrackErrorY, *pfTargetSizeX, *pfTargetSizeY);
+
+   return bTargetTracked;
     } // end Periodic()
 
 
@@ -326,14 +341,121 @@ void CameraTrack::TrackThread()
 // Utilities
 // ----------------------------------------------------------------------------
 
+// qsort() logic to sort rectangle points left to right
+int SortY (const void * Pt1, const void * Pt2)
+    {
+    if (((cv::Point2f *)Pt1)->y <  ((cv::Point2f *)Pt2)->y) return -1;
+    if (((cv::Point2f *)Pt1)->y == ((cv::Point2f *)Pt2)->y) return  0;
+    if (((cv::Point2f *)Pt1)->y >  ((cv::Point2f *)Pt2)->y) return  1;
+    }
+
+// ----------------------------------------------------------------------------
+
+// qsort() logic to sort rectangle points top to bottom
+int SortX (const void * Pt1, const void * Pt2)
+    {
+    if (((cv::Point2f *)Pt1)->x <  ((cv::Point2f *)Pt2)->x) return -1;
+    if (((cv::Point2f *)Pt1)->x == ((cv::Point2f *)Pt2)->x) return  0;
+    if (((cv::Point2f *)Pt1)->x >  ((cv::Point2f *)Pt2)->x) return  1;
+    }
+
+// ----------------------------------------------------------------------------
+
+// Sort the points into the proper order as specified on the OpenCV page.
+// The order is bottomLeft, topLeft, topRight, bottomRight. 
+
+void SortRectPoints(cv::Point2f  * aRectPts)
+    {
+    // Sort the points left to right
+    qsort(aRectPts, 4, sizeof(cv::Point2f), SortX);
+
+    // Figure out left top and bottom
+
+    }
+    
+// ----------------------------------------------------------------------------
+
+// Calculate the angle from vertical of the rectangle. This is necessary because
+// the orientation angle that is calculated for the RotatedRect is all over
+// the place.
+
+float fRectAngle(cv::RotatedRect * pRectangle)
+    {
+    cv::Point2f     aRectPts[4];
+    float           fAngle;
+    float           fLength;
+    int             iPts1, iPts2; // Point indexes for longest side
+
+    // Get the rectangle points
+    pRectangle->points(aRectPts);
+
+    // Find the longest side
+    fLength = 0.0;
+//    printf("Len");
+    for (int iIdx1 = 0; iIdx1 < 4; iIdx1++)
+        {
+        int iIdx2 = iIdx1 < 3 ? iIdx1 + 1 : 0;
+        float fXDiff = aRectPts[iIdx1].x - aRectPts[iIdx2].x;
+        float fYDiff = aRectPts[iIdx1].y - aRectPts[iIdx2].y;
+        float fNewLength = sqrt((fXDiff * fXDiff) + (fYDiff * fYDiff));
+//        printf(" %4.1f", fNewLength);
+        if (fNewLength > fLength)
+            {
+            fLength = fNewLength;
+            iPts1 = iIdx1; 
+            iPts2 = iIdx2;
+            }
+        }
+//        printf(" Max %4.1f - %d %d\n", fLength, iPts1, iPts2);
+
+    float fXDiff =   aRectPts[iPts1].x-aRectPts[iPts2].x;
+    float fYDiff = -(aRectPts[iPts1].y-aRectPts[iPts2].y);
+    // Calculate the angle between the points of the longest side. 0 degrees is up.
+//  fAngle = 90.0 - (atan2(aRectPts[iPts1].x-aRectPts[iPts2].x, aRectPts[iPts1].y-aRectPts[iPts2].y) * 180.0 / 3.1416);
+    fAngle = atan2(fYDiff, fXDiff) * 180.0 / 3.1416;
+//    printf("dX %3.0f dY %3.0d atan %5.1f ", fXDiff, fYDiff, fAngle);
+    fAngle = 90.0 - fAngle;
+//    printf("%5.1f ", fAngle);
+
+    // Make it between -90 and +90
+    if (fAngle > 180.0) fAngle -= 180.0;
+    if (fAngle >  90.0) fAngle -= 180.0;
+
+    return fAngle;
+    }
+
+
+// ----------------------------------------------------------------------------
+
 // Compare two rectangles. Return true if they seem to be a good match pair.
 
 bool bMatchPair(cv::RotatedRect Rectangle1, cv::RotatedRect Rectangle2)
     {
+    float fHtoS;
+    cv::Point2f         aPts1[4];
+    cv::Point2f         aPts2[4];
+    cv::RotatedRect   * pLeftRectangle;
+    cv::RotatedRect   * pRightRectangle;
+
+    // Figure out left and right side rectangles
+    if (Rectangle1.center.x < Rectangle2.center.x)
+        {
+        pLeftRectangle  = &Rectangle1;
+        pRightRectangle = &Rectangle2;
+        }
+    else
+        {
+        pLeftRectangle  = &Rectangle2;
+        pRightRectangle = &Rectangle1;
+        }
+    // printf("Left X %4.0f Y %4.0f Right X %4.0f Y %4.0f ", 
+    //     pLeftRectangle->center.x,  pLeftRectangle->center.y,
+    //     pRightRectangle->center.x, pRightRectangle->center.y);
+
     // Check verticle alignment
 //    printf(" Center Diff %d ", fYDiff);
     float   fYDiff = fabs(Rectangle1.center.y - Rectangle2.center.y);
-    if (fYDiff > 10.0)
+    if (fYDiff > 30.0)
          return false;
 
     // Check relative areas
@@ -349,23 +471,31 @@ bool bMatchPair(cv::RotatedRect Rectangle1, cv::RotatedRect Rectangle2)
     float fDistance = fabs(Rectangle1.center.x - Rectangle2.center.x);
     if (fDistance > 0.0)
         {
-        float fHtoS = fHeight / fDistance;
-//        printf(" HtoS %5.2f ", fHtoS);
-        if ((fHtoS < 0.3) || (fHtoS > 0.7))
+        fHtoS = fHeight / fDistance;
+//            printf(" HtoS %5.2f ", fHtoS);
+            if ((fHtoS < 0.2) || (fHtoS > 0.6))
         return false;
         }
 
-    // Check relative angles. This may not be necessary. This seems to pick out
-    // the targets without it.
-    float fRelAngle = fabs(Rectangle1.angle - Rectangle2.angle);
-    if ((fRelAngle > 70.0) || (fRelAngle < 50.0))
-        return false;
+    // Check relative angles
+    float fLeftAngle  = fRectAngle(pLeftRectangle);
+    float fRightAngle = fRectAngle(pRightRectangle);
 
+    if ((fLeftAngle  <   5.0) || (fLeftAngle  >  25.0) ||
+        (fRightAngle >  -5.0) || (fRightAngle < -25.0))
+        return false;
+//    printf(" Left Ang %6.1f Right Angle %6.1f", fLeftAngle, fRightAngle);
+
+    // printf("Target Center  X,Y=%4.0f,%4.0f ",
+    //         (pLeftRectangle->center.x + pRightRectangle->center.x) / 2.0, 
+    //         (pLeftRectangle->center.y + pRightRectangle->center.y) / 2.0); 
 //    printf("  X,Y=%d,%d XxY=%dx%d   X,Y=%d,%d XxY=%dx%d",
 //            Rectangle1.x, Rectangle1.y, Rectangle1.width, Rectangle1.height,
 //            Rectangle2.x, Rectangle2.y, Rectangle2.width, Rectangle2.height);
-//    printf(" Center Diff %d ", (y1-y2));
-//    printf(" Area %f %f %5.2f ", fTargetArea1, fTargetArea2, fAreaRatio);
+//    printf(" Angles %6.1f %6.1f %6.1f", fRectAngle(&Rectangle1), fRectAngle(&Rectangle2), fRelAngle);
+//   printf(" Center Diff %f ", fDistance);
+//   printf(" Area %f %f %5.2f", fTargetArea1, fTargetArea2, fAreaRatio);
+//    printf("\n");
 
     return true;
     }

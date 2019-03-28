@@ -47,15 +47,16 @@ void Robot::RobotInit() {
 
 
 #ifdef AXIS_CAMERA
-  AxisCamera1 = frc::CameraServer::GetInstance()->AddAxisCamera("11.25.56.17");
-  AxisCamera1.SetResolution(320, 240);
-  AxisCamera1.SetFPS(10);
+    AxisCamera1 = frc::CameraServer::GetInstance()->AddAxisCamera("10.25.56.17");
+    AxisCamera1.SetResolution(640, 480);
+    AxisCamera1.SetFPS(10);
 #endif
 
 #ifdef CAMERA
-  CameraTrk.Init();
-  frc::SmartDashboard::PutNumber("Vision Display", CameraTrk.iDisplayFrame);
-  pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
+    CameraTrk.Init();
+    frc::SmartDashboard::PutNumber("Vision Brightness", CameraTrk.ValLo);
+    frc::SmartDashboard::PutNumber("Vision Display", CameraTrk.iDisplayFrame);
+    pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
 #endif
 
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
@@ -76,6 +77,8 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() 
 {
 #ifdef CAMERA
+    CameraTrk.ValLo         = frc::SmartDashboard::GetNumber("Vision Brightness", 250);
+    pPrefs->PutInt("Target Val Lo", CameraTrk.ValLo);
     CameraTrk.iDisplayFrame = frc::SmartDashboard::GetNumber("Vision Display", 0);
     pPrefs->PutInt("Display Frame", CameraTrk.iDisplayFrame);
 #endif
