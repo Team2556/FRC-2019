@@ -25,13 +25,23 @@ void TeleopControl::TeleopMain()
         pRobot->LineTracker.UpdateValues();
         this->TeleopElevator();
         Climber->HoldIn();
+        frc::SmartDashboard::PutString("ClimbMode", "Disabled");
     }
     else
     {
-        Climber->Climbing();
+        Climber->Climb2();
+        //Climber->NewClimbing();
+        
+        this->TeleopDrive();
+        ControlElevator->CMDMode = pRobot->DriverCmd.GetElevatorMode();
+        ControlElevator->IntakeOuttake();
+        frc::SmartDashboard::PutString("ClimbMode", "Enabled");
     }
+    frc::SmartDashboard::PutNumber("Climb Encoder", Climber->ClimbMotor.GetSelectedSensorPosition());
+    frc::SmartDashboard::PutNumber("Pitch", pRobot->Nav.GetTilt());
     frc::SmartDashboard::PutNumber("Angle", pRobot->Nav.GetYaw());
     frc::SmartDashboard::PutNumber("Distance", pRobot->UltraLF.GetRangeInches());
+    
 }
 
 void TeleopControl::TeleopDrive()

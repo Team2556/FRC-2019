@@ -36,7 +36,7 @@ class Climb {
   // Methods
   void Climbing();
   void Oscillation(int Side);// 0 is the front and 1 is the back
-  void test();
+  void Climb2();
   void ShuffleForward();
   void HoldIn();
   void NewClimbing();

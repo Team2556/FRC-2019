@@ -60,3 +60,10 @@
 
 #define         DIO_LS_HTCH_PKUP_LEFT   8
 #define         DIO_LS_HTCH_PKUP_RIGHT  9
+
+
+
+
+
+
+#define         RELAY_HATCH_DROP        0

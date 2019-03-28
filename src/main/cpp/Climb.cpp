@@ -16,7 +16,7 @@ Climb::Climb(Robot * pRobot)
     //For the purposes of this code, the front is the side that doesnt have the elevator and the back is the elevator side
 
     this->pRobot = pRobot;
-    FrontClimb = new frc::DoubleSolenoid(CAN_PCM,0,1); // this is the one we will be using 
+    FrontClimb = new frc::DoubleSolenoid(CAN_PCM,1,0); // this is the one we will be using 
     RearClimb  = new frc::DoubleSolenoid(CAN_PCM,2,3); //this one is obsolete, I just left it so it didnt break everything else
     
     
@@ -228,7 +228,7 @@ void Climb::Climbing()
 
 
 // ----------------------------------------------------------------------------
-
+/*
 void Climb::test()
 {
 
@@ -273,7 +273,7 @@ void Climb::test()
 
 }
 
-
+*/
 void Climb::HoldIn()
 {
     //RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
@@ -334,5 +334,19 @@ void Climb::NewClimbing()
 }
 
 
+void Climb::Climb2()
+{
+    if (pRobot->DriverCmd.bTestButton(1))
+    {
+        RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+    }
+    else
+    {
+        RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+    }
+
+
+    ClimbMotor.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fClimbScrewSpeed());
+}
 
 

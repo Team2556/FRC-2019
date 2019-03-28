@@ -495,14 +495,14 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
 float DriveBase::FindClose(float Angle)
 {
-double RocketHatchAngles[] = {-28.75, -151.25, 28.75, 151.25};
-double RocketCargoAngles[] = {90, -90};
-double CargoshipAngles[] = {90, -90, 0};
-double HumanplayerAngles[]= {180};
+    double RocketHatchAngles[] = {-28.75, -151.25, 28.75, 151.25};
+    double RocketCargoAngles[] = {90, -90};
+    double CargoshipAngles[] = {90, -90, 0};
+    double HumanplayerAngles[]= {180};
 
-double Aglet; //= Angle;
+    double Aglet; //= Angle;
 
-int closestIndex = 0;
+    int closestIndex = 0;
 
 
     if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::CargoShip)

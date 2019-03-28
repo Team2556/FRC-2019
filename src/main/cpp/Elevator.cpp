@@ -21,7 +21,7 @@ Elevator::Elevator(Robot * pRobot)
 
     //create new DoubleSolenoid//
     EleTilt = new frc::DoubleSolenoid(CAN_PCM,5,6);
-    rollerPiston = new frc::DoubleSolenoid(CAN_PCM,2,3);
+    //rollerPiston = new frc::DoubleSolenoid(CAN_PCM,2,3);
 }
 
 
@@ -207,7 +207,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
     
     else
     {
-        bool RollerPos; // true if up, false if down
+        float RollerPos = WRIST_MID; // true if up, false if down
         // Figure out whether rollers should be up or down
 
 
@@ -220,27 +220,27 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
             switch (Height)
             {
                 case DriverCommands::ElevatorHeight::Low :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::Middle :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
                 
                 case DriverCommands::ElevatorHeight::High :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::Pickup :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::GroundPickup :
-                    RollerPos = false;
+                    RollerPos = WRIST_MID;
                 break;
 
                 case DriverCommands::ElevatorHeight::CargoShip :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
             }
         }
@@ -249,27 +249,27 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
             switch (Height)
             {
                 case DriverCommands::ElevatorHeight::Low :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::Middle :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
                 
                 case DriverCommands::ElevatorHeight::High :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::Pickup :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
 
                 case DriverCommands::ElevatorHeight::GroundPickup :
-                    RollerPos = false;
+                    RollerPos = WRIST_DOWN;
                 break;
 
                 case DriverCommands::ElevatorHeight::CargoShip :
-                    RollerPos = true;
+                    RollerPos = WRIST_UP;
                 break;
             }
         }
@@ -277,14 +277,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
 
 
         
-        if (RollerPos)
-        {
-            Wrist.Set(ControlMode::Position, WRIST_UP);
-        }
-        else if (!RollerPos)
-        {
-            Wrist.Set(ControlMode::Position, WRIST_DOWN);
-        }
+        Wrist.Set(ControlMode::Position, RollerPos);
 
     }
 
@@ -298,15 +291,11 @@ int Elevator::IntakeOuttake()
     {
         //outtake
         RollerPistons(pRobot->DriverCmd.Outtake());
-        if (pRobot->DriverCmd.Outtake())
-        {
-            //RollerIn(.3);
-        }
-        else
-        {
-            RightRoller.Set(ControlMode::PercentOutput, 0);
-            LeftRoller.Set(ControlMode::PercentOutput, 0);
-        }
+
+
+        
+        RightRoller.Set(ControlMode::PercentOutput, 0);
+        LeftRoller.Set(ControlMode::PercentOutput, 0);
 
         //intake
         if (CMDHeight == DriverCommands::ElevatorHeight::GroundPickup)
@@ -345,7 +334,7 @@ int Elevator::IntakeOuttake()
         }
 
         // make sure the hatch pistons are in
-        rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
+        //rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
     }
 
     if (CMDMode == DriverCommands::ElevatorMode::Hatch && CMDHeight == DriverCommands::ElevatorHeight::GroundPickup)
@@ -414,11 +403,13 @@ void Elevator::RollerPistons(bool bHatchOut)
 {
     if (bHatchOut) // when the driver commands the elevator to tilt, retract the piston
     {
-        rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
+        //rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
+        HatchDrop.Set(frc::Relay::Value::kForward);
     }
     else if (!bHatchOut)
     {
-        rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
+        HatchDrop.Set(frc::Relay::Value::kOff);
+        //rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
     }
 }
 

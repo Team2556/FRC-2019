@@ -32,6 +32,8 @@ class Elevator {
   frc::DoubleSolenoid   * EleTilt;
   frc::DoubleSolenoid   * rollerPiston;
 
+  frc::Relay              HatchDrop{RELAY_HATCH_DROP, frc::Relay::Direction::kForwardOnly};
+
   WPI_TalonSRX          LeftRoller{CAN_TALON_LEFT_ROLLER};
   WPI_TalonSRX          RightRoller{CAN_TALON_RIGHT_ROLLER};
   WPI_TalonSRX          ElevatorUpDown{CAN_TALON_ELEVB};

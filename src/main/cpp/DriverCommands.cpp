@@ -263,7 +263,27 @@ bool DriverCommands::Outtake()
 
 bool DriverCommands::Intake()
 {
-    return Xbox2.GetAButton();
+    if (CMDElevatorMode == ElevatorMode::Cargo)
+    {
+        if (Xbox2.GetAButtonPressed())
+        {
+            CargoGrabbed = true;
+            return false;
+        }
+        else if (CargoGrabbed == false)
+        {
+            return true;
+        }
+        else
+        {
+            return Xbox2.GetAButton();
+        }
+        
+    }
+    else
+    {
+        return Xbox2.GetAButton();
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -364,14 +384,15 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
     }
     if(Xbox2.GetStickButtonPressed(frc::XboxController::kRightHand)) // when pressing the right stick down enable and disable pickup 
     {
-         // enable pickup mode
+        // enable pickup mode
         
         iElevatorHeight = -1;
 
     }
     if(Xbox2.GetStickButtonPressed(frc::XboxController::kLeftHand)) // when pressing the right stick down enable and disable ground pickup 
     {
-         // enable pickup mode
+        // enable pickup mode
+        CargoGrabbed = false;
         iElevatorHeight = -2;
     }
     frc::SmartDashboard::PutNumber("Height Number", iElevatorHeight);
@@ -392,13 +413,30 @@ bool DriverCommands::bAutomaticElevator()
 
 bool DriverCommands::bCurrentlyClimbing()
 {
-    if (Xbox2.GetAButtonPressed())
+    if (Xbox2.GetXButtonPressed())
     {
         CurrentlyClimbing = !CurrentlyClimbing; // switches everytime the 'A' button is pressed on Co-Drivers controller 
     }
     
 
-    return CurrentlyClimbing;
+    return Xbox2.GetXButton();
+}
+
+
+float DriverCommands::fClimbScrewSpeed()
+{
+    if (Xbox2.GetAButton())
+    {
+        return 1.0;
+    }
+    else if (Xbox2.GetYButton())
+    {
+        return -1.0;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 

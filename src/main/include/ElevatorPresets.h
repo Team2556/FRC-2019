@@ -29,4 +29,5 @@
 // Wrist Values
 #define         WRIST_DOWN          643
 #define         WRIST_UP            328
+#define         WRIST_MID           400
 
