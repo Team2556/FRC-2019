@@ -118,6 +118,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
     fDistanceToTarget += pRobot->UltraLF.GetRangeInches();
     fDistanceToTarget =  fDistanceToTarget / 3.0;
 
+
     bDistanceGood     =  pRobot->UltraLF.IsRangeValid();
     frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
 

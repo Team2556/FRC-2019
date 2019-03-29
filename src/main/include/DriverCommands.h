@@ -40,7 +40,7 @@ public:
   bool        RollersDown = false; // true if the rollers/wrist are down
   bool        ElevatorTilted = false; // true if the elevator is tilted backwards
   bool        rollerBool = false;//true if roller pistons pushed out
-  bool        CargoGrabbed = false;
+  bool        CargoGrabbed = true;
   bool        ClimbMode  = false; // false normally, true when climbing
   bool        PrevReset = false; // true if prev reset was facing forward
   bool        CurrentlyClimbing = false; // true while we are lifting, false normally

@@ -16,8 +16,8 @@ Climb::Climb(Robot * pRobot)
     //For the purposes of this code, the front is the side that doesnt have the elevator and the back is the elevator side
 
     this->pRobot = pRobot;
-    FrontClimb = new frc::DoubleSolenoid(CAN_PCM,1,0); // this is the one we will be using 
-    RearClimb  = new frc::DoubleSolenoid(CAN_PCM,2,3); //this one is obsolete, I just left it so it didnt break everything else
+    FrontClimb = new frc::DoubleSolenoid(CAN_PCM,2,3); // this is the one we will be using 
+    //RearClimb  = new frc::DoubleSolenoid(CAN_PCM,2,3); //this one is obsolete, I just left it so it didnt break everything else
     
     
     int timing = frc::SmartDashboard::GetNumber("Timing", 3);
@@ -37,12 +37,12 @@ void Climb::Oscillation(int Side)
     if(ClimbCounter % 2 == 0)
     {
         if (Side == 0) FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
-        if (Side == 1) RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+        //if (Side == 1) RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
     }
     else
     {
         if (Side == 0) FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
-        if (Side == 1) RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+        //if (Side == 1) RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
     }
     if(Timer % testingtime == 0)
     {
@@ -82,12 +82,12 @@ void Climb::ShuffleForward()
         if(iSwitch % 2 == 0)// brings front in
         {
             FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
-            RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
+            //RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
         }
         else if (iSwitch % 2 == 1)// all are out
         {
             FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
-            RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
+            //RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
         }
         
 
@@ -111,7 +111,7 @@ void Climb::ShuffleForward()
         iSwitch = 0;
         // makes sure that both are pushing out
         FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
-        RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
+        //RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
     }
 }
 
@@ -182,11 +182,11 @@ void Climb::Climbing()
         else if(Oscillating == 1) // robot is leaning backwards
         {
             Oscillation(0);
-            RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+            //RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
         }
         else if (Oscillating == 0)
         {
-            RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+            //RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
             FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
             ClimbCounter = 0;
             initBadTilt = pRobot->Nav.GetTilt();
@@ -195,7 +195,7 @@ void Climb::Climbing()
     else if (isClimbing == 0)// all in
     {
         frc::SmartDashboard::PutBoolean("Is Shuffling", false);
-        RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+        //RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
         FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
         ClimbCounter = 0;
     }
@@ -203,7 +203,7 @@ void Climb::Climbing()
     {
         frc::SmartDashboard::PutBoolean("Is Shuffling", false);
         FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
-        RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
+        //RearClimb->Set (frc::DoubleSolenoid::Value::kForward);
     }
     else if (isClimbing == 3)// all out without leveling
     {
@@ -211,11 +211,11 @@ void Climb::Climbing()
         int Delay = frc::SmartDashboard::GetNumber("Delay", 10);
         if (RearDelay > Delay)
         {
-            RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+            //RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
         }
         else
         {
-            RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+            //RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
         }
         FrontClimb->Set (frc::DoubleSolenoid::Value::kForward);
         RearDelay++;
@@ -279,7 +279,7 @@ void Climb::HoldIn()
     //RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
     FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
 
-    if (true) // if statement so you can figure out which one works better
+    if (false) // if statement so you can figure out which one works better
     {
         ClimbMotor.Set(ControlMode::Position, 0.0); // this one requres an encoder on talon 10
         ClimbMotorB.Follow(ClimbMotor); // encoder will always be set to 0 at power on so this will hold it where it started
@@ -338,11 +338,11 @@ void Climb::Climb2()
 {
     if (pRobot->DriverCmd.bTestButton(1))
     {
-        RearClimb->Set(frc::DoubleSolenoid::Value::kForward);
+        FrontClimb->Set(frc::DoubleSolenoid::Value::kForward);
     }
     else
     {
-        RearClimb->Set(frc::DoubleSolenoid::Value::kReverse);
+        FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
     }
 
 
