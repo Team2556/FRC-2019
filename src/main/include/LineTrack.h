@@ -13,7 +13,7 @@
 #include "robotmap.h"
 #include "NavGyro.h"
 
-#define LT_SENSORS_FRONT  6
+#define LT_SENSORS_FRONT  7
 #define LT_SENSORS_BACK   2
 
 class ColorSens {
@@ -25,7 +25,7 @@ class ColorSens {
   double  GetStrafe(float InitStrafe);
   double  GetRotate(float InitRotate, bool AllowRotate);
   
-  double Strafes[LT_SENSORS_FRONT] = {.75, 0.5, 0.25, -0.25, -0.5, -.75};
+  double Strafes[LT_SENSORS_FRONT] = {.75, 0.5, 0.25, 0.0, -0.25, -0.5, -.75}; // might need tuning -- Houston
   double Rotates[LT_SENSORS_BACK]  = {-0.1, 0.1};
 
   // Map sensor DIO inputs to sensor array
@@ -36,7 +36,8 @@ class ColorSens {
     frc::DigitalInput(DIO_LT_FRONT_3),
     frc::DigitalInput(DIO_LT_FRONT_4),
     frc::DigitalInput(DIO_LT_FRONT_5),
-    frc::DigitalInput(DIO_LT_FRONT_6)
+    frc::DigitalInput(DIO_LT_FRONT_6),
+    frc::DigitalInput(DIO_LT_FRONT_7)
   };
 
   frc::DigitalInput BackSens[LT_SENSORS_BACK] = 

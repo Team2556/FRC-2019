@@ -46,11 +46,15 @@
 #define         DIO_LT_FRONT_1          10
 #define         DIO_LT_FRONT_2          11
 #define         DIO_LT_FRONT_3          12
-#define         DIO_LT_FRONT_4          13
-#define         DIO_LT_FRONT_5          18
-#define         DIO_LT_FRONT_6          19
-#define         DIO_LT_BACK_1           20
-#define         DIO_LT_BACK_2           21
+#define         DIO_LT_FRONT_4          20
+#define         DIO_LT_FRONT_5          13
+#define         DIO_LT_FRONT_6          18
+#define         DIO_LT_FRONT_7          19
+
+
+
+#define         DIO_LT_BACK_1           21
+#define         DIO_LT_BACK_2           22
 #endif
 
 #define         DIO_US_RANGE_TRIGGER_LF 0

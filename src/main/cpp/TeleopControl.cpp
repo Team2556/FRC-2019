@@ -40,7 +40,7 @@ void TeleopControl::TeleopMain()
     frc::SmartDashboard::PutNumber("Pitch", pRobot->Nav.GetTilt());
     frc::SmartDashboard::PutNumber("Angle", pRobot->Nav.GetYaw());
     frc::SmartDashboard::PutNumber("Distance", pRobot->UltraLF.GetRangeInches());
-    
+    frc::SmartDashboard::PutNumber("Get Strafe", pRobot->LineTracker.GetStrafe(0));    
 }
 
 void TeleopControl::TeleopDrive()
@@ -134,7 +134,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
 
             if (pRobot->LineTracker.FrontSensors.bLineFound)
             {
-                AutoLineUpState = 15;
+                AutoLineUpState = 20;
             }
             else
             {
@@ -151,7 +151,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
             }
             if (fDistanceToTarget > 11.3)
             {
-                *fForward = MecDrive ->LimitFWDDrive(11);
+                *fForward = MecDrive ->LimitFWDDrive(11); // find real distance at competition -- Houston
             
             }
             if(pRobot->LineTracker.FrontSensors.bLineFound)
@@ -188,11 +188,8 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
             *fStrafe = 0;
             pRobot->Nav.SetCommandYaw( MecDrive->FindClose( pRobot->Nav.GetYaw()));
 
-            if (fabs(pRobot->Nav.GetYawError()) < 4)
-            {
-                AutoLineUpState = 20;
-            }
-            *fForward = MecDrive->LimitFWDDrive(11); // ** might cause the robot to drive into the rocket
+
+            *fForward = MecDrive->LimitFWDDrive(15); // ** might cause the robot to drive into the rocket
             *fStrafe = pRobot->LineTracker.GetStrafe(*fStrafe);
 
             
@@ -207,7 +204,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
                 StopCounter = 0;
             }
 
-            if (StopCounter >= 5)
+            if (StopCounter >= 5 && fabs(pRobot->Nav.GetYawError()) < 4)
             {
                 AutoLineUpState = 25;
                 StopCounter = 0;
