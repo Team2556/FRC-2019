@@ -60,9 +60,9 @@ void Robot::RobotInit() {
 #endif
 
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
-  frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
+  //frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
   int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
-  frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
+  //frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   frc::SmartDashboard::PutNumber("Roller Speed", speed);
 
@@ -88,8 +88,8 @@ void Robot::RobotPeriodic()
 
 void Robot::AutonomousInit() 
 {
-  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::Gyro;
-  AutoMode = AutoChooser.GetSelected();
+  DriverCmd.CurrDriveMode = DriverCommands::DriveMode::Normal;
+  Nav.SetCommandYawToCurrent();
   //set the elevator up
   DriverCmd.ElevatorTilted = true;
 }
@@ -98,10 +98,7 @@ void Robot::AutonomousInit()
 
 void Robot::AutonomousPeriodic() 
 {
-  
-  LineTracker.UpdateValues();
-  Autos->Auto();
-  
+  TeleopMain->TeleopMain();  
 }
 
 // ----------------------------------------------------------------------------
@@ -117,7 +114,6 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
-    SmartDashboard::PutNumber("Close Angle", MecDrive->FindClose(Nav.GetYaw()));
 }
 
 // ============================================================================

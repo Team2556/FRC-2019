@@ -79,8 +79,8 @@ void DriveBase::GyroDrive(float * fForward, float * fStrafe, float *fRotate)
 
         if (*fRotate >  0.0) *fRotate -= 0.05;
         if (*fRotate <  0.0) *fRotate += 0.05;
-        if (*fRotate >  0.5) *fRotate  =  0.5;
-        if (*fRotate < -0.5) *fRotate  = -0.5;
+        if (*fRotate >  0.8) *fRotate  =  0.8;
+        if (*fRotate < -0.8) *fRotate  = -0.8;
 
         pRobot->Nav.SetCommandYawToCurrent();
         frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
@@ -110,10 +110,10 @@ void DriveBase::GyroDrive(float * fForward, float * fStrafe, float *fRotate)
 void DriveBase::NormalDrive(float * fForward, float * fStrafe, float *fRotate)
 {
     
-    pRobot->RobotDrive.DriveCartesian(
-        pRobot->DriverCmd.fMoveSideways(), 
-        pRobot->DriverCmd.fMoveForward(), 
-        pRobot->DriverCmd.fRotate());
+    
+        *fStrafe = pRobot->DriverCmd.fMoveSideways(), 
+        *fForward = pRobot->DriverCmd.fMoveForward(), 
+        *fRotate = pRobot->DriverCmd.fRotate();
 }
 
 // ----------------------------------------------------------------------------
@@ -168,8 +168,8 @@ void DriveBase::FieldOrientedDrive(float * fForward, float * fStrafe, float *fRo
 
         if (*fRotate >  0.0) *fRotate -= 0.05;
         if (*fRotate <  0.0) *fRotate += 0.05;
-        if (*fRotate >  0.5) *fRotate  =  0.5;
-        if (*fRotate < -0.5) *fRotate  = -0.5;
+        if (*fRotate >  0.8) *fRotate  =  0.8;
+        if (*fRotate < -0.8) *fRotate  = -0.8;
 
         pRobot->Nav.SetCommandYawToCurrent();
         frc::SmartDashboard::PutBoolean("Gryo Enabled", false);
@@ -238,7 +238,7 @@ void DriveBase::DriveToTarget()
     fDistanceToTarget = Ultra.GetRangeInches();
 #endif
     bDistanceGood     =  pRobot->UltraLF.IsRangeValid();
-    frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
+//    frc::SmartDashboard::PutBoolean("Distance Valid", bDistanceGood);
     if (bDistanceGood) frc::SmartDashboard::PutNumber("Distance", fDistanceToTarget);
     else               frc::SmartDashboard::PutString("Distance", " ");
 
@@ -445,7 +445,7 @@ void DriveBase::RealVision(float * fForward, float * fStrafe, float *fRotate)
 
 
     }
-    SmartDashboard::PutNumber("State", State);
+    //SmartDashboard::PutNumber("State", State);
 }
 
 
@@ -481,7 +481,7 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 
     if (MaxSpeed > .6) MaxSpeed = .6;
     if (MaxSpeed < -.6) MaxSpeed = -.6;
-    SmartDashboard::PutNumber("Max Speed", MaxSpeed);
+    //SmartDashboard::PutNumber("Max Speed", MaxSpeed);
     return MaxSpeed;
 }
 
@@ -515,7 +515,7 @@ float DriveBase::FindClose(float Angle)
             }
         }
         Aglet = CargoshipAngles[closestIndex];
-        frc::SmartDashboard::PutString("Array", "Cargo Ship");
+        //frc::SmartDashboard::PutString("Array", "Cargo Ship");
     }
     else if (pRobot->DriverCmd.GetElevatorHeight() == DriverCommands::ElevatorHeight::Pickup)
     {
@@ -527,7 +527,7 @@ float DriveBase::FindClose(float Angle)
             }
         }
         Aglet = HumanplayerAngles[closestIndex];
-        frc::SmartDashboard::PutString("Array", "Pickup");
+        //frc::SmartDashboard::PutString("Array", "Pickup");
     }
     else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo &&  pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
     {
@@ -539,7 +539,7 @@ float DriveBase::FindClose(float Angle)
             }
         }
         Aglet = RocketCargoAngles[closestIndex];
-        frc::SmartDashboard::PutString("Array", "Cargo");
+        //frc::SmartDashboard::PutString("Array", "Cargo");
     }
     else if(pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch && pRobot->DriverCmd.GetElevatorHeight() != DriverCommands::ElevatorHeight::GroundPickup)
     {
@@ -551,19 +551,19 @@ float DriveBase::FindClose(float Angle)
             }
         }
         Aglet = RocketHatchAngles[closestIndex];
-        frc::SmartDashboard::PutString("Array", "Hatch");
+        //frc::SmartDashboard::PutString("Array", "Hatch");
     }
             
     return Aglet;
     
-    SmartDashboard::PutNumber("Set Angle", Aglet);
+    //SmartDashboard::PutNumber("Set Angle", Aglet);
 }
 
 
 float DriveBase::EncoderTest()
 {
     float position = pRobot->MotorControl_RR.GetSelectedSensorPosition();
-    SmartDashboard::PutNumber("Position", position);
+    //SmartDashboard::PutNumber("Position", position);
     
     pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
 }

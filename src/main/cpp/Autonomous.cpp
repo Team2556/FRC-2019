@@ -15,13 +15,13 @@ Autonomous::Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlE
     this->TeleopAuto = TeleopAuto;
 }
 
+void Autonomous::AutoTeleopInit()
+{
+    AutoNumber = 0;
+}
 
 void Autonomous::AutoTeleop()
 {
-   /* pRobot->LineTracker.UpdateValues();
-    //MecDrive->Drive();
-    ControlElevator->ElevatorControls();*/
-    
     TeleopAuto->TeleopMain();
 }
 
@@ -259,7 +259,6 @@ void Autonomous::Auto1()
     if (AutoCounter == 0)
     {
         pRobot->Nav.ResetYaw();
-        SmartDashboard::PutBoolean("Gyro Reset", true);
     }
     fRotate = pRobot->Nav.GetRotate();
     
@@ -282,7 +281,6 @@ void Autonomous::Auto1Init()
     ActionNum  = 10;
     AutoCounter = 0;
     SectionStart = 0;
-    SmartDashboard::PutBoolean("Gyro Reset", false);
 }
 
 void Autonomous::Auto2()
@@ -432,7 +430,9 @@ bool Autonomous::RollersSet()
     }
 }
 
-
+void Autonomous::AutoInit()
+{
+}
 
 void Autonomous::Auto()
 {

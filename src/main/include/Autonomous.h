@@ -19,6 +19,7 @@ class Autonomous {
   Autonomous(Robot * pRobot, DriveBase * MecDrive, Elevator * ControlElevator, TeleopControl * TeleopAuto);
 
   void Auto();
+  void AutoInit();
 
   // Auto Modes
   void AutoTeleop();

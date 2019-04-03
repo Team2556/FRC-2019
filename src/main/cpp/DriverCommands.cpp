@@ -212,7 +212,7 @@ float DriverCommands::fElevatorUpDownSpeed()
     else 
         fUpDownSpeed = -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
 
-    return fUpDownSpeed/2;
+    return fUpDownSpeed*0.7;
     }
 
 
@@ -343,7 +343,7 @@ void DriverCommands::HeightIntEnum() // converts the height int to the height en
 DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
 {
     int POV = Xbox2.GetPOV();
-    frc::SmartDashboard::PutNumber("POV", POV);
+    //frc::SmartDashboard::PutNumber("POV", POV);
     static bool HeightChanged = false;
     if (POV == -1)
     {
@@ -359,7 +359,7 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
             HeightChanged = true;
         }
     }
-    else if (iElevatorHeight >= 0 && iElevatorHeight <= 3 && !HeightChanged) // ensures the elevator isnt in pickup mode
+    else if (iElevatorHeight >= 0 && iElevatorHeight <= 2 && !HeightChanged) // ensures the elevator isnt in pickup mode
     {
         if(POV == 0)
         {
@@ -377,9 +377,9 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
         {
             iElevatorHeight = 0;
         }
-        else if (iElevatorHeight > 3)
+        else if (iElevatorHeight > 2)
         {
-            iElevatorHeight = 3;
+            iElevatorHeight = 2;
         }
     }
     if(Xbox2.GetStickButtonPressed(frc::XboxController::kRightHand)) // when pressing the right stick down enable and disable pickup 
@@ -389,13 +389,20 @@ DriverCommands::ElevatorHeight DriverCommands::GetElevatorHeight()
         iElevatorHeight = -1;
 
     }
-    if(Xbox2.GetStickButtonPressed(frc::XboxController::kLeftHand)) // when pressing the right stick down enable and disable ground pickup 
+    if(Xbox2.GetStickButtonPressed(frc::XboxController::kLeftHand)) // when pressing the left stick down enable and disable ground pickup 
     {
         // enable pickup mode
-        CargoGrabbed = false;
+        if (CMDElevatorMode == ElevatorMode::Cargo)
+        {
+            CargoGrabbed = false;
+        }
         iElevatorHeight = -2;
     }
-    frc::SmartDashboard::PutNumber("Height Number", iElevatorHeight);
+    if(Xbox2.GetBumperPressed(frc::XboxController::kRightHand))
+    {
+        iElevatorHeight = 3;
+    }
+    //frc::SmartDashboard::PutNumber("Height Number", iElevatorHeight);
     this->HeightIntEnum();
     return CMDElevatorHeight;
 }

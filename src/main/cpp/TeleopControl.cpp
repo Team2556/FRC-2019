@@ -21,8 +21,8 @@ void TeleopControl::TeleopMain()
 {
     if (!pRobot->DriverCmd.GetClimbMode())
     {
-        this->TeleopDrive();
         pRobot->LineTracker.UpdateValues();
+        this->TeleopDrive();
         this->TeleopElevator();
         Climber->HoldIn();
         frc::SmartDashboard::PutString("ClimbMode", "Disabled");
@@ -34,7 +34,6 @@ void TeleopControl::TeleopMain()
         
         this->TeleopDrive();
         ControlElevator->CMDMode = pRobot->DriverCmd.GetElevatorMode();
-        ControlElevator->IntakeOuttake();
         frc::SmartDashboard::PutString("ClimbMode", "Enabled");
     }
     frc::SmartDashboard::PutNumber("Climb Encoder", Climber->ClimbMotor.GetSelectedSensorPosition());

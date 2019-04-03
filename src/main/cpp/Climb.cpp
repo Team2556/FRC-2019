@@ -21,9 +21,9 @@ Climb::Climb(Robot * pRobot)
     
     
     int timing = frc::SmartDashboard::GetNumber("Timing", 3);
-    frc::SmartDashboard::PutNumber("Timing", timing);
+    //frc::SmartDashboard::PutNumber("Timing", timing);
     int RearDelay = frc::SmartDashboard::GetNumber("Delay", 5);
-    frc::SmartDashboard::PutNumber("Delay", RearDelay);
+    //frc::SmartDashboard::PutNumber("Delay", RearDelay);
 }
 
 
@@ -64,7 +64,7 @@ void Climb::ShuffleForward()
 
 
 
-    frc::SmartDashboard::PutBoolean("Is Shuffling", true);
+    //frc::SmartDashboard::PutBoolean("Is Shuffling", true);
     //allow for disabling the shuffling while remaining in this function
     if (pRobot->DriverCmd.fTestValue(1) > .5)
     {
@@ -78,7 +78,7 @@ void Climb::ShuffleForward()
 
     if(IsMoving)// shuffling is enabled
     {
-        frc::SmartDashboard::PutBoolean("Moving", true);
+       // frc::SmartDashboard::PutBoolean("Moving", true);
         if(iSwitch % 2 == 0)// brings front in
         {
             FrontClimb->Set(frc::DoubleSolenoid::Value::kReverse);
@@ -105,7 +105,7 @@ void Climb::ShuffleForward()
     }
     else // shuffling is disabled
     {
-        frc::SmartDashboard::PutBoolean("Moving", false);
+        //frc::SmartDashboard::PutBoolean("Moving", false);
         //resets the shuffle cycle
         iCycle = 0;
         iSwitch = 0;
