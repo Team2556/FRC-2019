@@ -57,25 +57,14 @@ void Autonomous::Auto1()
     switch (ActionNum)
     {
         case 10: // Drive Off of platform
+            bool OffHab;
+            OffHab = GetOffHab(&fForward, &fStrafe, &FieldOrientedDrive);
 
-            // Drive Commands
-            FieldOrientedDrive = false;
-            fForward = (AutoCounter - SectionStart) * .005;
-            fStrafe = 0;
-
-            #ifdef AUTO_ELE_ENABLED
-
-            // Elevator Commands
-            ControlElevator->ElevatorTilt(true); // keep the elevator tilted backwards as you drive off of the hab
-            
-
-            #endif
-            // end section statement
-            if (AutoCounter - SectionStart >= 90)
+            if (OffHab)
             {
                 SectionStart = AutoCounter;
                 ActionNum = 15;
-            }
+            }            
         break;
 
         case 15: // delay before turning
@@ -262,14 +251,7 @@ void Autonomous::Auto1()
     }
     fRotate = pRobot->Nav.GetRotate();
     
-    if (!FieldOrientedDrive)
-    {
-        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0); 
-    }
-    else
-    {
-        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -(pRobot->Nav.GetYaw())); 
-    }
+    MecDrive->Drive(fForward, fStrafe, fRotate, FieldOrientedDrive);
 
     SmartDashboard::PutNumber("Auto Section", ActionNum);
     AutoCounter++;
@@ -388,14 +370,7 @@ void Autonomous::Auto2()
     }
     fRotate = pRobot->Nav.GetRotate();
     
-    if (!FieldOrientedDrive)
-    {
-        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, 0.0); 
-    }
-    else
-    {
-        MecDrive->pRobot->RobotDrive.DriveCartesian(fStrafe, fForward, fRotate, -pRobot->Nav.GetYaw()); 
-    }
+    MecDrive->Drive(fForward, fStrafe, fRotate, FieldOrientedDrive);
 
     SmartDashboard::PutNumber("Auto Section", ActionNum);
     AutoCounter++;
@@ -404,34 +379,176 @@ void Autonomous::Auto2()
 void Autonomous::Auto2Init()
 {
     AutoNumber = 2;
-    ActionNum  = 30;
+    ActionNum  = 10;
     AutoCounter = 0;
     SectionStart = 0;
     SmartDashboard::PutBoolean("Gyro Reset", false);
 }
 
-bool Autonomous::RollersSet()
-{
-    static int EncoderValue = -1;
-    static bool EncoderDown = false;
 
-    if(ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() == 0 && EncoderDown == true)
+void Autonomous::Auto3()
+{
+    float fForward = 0.0;
+    float fStrafe  = 0.0;
+    float fRotate  = 0.0;
+
+
+
+    /*
+        Action Number will increment by 10 to allow for new ones in between current ones
+
+        10 - Drive Off of platform & bring down elevator down
+
+        20 - turn and strafe to face the cargoship
+
+        30 - run vision
+
+        
+    */
+
+    switch (ActionNum)
     {
-        return false;
+        case 10: // Drive Off of platform
+            bool OffHab;
+            OffHab = GetOffHab(&fForward, &fStrafe, &FieldOrientedDrive);
+
+            if (OffHab)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 15;
+            }            
+        break;
+
+        case 20 :
+        {
+            FieldOrientedDrive = true;
+            fForward = .5;
+            fStrafe  = -.2;
+
+            pRobot->Nav.SetCommandYaw(90.0);
+
+
+            if (AutoCounter - SectionStart >= 150)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 30;
+            }
+        }
+
+        case 30 :
+            TeleopAuto->AutoLineUp(&fForward, &fStrafe, &fRotate);
+            FieldOrientedDrive = false;
+        break;
     }
-    else if(EncoderDown == false && ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() < -50)
+
+    if (AutoCounter == 0)
     {
-        EncoderDown = true;
+
+        pRobot->Nav.ResetYaw();
     }
-    else
+    fRotate = pRobot->Nav.GetRotate();
+    
+    MecDrive->Drive(fForward, fStrafe, fRotate, FieldOrientedDrive);
+
+    SmartDashboard::PutNumber("Auto Section", ActionNum);
+    AutoCounter++;
+}
+
+void Autonomous::Auto3Init()
+{
+    AutoNumber = 3;
+    ActionNum  = 10;
+    AutoCounter = 0;
+    SectionStart = 0;
+}
+
+
+bool Autonomous::GetOffHab(float *fForward, float *fStrafe, bool *bFOD) 
+{
+
+    static int      EncoderValue = -1;
+    static bool     EncoderDown = false;
+    static bool     ElevatorBottomed = false;
+    static int      JumpState = 10; // state for getting off of the hab
+    static int      JumpSectionStart = SectionStart;
+
+    switch (JumpState)
     {
-        ControlElevator->ElevatorUpDown.Set(ControlMode::PercentOutput, -0.25);
-        ControlElevator->ElevatorUpDownB.Follow(ControlElevator->ElevatorUpDown);
+        case 10 :
+            *bFOD = false;
+            *fForward = (AutoCounter - JumpSectionStart) * .005;
+            *fStrafe = 0;
+            
+            // end section statement
+            if (AutoCounter - JumpSectionStart >= 90)
+            {
+                JumpSectionStart = AutoCounter;
+                ActionNum = 20;
+            }
+
+        break;
+
+        case 20 :
+            pRobot->DriverCmd.ElevatorTilted = false;
+
+            if (AutoCounter - JumpSectionStart >= 100)
+            {
+                JumpSectionStart = AutoCounter;
+                ActionNum = 30;
+            }
+        break;
+
+        case 30 :
+ 
+            if(ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() == 0 && EncoderDown == true)
+            {
+                ElevatorBottomed = true;
+            }
+            else if(EncoderDown == false && ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() < -50)
+            {
+                EncoderDown = true;
+            }
+            else
+            {
+                ControlElevator->ElevatorUpDown.Set(ControlMode::PercentOutput, -0.25);
+                ControlElevator->ElevatorUpDownB.Follow(ControlElevator->ElevatorUpDown);
+            }
+
+            if (AutoCounter - JumpSectionStart >= 150 && ElevatorBottomed)
+            {
+                JumpSectionStart = AutoCounter;
+                ActionNum = 40;
+            }
+        break;
+
+        case 40 :
+            return true;
+        break;
     }
+
+    return false;
 }
 
 void Autonomous::AutoInit()
 {
+    pRobot->AutoMode = pRobot->AutoChooser.GetSelected();
+
+    if (pRobot->AutoMode == pRobot->Auto1)
+    {
+        Auto1Init();
+    }
+    else if (pRobot->AutoMode == pRobot->Auto2)
+    {
+        Auto2Init();
+    }
+    else if (pRobot->AutoMode == pRobot->Auto3)
+    {
+        Auto3Init();
+    }
+    else 
+    {
+        AutoTeleopInit();
+    } 
 }
 
 void Autonomous::Auto()

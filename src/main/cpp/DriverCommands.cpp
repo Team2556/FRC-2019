@@ -131,20 +131,18 @@ int DriverCommands::POV()
 // ----------------------------------------------------------------------------
 
 bool DriverCommands::bResetGyro()
+{
+    if (Xbox1.GetAButton())
     {
-        if (Xbox1.GetAButton())
-        {
-            return true;
-        }
-        else if (Xbox1.GetBumper(frc::XboxController::kRightHand))
-        {
-            return true;
-        }
-        else 
-        {
-            return false;
-        }
+        return true;
     }
+    else 
+    {
+        return false;
+    }
+}
+
+
 
 
 // ----------------------------------------------------------------------------
@@ -511,7 +509,7 @@ float DriverCommands::fTestValue(int iControl)
     {
     float   fControlValue;
 
-    if ((iControl < 0) || (iControl > 3))
+    if ((iControl < 0) || (iControl > 5))
         return 0.0;
 
     switch (iControl)
@@ -527,6 +525,9 @@ float DriverCommands::fTestValue(int iControl)
             break;
         case 3 :
             fControlValue = Xbox2.GetY(frc::XboxController::kLeftHand);
+            break;
+        case 4 :
+            fControlValue = Xbox1.GetTriggerAxis(frc::XboxController::kRightHand);
             break;
         default :
             fControlValue = 0.0;

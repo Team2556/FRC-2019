@@ -86,6 +86,12 @@ void TeleopControl::TeleopDrive()
         SmartDashboard::PutBoolean("Auto Line Up", false);
     }
 
+
+    if (pRobot->DriverCmd.fTestValue(4) > .5 && pRobot->LineTracker.FrontSensors.bLineFound)
+    {
+        fStrafe = pRobot->LineTracker.GetStrafe(0);
+        bFOD = false;
+    }
     SmartDashboard::PutNumber("AutoLineUpAutoLineUpState", AutoLineUpState);
 
     frc::SmartDashboard::PutNumber("Forward", fForward);
@@ -149,16 +155,15 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
                 *fRotate = fVisionTrackErrorX * 0.35;
                 pRobot->Nav.SetCommandYawToCurrent();
             }
-            if (fDistanceToTarget > 11.3)
+            if (bDistanceGood)
             {
-                *fForward = MecDrive ->LimitFWDDrive(11); // find real distance at competition -- Houston
-            
+                *fForward = MecDrive ->LimitFWDDrive(15); // find real distance at competition -- Houston
             }
             if(pRobot->LineTracker.FrontSensors.bLineFound)
             {
                 AutoLineUpState = 15;
             }
-            if(fDistanceToTarget < 10.9)
+            if(fDistanceToTarget < 14.5)
             {
                 AutoLineUpState = 0;
             }

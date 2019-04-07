@@ -69,6 +69,7 @@ void Robot::RobotInit() {
     AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
     AutoChooser.AddOption(Auto1, Auto1);
     AutoChooser.AddOption(Auto2, Auto2);
+    AutoChooser.AddOption(Auto3, Auto3);
     frc::SmartDashboard::PutData("Auto Selector", &AutoChooser);
   }
 
@@ -92,13 +93,14 @@ void Robot::AutonomousInit()
   Nav.SetCommandYawToCurrent();
   //set the elevator up
   DriverCmd.ElevatorTilted = true;
+  Autos->AutoInit();
 }
 
 // ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() 
 {
-  TeleopMain->TeleopMain();  
+  Autos->Auto(); 
 }
 
 // ----------------------------------------------------------------------------
