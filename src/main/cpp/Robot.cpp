@@ -16,6 +16,7 @@
 #include "Autonomous.h"
 #include "TeleopControl.h"
 
+
 // Objects and variable for this file only
 DriveBase         * MecDrive;
 Elevator          * ControlElevator;
@@ -54,17 +55,20 @@ void Robot::RobotInit() {
 
 #ifdef CAMERA
     CameraTrk.Init();
+#ifdef TestValues
     frc::SmartDashboard::PutNumber("Vision Brightness", CameraTrk.ValLo);
     frc::SmartDashboard::PutNumber("Vision Display", CameraTrk.iDisplayFrame);
     pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
 #endif
-
+#endif
+#ifdef TestValues
   int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
   //frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
   int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
   //frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
   double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
   frc::SmartDashboard::PutNumber("Roller Speed", speed);
+#endif
 
     AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
     AutoChooser.AddOption(Auto1, Auto1);
@@ -77,10 +81,12 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() 
 {
 #ifdef CAMERA
+#ifdef TestValues
     CameraTrk.ValLo         = frc::SmartDashboard::GetNumber("Vision Brightness", 250);
     pPrefs->PutInt("Target Val Lo", CameraTrk.ValLo);
     CameraTrk.iDisplayFrame = frc::SmartDashboard::GetNumber("Vision Display", 0);
     pPrefs->PutInt("Display Frame", CameraTrk.iDisplayFrame);
+#endif
 #endif
 }
 
@@ -114,6 +120,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
+    DriverCmd.XboxRumbies();
 }
 
 // ============================================================================

@@ -21,7 +21,7 @@ Elevator::Elevator(Robot * pRobot)
 
     //create new DoubleSolenoid//
     EleTilt = new frc::DoubleSolenoid(CAN_PCM,5,6);
-    //rollerPiston = new frc::DoubleSolenoid(CAN_PCM,2,3);
+    HatchPiston = new frc::DoubleSolenoid(CAN_PCM,0,1);
 }
 
 
@@ -290,7 +290,7 @@ int Elevator::IntakeOuttake()
     if(CMDMode == DriverCommands::ElevatorMode::Hatch)
     {
         //outtake
-        RollerPistons(pRobot->DriverCmd.Outtake());
+        HatchPistons(pRobot->DriverCmd.Outtake());
 
 
         
@@ -399,17 +399,17 @@ void Elevator::ElevatorTilt(bool Position)
     }
 }
 
-void Elevator::RollerPistons(bool bHatchOut)
+void Elevator::HatchPistons(bool bHatchOut)
 {
     if (bHatchOut) // when the driver commands the elevator to tilt, retract the piston
     {
-        //rollerPiston->Set(frc::DoubleSolenoid::Value::kReverse);
+        HatchPiston->Set(frc::DoubleSolenoid::Value::kReverse);
         HatchDrop.Set(frc::Relay::Value::kForward);
     }
     else if (!bHatchOut)
     {
         HatchDrop.Set(frc::Relay::Value::kOff);
-        //rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
+        HatchPiston->Set(frc::DoubleSolenoid::Value::kForward);
     }
 }
 

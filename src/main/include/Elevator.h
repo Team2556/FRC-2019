@@ -22,7 +22,7 @@ class Elevator {
   int IntakeOuttake();
   void RollerIn(float speed);
   void RollerOut();
-  void RollerPistons(bool bHatchOut);
+  void HatchPistons(bool bHatchOut);
 
   void ElevatorTilt(bool Position);// false if forward true if pulled back
   
@@ -30,7 +30,7 @@ class Elevator {
 
   //Created pointers
   frc::DoubleSolenoid   * EleTilt;
-  frc::DoubleSolenoid   * rollerPiston;
+  frc::DoubleSolenoid   * HatchPiston;
 
   frc::Relay              HatchDrop{RELAY_HATCH_DROP, frc::Relay::Direction::kForwardOnly};
 

@@ -33,14 +33,12 @@ DriverCommands::DriverCommands()
 
 bool DriverCommands::GetClimbMode() // this determines whether we are in the process of climbing at the moment
 {
-    if (Xbox1.GetStartButton())
+    bool ClimbMode = false;
+    if (Xbox1.GetBumperPressed(frc::XboxController::kRightHand))
     {
-        ClimbMode = false;
+        ClimbMode = !ClimbMode;   
     }
-    if (Xbox1.GetBackButton())
-    {
-        ClimbMode = true;
-    }
+    
     return ClimbMode;
 }
 
@@ -534,4 +532,57 @@ float DriverCommands::fTestValue(int iControl)
         }
 
     return fControlValue;
+    }
+
+    void DriverCommands::XboxRumbies(void)
+    {
+        Xbox1.SetRumble(frc::XboxController::kRightRumble, 1.0);
+        Xbox2.SetRumble(frc::XboxController::kLeftRumble, 1.0);
+    }
+
+    bool DriverCommands::DriverActive()
+    {
+        if(Xbox1.GetAButton())                                              return true;
+
+        if(Xbox1.GetBackButton())                                           return true;
+        
+        if(Xbox1.GetBButton())                                              return true;
+
+        //Right
+        if(Xbox1.GetBumperPressed(frc::XboxController::kRightHand))         return true;
+        //Left
+        if(Xbox1.GetBumperPressed(frc::XboxController::kLeftHand))          return true;
+
+
+        if(Xbox1.GetStartButton())                                          return true;
+
+        //Right
+        if(Xbox1.GetStickButtonPressed(frc::XboxController::kRightHand))    return true;
+        //Left
+        if(Xbox1.GetStickButtonPressed(frc::XboxController::kLeftHand))     return true;
+
+        //Right
+        if(Xbox1.GetTriggerAxis(frc::XboxController::kRightHand) > 0.1)     return true;
+        //Left
+        if(Xbox1.GetTriggerAxis(frc::XboxController::kLeftHand) > 0.1)      return true;
+
+        if(Xbox1.GetPOV() > -1)                                             return true;
+
+        if(Xbox1.GetStartButtonPressed())                                   return true; 
+
+        //Right
+        if(Xbox1.GetX(frc::XboxController::kRightHand) > 0.3)               return true;
+        //Left
+        if(Xbox1.GetX(frc::XboxController::kLeftHand) > 0.3)                return true;
+
+        //Right
+        if(Xbox1.GetY(frc::XboxController::kRightHand) > 0.3)               return true;
+        if(Xbox1.GetY(frc::XboxController::kLeftHand) > 0.3)                return true;
+
+        if(Xbox1.GetXButton())                                              return true;
+
+        if(Xbox1.GetYButton())                                              return true;
+
+        return false;
+            
     }

@@ -25,6 +25,8 @@
 class Robot : public frc::TimedRobot {
  public:
 
+#define TestValues
+
 #ifdef USB_CAMERA
 cs::UsbCamera         UsbCamera1;
 cs::UsbCamera         UsbCamera2;
