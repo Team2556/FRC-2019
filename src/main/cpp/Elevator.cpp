@@ -236,7 +236,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
                 break;
 
                 case DriverCommands::ElevatorHeight::GroundPickup :
-                    RollerPos = WRIST_DOWN;
+                    RollerPos = WRIST_MID;
                 break;
 
                 case DriverCommands::ElevatorHeight::CargoShip :
@@ -265,7 +265,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
                 break;
 
                 case DriverCommands::ElevatorHeight::GroundPickup :
-                    RollerPos = WRIST_MID;
+                    RollerPos = WRIST_DOWN;
                 break;
 
                 case DriverCommands::ElevatorHeight::CargoShip :
@@ -302,7 +302,7 @@ int Elevator::IntakeOuttake()
         {
             if (pRobot->HatchPickupLimitLeft.Get() && pRobot->HatchPickupLimitRight.Get())
             {
-                ElevatorOffset = GND_HATCH_OFFSET;
+                ElevatorOffset = GND_HATCH_OFFSET;   
             }
             else
             {
@@ -341,24 +341,24 @@ int Elevator::IntakeOuttake()
     {
         if (pRobot->HatchPickupLimitLeft.Get() && pRobot->HatchPickupLimitRight.Get())
         {
-            //frc::SmartDashboard::PutString("Hatch Lineup Guide", "Good");
+            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Good");
         }
         else if (pRobot->HatchPickupLimitLeft.Get())
         {
-            //frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Right");
+            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Right");
         }
         else if (pRobot->HatchPickupLimitRight.Get())
         {
-            //frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Left");
+            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Left");
         }
         else
         {
-            //frc::SmartDashboard::PutString("Hatch Lineup Guide", "Go Forward");
+            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Go Forward");
         }
     }
     else
     {
-        //frc::SmartDashboard::PutString("Hatch Lineup Guide", "Not Hatch Pickup");
+        frc::SmartDashboard::PutString("Hatch Lineup Guide", "Not Hatch Pickup");
     }
 
     return ElevatorOffset;

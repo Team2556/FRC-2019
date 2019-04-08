@@ -28,7 +28,13 @@ class Autonomous {
   void Auto1Init();
   void Auto2();
   void Auto2Init();
-  bool RollersSet();
+  void Auto3();
+  void Auto3Init();
+  void Auto4();
+  void Auto4Init();
+  void Auto5();
+  void Auto5Init();
+  bool GetOffHab(float *fForward, float *fStrafe, bool *bFOD);
 
   Robot * pRobot;
   DriveBase * MecDrive;

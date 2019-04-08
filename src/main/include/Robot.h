@@ -72,11 +72,11 @@ cs::UsbCamera         UsbCamera2;
   void TestPeriodic() override;
 
 
- private:
   frc::SendableChooser<std::string> AutoChooser;
   
   const std::string AutoTeleop = "Teleop";
   const std::string Auto1 = "Left Rocket Front";
   const std::string Auto2 = "Left Rocket Back";
+  const std::string Auto3 = "Left Cargoship Close";
   std::string AutoMode;
 };
