@@ -87,9 +87,9 @@ void TeleopControl::TeleopDrive()
     }
 
 
-    if (pRobot->DriverCmd.fTestValue(4) > .5 && pRobot->LineTracker.FrontSensors.bLineFound)
+    if (pRobot->DriverCmd.fTestValue(4) > .5)
     {
-        fStrafe = pRobot->LineTracker.GetStrafe(0);
+        MecDrive->DriveToDistance(9700, &fForward, &fStrafe, &fRotate);
         bFOD = false;
     }
     SmartDashboard::PutNumber("AutoLineUpAutoLineUpState", AutoLineUpState);

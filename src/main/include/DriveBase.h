@@ -32,6 +32,7 @@ class DriveBase {
   void DriveToTarget();
   void Drive(float fForward, float fStrafe, float fRotate, bool bFOD);
   float LimitFWDDrive(float CommandDistance);
+  float DriveToDistance(float CommandDistance, float * fForward, float * fStrafe, float *fRotate);
   bool SideUltra(float distance);
   float FindClose(float Angle);
 

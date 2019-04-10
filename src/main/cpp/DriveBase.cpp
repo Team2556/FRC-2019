@@ -489,6 +489,17 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 // ----------------------------------------------------------------------------
 
 
+float DriveBase::DriveToDistance(float CommandDistance, float * fForward, float * fStrafe, float *fRotate)
+{
+    float Distance = pRobot->MotorControl_LR.GetSelectedSensorPosition();
+
+    float Error = Distance - CommandDistance;
+
+    *fForward = -(Error / 350) +(.03* (Error/fabs(Error)));
+}
+
+// ----------------------------------------------------------------------------
+
 // ============================================================================
 // Local methods
 // ============================================================================
@@ -562,8 +573,9 @@ float DriveBase::FindClose(float Angle)
 
 float DriveBase::EncoderTest()
 {
-    float position = pRobot->MotorControl_RR.GetSelectedSensorPosition();
-    //SmartDashboard::PutNumber("Position", position);
-    
-    pRobot->MotorControl_RR.Set(ControlMode::PercentOutput, pRobot->DriverCmd.fTestValue(3));
+    if (pRobot->DriverCmd.bResetGyro()) // 9700 is pos at ten feet
+    {
+        pRobot->MotorControl_LR.SetSelectedSensorPosition(0);
+    }
+    frc::SmartDashboard::PutNumber("Drive Encoder", pRobot->MotorControl_LR.GetSelectedSensorPosition());
 }

@@ -116,6 +116,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
+    MecDrive->EncoderTest();
 }
 
 // ============================================================================
