@@ -36,6 +36,9 @@ class Autonomous {
   void Auto5Init();
   bool GetOffHab(float *fForward, float *fStrafe, bool *bFOD);
 
+  void EncoderDrive(bool ControllerOne);
+  bool DriveToEncoder(int Rotation);
+
   Robot * pRobot;
   DriveBase * MecDrive;
   Elevator * ControlElevator;

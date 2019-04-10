@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-
 #include "Robot.h"
 
 class DriveBase {
@@ -16,7 +15,8 @@ class DriveBase {
 
   //Members
   Robot * pRobot;
-//  bool drivemode;
+
+  //  bool drivemode;
   int      stopHoldCounter = 0;
   int      State = 0;
   bool     bRotatePrevious = false;
@@ -36,4 +36,6 @@ class DriveBase {
   float FindClose(float Angle);
 
   float EncoderTest();
+
+  void EncoderDrive(bool DriverOne);
 };

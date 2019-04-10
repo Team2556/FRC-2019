@@ -553,6 +553,10 @@ void Autonomous::AutoInit()
 
 void Autonomous::Auto()
 {
+    if (pRobot->DriverCmd.DriverActive() && AutoNumber != 0)
+    {
+        AutoTeleopInit();
+    }
     switch (AutoNumber)
     {
         case 0: default:
@@ -565,4 +569,57 @@ void Autonomous::Auto()
         Auto2();
         break;
     }
+}
+
+void Autonomous::EncoderDrive(bool ControllerOne)
+{
+    
+    bool DriverControl = false;
+    int StateValue = 0;
+
+    if(ControllerOne)
+    {
+        DriverControl = true;
+    }
+    if(DriverControl == false)
+    {
+       switch (StateValue)
+       {
+           case 0:
+                if(DriveToEncoder(21340))
+                {
+                }
+            break;
+            case 5:
+
+            break;
+       
+           default:
+               break;
+       }
+        
+
+    }
+    else
+    {
+        TeleopAuto->TeleopMain();
+    }
+}
+
+bool Autonomous::DriveToEncoder(int rotation)
+{
+    double DriveError = rotation - pRobot->MotorControl_LR.GetSelectedSensorPosition();
+    double StraightDrive = (DriveError / 5000) +(.03* (DriveError/fabs(DriveError))); 
+
+     MecDrive->Drive(StraightDrive, 0, 0, FieldOrientedDrive);
+
+     if(0.4-fabs(StraightDrive) < .1)
+     {
+         return true;
+     }
+     else
+     {
+         return false;
+     }
+     
 }

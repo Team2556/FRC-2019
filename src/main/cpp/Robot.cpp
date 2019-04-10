@@ -99,14 +99,16 @@ void Robot::AutonomousInit()
   Nav.SetCommandYawToCurrent();
   //set the elevator up
   DriverCmd.ElevatorTilted = true;
-  Autos->AutoInit();
+  MotorControl_LR.SetSelectedSensorPosition(0);
 }
 
 // ----------------------------------------------------------------------------
 
 void Robot::AutonomousPeriodic() 
 {
-  Autos->Auto(); 
+  bool DriverMove = DriverCmd.DriverActive();
+  Autos->EncoderDrive(DriverMove); 
+  SmartDashboard::PutNumber("Motor Encoder", MotorControl_LR.GetSelectedSensorPosition());
 }
 
 // ----------------------------------------------------------------------------
@@ -122,7 +124,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic() 
 {
     TeleopMain->TeleopMain();
-    DriverCmd.XboxRumbies();
+    //DriverCmd.XboxRumbies();
 }
 
 // ============================================================================
