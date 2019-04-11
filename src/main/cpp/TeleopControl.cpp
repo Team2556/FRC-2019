@@ -89,7 +89,9 @@ void TeleopControl::TeleopDrive()
 
     if (pRobot->DriverCmd.fTestValue(4) > .5)
     {
-        MecDrive->DriveToDistance(9700, &fForward, &fStrafe, &fRotate);
+        MecDrive->DriveToDistance(9700, &fForward);
+        fStrafe = 0;
+        fRotate = 0;
         bFOD = false;
     }
     SmartDashboard::PutNumber("AutoLineUpAutoLineUpState", AutoLineUpState);
@@ -238,7 +240,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
         case 40 :
             if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Hatch)
             {
-                ControlElevator->RollerPistons(true); // extend the pistons
+                ControlElevator->HatchPistons(true); // extend the pistons
             }
             else if (pRobot->DriverCmd.GetElevatorMode() == DriverCommands::ElevatorMode::Cargo)
             {

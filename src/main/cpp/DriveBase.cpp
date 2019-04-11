@@ -489,13 +489,29 @@ float DriveBase::LimitFWDDrive(float CommandDistance)
 // ----------------------------------------------------------------------------
 
 
-float DriveBase::DriveToDistance(float CommandDistance, float * fForward, float * fStrafe, float *fRotate)
+bool DriveBase::DriveToDistance(float CommandDistance, float * fForward)
 {
+    if (this->EncoderReset == false)
+    {
+        pRobot->MotorControl_LR.SetSelectedSensorPosition(0);
+    }
+    EncoderReset = true;
     float Distance = pRobot->MotorControl_LR.GetSelectedSensorPosition();
 
     float Error = Distance - CommandDistance;
 
-    *fForward = -(Error / 350) +(.03* (Error/fabs(Error)));
+
+    *fForward = -(Error / 5000) +(.03* (Error/fabs(Error)));
+
+    if ((.03-fabs(*fForward)) > .001)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+    
 }
 
 // ----------------------------------------------------------------------------

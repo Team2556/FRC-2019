@@ -6,7 +6,6 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-
 #include "Robot.h"
 
 class DriveBase {
@@ -16,10 +15,12 @@ class DriveBase {
 
   //Members
   Robot * pRobot;
-//  bool drivemode;
+
+  //  bool drivemode;
   int      stopHoldCounter = 0;
   int      State = 0;
   bool     bRotatePrevious = false;
+  bool     EncoderReset = false; // true if encoder has been reset since starting to use the encoder
 
 
   //Functions
@@ -32,9 +33,11 @@ class DriveBase {
   void DriveToTarget();
   void Drive(float fForward, float fStrafe, float fRotate, bool bFOD);
   float LimitFWDDrive(float CommandDistance);
-  float DriveToDistance(float CommandDistance, float * fForward, float * fStrafe, float *fRotate);
+  bool DriveToDistance(float CommandDistance, float * fForwarde);
   bool SideUltra(float distance);
   float FindClose(float Angle);
 
   float EncoderTest();
+
+  void EncoderDrive(bool DriverOne);
 };

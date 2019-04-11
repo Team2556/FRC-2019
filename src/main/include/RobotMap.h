@@ -9,7 +9,6 @@
 //Xbox Controllers
 #define         XBOX_ONE                0
 #define         XBOX_TWO                1
-
 // CAN BUS IDs
 #define         CAN_PDP                 0
 #define         CAN_TALON_LF            1

@@ -54,6 +54,7 @@ public:
     void    SetCommandYaw(float fAngle);
     void    SetCommandYawToCurrent();
     bool    GetPresetTurning();
+    bool    GetPresetTurning(float AllowableError);
     void    ResetYaw();
     float   GetYaw();
     float   GetYawError();

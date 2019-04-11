@@ -28,8 +28,6 @@ class TeleopControl
   void TeleopDrive();
   void TeleopElevator();
   void AutoLineUp(float * fForward, float * fStrafe, float *fRotate);
-  
-
 
 
   // Variables

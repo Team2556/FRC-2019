@@ -25,6 +25,8 @@
 class Robot : public frc::TimedRobot {
  public:
 
+#define TestValues
+
 #ifdef USB_CAMERA
 cs::UsbCamera         UsbCamera1;
 cs::UsbCamera         UsbCamera2;
@@ -76,5 +78,6 @@ cs::UsbCamera         UsbCamera2;
   const std::string Auto1 = "Left Rocket Front";
   const std::string Auto2 = "Left Rocket Back";
   const std::string Auto3 = "Left Cargoship Close";
+  const std::string Auto4 = "Left Cargoship w/ Encoder";
   std::string AutoMode;
 };

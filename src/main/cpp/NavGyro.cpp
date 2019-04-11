@@ -131,6 +131,18 @@ bool NavGyro::GetPresetTurning()
         return true;
     }
 }
+
+bool NavGyro::GetPresetTurning(float AllowableError)
+{
+    if(fabs(this->GetYawError())<AllowableError)
+    {
+    	return false;
+    }
+    else
+    {
+        return true;
+    }
+}
 #endif
 
 

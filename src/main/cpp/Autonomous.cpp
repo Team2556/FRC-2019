@@ -462,6 +462,203 @@ void Autonomous::Auto3Init()
     SectionStart = 0;
 }
 
+void Autonomous::Auto4()
+{
+    float fForward = 0.0;
+    float fStrafe  = 0.0;
+    float fRotate  = 0.0;
+
+    bool AtCgoShp;
+    static int AtCgoShpCounter = 0;
+
+
+
+    /*
+        Action Number will increment by 10 to allow for new ones in between current ones
+
+        10 - Drive Off of platform for 22 feet
+
+        40 - turn to face the cargoship
+
+        50 - run vision
+
+        
+    */
+
+    switch (ActionNum)
+    {
+        case 0:
+
+            MecDrive->EncoderReset = false;
+
+            ActionNum = 10;
+        break;
+
+
+        case 10: // Drive Off of platform
+
+            AtCgoShp = MecDrive->DriveToDistance(9700, &fForward);
+
+            if (AtCgoShp)
+            {
+                AtCgoShpCounter++;
+            }
+            else
+            {
+                AtCgoShpCounter = 0;
+            }
+            
+            if (AtCgoShpCounter > 5)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 20;
+                AtCgoShpCounter = 0;
+            }            
+        break;
+
+        case 20 :
+            fForward = 0;
+            fStrafe = 0;
+
+            pRobot->Nav.SetCommandYaw(-5);
+
+            if (!pRobot->Nav.GetPresetTurning(2))
+            {
+                ActionNum = 30;
+                SectionStart = AutoCounter;
+            }
+
+        MecDrive->EncoderReset = false;
+        break;
+
+        case 30: // Drive Off of platform
+
+            AtCgoShp = MecDrive->DriveToDistance(9700, &fForward);
+
+            if (AtCgoShp)
+            {
+                AtCgoShpCounter++;
+            }
+            else
+            {
+                AtCgoShpCounter = 0;
+            }
+            
+            if (AtCgoShpCounter > 5)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 40;
+                AtCgoShpCounter = 0;
+            }                       
+        break;
+
+        
+        case 40 :
+            fForward = 0;
+            fStrafe = 0;
+
+            pRobot->Nav.SetCommandYaw(90);
+
+            if (!pRobot->Nav.GetPresetTurning())
+            {
+                ActionNum = 50;
+                SectionStart = AutoCounter;
+            }
+        break;
+
+        case 50 :
+            TeleopAuto->AutoLineUp(&fForward, &fStrafe, &fRotate);
+            FieldOrientedDrive = false;
+        break;
+
+        default:
+        case -1 :
+            fForward = 0;
+            fStrafe = 0;
+
+        break;
+    }
+
+    if (AutoCounter == 0)
+    {
+
+        pRobot->Nav.ResetYaw();
+    }
+    fRotate = pRobot->Nav.GetRotate();
+    
+    MecDrive->Drive(fForward, fStrafe, fRotate, FieldOrientedDrive);
+
+    SmartDashboard::PutNumber("Auto Section", ActionNum);
+    AutoCounter++;
+}
+
+
+void Autonomous::Auto4Init()
+{
+    AutoNumber = 4;
+    ActionNum  = 0;
+    AutoCounter = 0;
+    SectionStart = 0;
+
+    pRobot->DriverCmd.CMDElevatorHeight = DriverCommands::ElevatorHeight::CargoShip;
+    pRobot->DriverCmd.CMDElevatorMode = DriverCommands::ElevatorMode::Cargo;
+
+}
+
+void Autonomous::AutoInit()
+{
+    pRobot->AutoMode = pRobot->AutoChooser.GetSelected();
+
+    if (pRobot->AutoMode == pRobot->Auto1)
+    {
+        Auto1Init();
+    }
+    else if (pRobot->AutoMode == pRobot->Auto2)
+    {
+        Auto2Init();
+    }
+    else if (pRobot->AutoMode == pRobot->Auto3)
+    {
+        Auto3Init();
+    }
+    else if (pRobot->AutoMode == pRobot->Auto4)
+    {
+        Auto4Init();
+    }
+    else 
+    {
+        AutoTeleopInit();
+    } 
+
+    frc::SmartDashboard::PutNumber("AutoNumber", AutoNumber);
+}
+
+void Autonomous::Auto()
+{
+    if (pRobot->DriverCmd.DriverActive() && AutoNumber != 0)
+    {
+        AutoTeleopInit();
+    }
+    switch (AutoNumber)
+    {
+        case 0: default:
+        AutoTeleop();
+        break;
+        case 1:
+        Auto1();
+        break;
+        case 2:
+        Auto2();
+        break;
+        case 3:
+        Auto3();
+        break;
+        case 4:
+        Auto4();
+        break;
+    }
+}
+
 
 bool Autonomous::GetOffHab(float *fForward, float *fStrafe, bool *bFOD) 
 {
@@ -529,40 +726,90 @@ bool Autonomous::GetOffHab(float *fForward, float *fStrafe, bool *bFOD)
     return false;
 }
 
-void Autonomous::AutoInit()
-{
-    pRobot->AutoMode = pRobot->AutoChooser.GetSelected();
 
-    if (pRobot->AutoMode == pRobot->Auto1)
+
+
+bool Autonomous::ZeroElevator()
+{
+    static int      EncoderValue = -1;
+    static bool     EncoderDown = false;
+    static bool     ElevatorBottomed = false;
+
+    if(ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() == 0 && EncoderDown == true)
     {
-        Auto1Init();
+        ElevatorBottomed = true;
     }
-    else if (pRobot->AutoMode == pRobot->Auto2)
+    else if(EncoderDown == false && ControlElevator->ElevatorUpDown.GetSelectedSensorPosition() < -50)
     {
-        Auto2Init();
+        EncoderDown = true;
     }
-    else if (pRobot->AutoMode == pRobot->Auto3)
+    else
     {
-        Auto3Init();
+        ControlElevator->ElevatorUpDown.Set(ControlMode::PercentOutput, -0.25);
+        ControlElevator->ElevatorUpDownB.Follow(ControlElevator->ElevatorUpDown);
     }
-    else 
+
+    if (ElevatorBottomed)
     {
-        AutoTeleopInit();
-    } 
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-void Autonomous::Auto()
+
+
+void Autonomous::EncoderDrive(bool ControllerOne)
 {
-    switch (AutoNumber)
+    
+    bool DriverControl = false;
+    int StateValue = 0;
+
+    if(ControllerOne)
     {
-        case 0: default:
-        AutoTeleop();
-        break;
-        case 1:
-        Auto1();
-        break;
-        case 2:
-        Auto2();
-        break;
+        DriverControl = true;
     }
+    if(DriverControl == false)
+    {
+       switch (StateValue)
+       {
+           case 0:
+                if(DriveToEncoder(21340))
+                {
+                }
+            break;
+            case 5:
+
+            break;
+       
+           default:
+               break;
+       }
+        
+
+    }
+    else
+    {
+        TeleopAuto->TeleopMain();
+    }
+}
+
+bool Autonomous::DriveToEncoder(int rotation)
+{
+    double DriveError = rotation - pRobot->MotorControl_LR.GetSelectedSensorPosition();
+    double StraightDrive = (DriveError / 5000) +(.03* (DriveError/fabs(DriveError))); 
+
+     MecDrive->Drive(StraightDrive, 0, 0, FieldOrientedDrive);
+
+     if(0.4-fabs(StraightDrive) < .1)
+     {
+         return true;
+     }
+     else
+     {
+         return false;
+     }
+     
 }

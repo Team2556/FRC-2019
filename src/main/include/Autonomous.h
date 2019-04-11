@@ -24,17 +24,21 @@ class Autonomous {
   // Auto Modes
   void AutoTeleop();
   void AutoTeleopInit();
-  void Auto1();
+  void Auto1(); // left front rocket hatch
   void Auto1Init();
-  void Auto2();
+  void Auto2(); // left back rocket hatch
   void Auto2Init();
-  void Auto3();
+  void Auto3(); // left cargoship cargo close w/o encoder
   void Auto3Init();
-  void Auto4();
+  void Auto4(); // left cargoship cargo w/ encoder
   void Auto4Init();
   void Auto5();
   void Auto5Init();
   bool GetOffHab(float *fForward, float *fStrafe, bool *bFOD);
+  bool ZeroElevator();
+
+  void EncoderDrive(bool ControllerOne);
+  bool DriveToEncoder(int Rotation);
 
   Robot * pRobot;
   DriveBase * MecDrive;
