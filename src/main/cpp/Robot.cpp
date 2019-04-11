@@ -75,6 +75,7 @@ void Robot::RobotInit() {
     AutoChooser.AddOption(Auto2, Auto2);
     AutoChooser.AddOption(Auto3, Auto3);
     AutoChooser.AddOption(Auto4, Auto4);
+    AutoChooser.AddOption(Auto5, Auto5);
     frc::SmartDashboard::PutData("Auto Selector", &AutoChooser);
   }
 

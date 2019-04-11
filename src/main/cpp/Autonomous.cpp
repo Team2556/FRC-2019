@@ -605,6 +605,147 @@ void Autonomous::Auto4Init()
 
 }
 
+void Autonomous::Auto5()
+{
+  float fForward = 0.0;
+    float fStrafe  = 0.0;
+    float fRotate  = 0.0;
+
+    bool AtCgoShp;
+    static int AtCgoShpCounter = 0;
+
+
+
+    /*
+        Action Number will increment by 10 to allow for new ones in between current ones
+
+        10 - Drive Off of platform for 22 feet
+
+        40 - turn to face the cargoship
+
+        50 - run vision
+
+        
+    */
+
+    switch (ActionNum)
+    {
+        case 0:
+
+            MecDrive->EncoderReset = false;
+
+            ActionNum = 10;
+        break;
+
+
+        case 10: // Drive Off of platform
+
+            AtCgoShp = MecDrive->DriveToDistance(9700, &fForward);
+
+            if (AtCgoShp)
+            {
+                AtCgoShpCounter++;
+            }
+            else
+            {
+                AtCgoShpCounter = 0;
+            }
+            
+            if (AtCgoShpCounter > 5)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 20;
+                AtCgoShpCounter = 0;
+            }            
+        break;
+
+        case 20 :
+            fForward = 0;
+            fStrafe = 0;
+
+            pRobot->Nav.SetCommandYaw(-5);
+
+            if (!pRobot->Nav.GetPresetTurning(2))
+            {
+                ActionNum = 30;
+                SectionStart = AutoCounter;
+            }
+
+        MecDrive->EncoderReset = false;
+        break;
+
+        case 30: // Drive Off of platform
+
+            AtCgoShp = MecDrive->DriveToDistance(9700, &fForward);
+
+            if (AtCgoShp)
+            {
+                AtCgoShpCounter++;
+            }
+            else
+            {
+                AtCgoShpCounter = 0;
+            }
+            
+            if (AtCgoShpCounter > 5)
+            {
+                SectionStart = AutoCounter;
+                ActionNum = 40;
+                AtCgoShpCounter = 0;
+            }                       
+        break;
+
+        
+        case 40 :
+            fForward = 0;
+            fStrafe = 0;
+
+            pRobot->Nav.SetCommandYaw(-90);
+
+            if (!pRobot->Nav.GetPresetTurning())
+            {
+                ActionNum = 50;
+                SectionStart = AutoCounter;
+            }
+        break;
+
+        case 50 :
+            TeleopAuto->AutoLineUp(&fForward, &fStrafe, &fRotate);
+            FieldOrientedDrive = false;
+        break;
+
+        default:
+        case -1 :
+            fForward = 0;
+            fStrafe = 0;
+
+        break;
+    }
+
+    if (AutoCounter == 0)
+    {
+
+        pRobot->Nav.ResetYaw();
+    }
+    fRotate = pRobot->Nav.GetRotate();
+    
+    MecDrive->Drive(fForward, fStrafe, fRotate, FieldOrientedDrive);
+
+    SmartDashboard::PutNumber("Auto Section", ActionNum);
+    AutoCounter++;
+}
+
+void Autonomous::Auto5Init()
+{
+    AutoNumber = 5;
+    ActionNum  = 0;
+    AutoCounter = 0;
+    SectionStart = 0;
+
+    pRobot->DriverCmd.CMDElevatorHeight = DriverCommands::ElevatorHeight::CargoShip;
+    pRobot->DriverCmd.CMDElevatorMode = DriverCommands::ElevatorMode::Cargo;
+}
+
 void Autonomous::AutoInit()
 {
     pRobot->AutoMode = pRobot->AutoChooser.GetSelected();
@@ -655,6 +796,9 @@ void Autonomous::Auto()
         break;
         case 4:
         Auto4();
+        break;
+        case 5:
+        Auto5();
         break;
     }
 }

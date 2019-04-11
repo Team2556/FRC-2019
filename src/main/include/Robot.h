@@ -79,5 +79,6 @@ cs::UsbCamera         UsbCamera2;
   const std::string Auto2 = "Left Rocket Back";
   const std::string Auto3 = "Left Cargoship Close";
   const std::string Auto4 = "Left Cargoship w/ Encoder";
+  const std::string Auto5 = "Right Cargoship w/ Encoder";
   std::string AutoMode;
 };
