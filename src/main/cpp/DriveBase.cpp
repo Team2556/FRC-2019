@@ -593,5 +593,4 @@ float DriveBase::EncoderTest()
     {
         pRobot->MotorControl_LR.SetSelectedSensorPosition(0);
     }
-    frc::SmartDashboard::PutNumber("Drive Encoder", pRobot->MotorControl_LR.GetSelectedSensorPosition());
 }

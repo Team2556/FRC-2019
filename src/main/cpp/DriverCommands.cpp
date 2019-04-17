@@ -208,7 +208,7 @@ float DriverCommands::fElevatorUpDownSpeed()
     else 
         fUpDownSpeed = -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
 
-    return fUpDownSpeed*0.7;
+    return fUpDownSpeed*0.35;
     }
 
 

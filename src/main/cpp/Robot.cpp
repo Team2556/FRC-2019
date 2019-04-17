@@ -61,14 +61,7 @@ void Robot::RobotInit() {
     pVisionThread = new std::thread(&CameraTrack::TrackThread, &CameraTrk);
 #endif
 #endif
-#ifdef TestValues
-  int period = frc::SmartDashboard::GetNumber("Shuffle Period", 1);
-  //frc::SmartDashboard::PutNumber("Shuffle Period", period);// time betwwen full shuffles
-  int delay = frc::SmartDashboard::GetNumber("Switch Delay", 1);
-  //frc::SmartDashboard::PutNumber("Switch Delay", delay);// delay between raising and droping front pistons
-  double speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
-  frc::SmartDashboard::PutNumber("Roller Speed", speed);
-#endif
+
 
     AutoChooser.SetDefaultOption(AutoTeleop, AutoTeleop);
     AutoChooser.AddOption(Auto1, Auto1);
@@ -112,7 +105,6 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic() 
 {
   Autos->Auto(); 
-  SmartDashboard::PutNumber("Motor Encoder", MotorControl_LR.GetSelectedSensorPosition());
 }
 
 // ----------------------------------------------------------------------------

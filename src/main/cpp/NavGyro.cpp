@@ -92,8 +92,6 @@ void NavGyro::UpdateValues()
 	float fAccelY    = pNavX->GetRawAccelY();
 	int   UpdateRate = pNavX->GetRequestedUpdateRate();
 	bool  bMoving    = pNavX->IsMoving();
-
-	SmartDashboard::PutNumber("Is Moving", bMoving);
 	pNavX->UpdateDisplacement(fAccelX,fAccelY,UpdateRate,true);
 }
 #endif
