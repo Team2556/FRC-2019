@@ -334,31 +334,7 @@ int Elevator::IntakeOuttake()
         }
 
         // make sure the hatch pistons are in
-        //rollerPiston->Set(frc::DoubleSolenoid::Value::kForward);
-    }
-
-    if (CMDMode == DriverCommands::ElevatorMode::Hatch && CMDHeight == DriverCommands::ElevatorHeight::GroundPickup)
-    {
-        if (pRobot->HatchPickupLimitLeft.Get() && pRobot->HatchPickupLimitRight.Get())
-        {
-            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Good");
-        }
-        else if (pRobot->HatchPickupLimitLeft.Get())
-        {
-            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Right");
-        }
-        else if (pRobot->HatchPickupLimitRight.Get())
-        {
-            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Turn Left");
-        }
-        else
-        {
-            frc::SmartDashboard::PutString("Hatch Lineup Guide", "Go Forward");
-        }
-    }
-    else
-    {
-        frc::SmartDashboard::PutString("Hatch Lineup Guide", "Not Hatch Pickup");
+        HatchPiston->Set(frc::DoubleSolenoid::Value::kReverse);;
     }
 
     return ElevatorOffset;
