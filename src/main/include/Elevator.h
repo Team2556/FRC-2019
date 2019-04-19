@@ -43,6 +43,7 @@ class Elevator {
 
   //Variables
   float speed = frc::SmartDashboard::GetNumber("Roller Speed", .5);
+  float CMDWristPos = 496;
   DriverCommands::ElevatorHeight    CMDHeight;
   DriverCommands::ElevatorMode      CMDMode;
 

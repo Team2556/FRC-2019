@@ -105,6 +105,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic() 
 {
   Autos->Auto(); 
+  frc::SmartDashboard::PutString("Auto Version", AutoChooser.GetSelected());
 }
 
 // ----------------------------------------------------------------------------

@@ -2,10 +2,10 @@
 
 
 // Hatch Values
-#define         TOP_HATCH           1111
-#define         MID_HATCH           554
-#define         LOW_HATCH           20
-#define         CGOSHP_HATCH        0 //cargo ship hatch
+#define         TOP_HATCH           1290
+#define         MID_HATCH           700
+#define         LOW_HATCH           130
+#define         CGOSHP_HATCH        20 //cargo ship hatch
 
 
 // Cargo Values
@@ -16,7 +16,7 @@
 
 
 // Pickup Values
-#define         HATCH_PKUP          0
+#define         HATCH_PKUP          130
 #define         GND_HATCH_PKUP      14
 #define         GND_HATCH_OFFSET    0
 #define         CARGO_PICKUP        392

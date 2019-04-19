@@ -77,7 +77,7 @@ void TeleopControl::TeleopDrive()
     if (pRobot->DriverCmd.GetLineUp())
     {
         SmartDashboard::PutBoolean("Auto Line Up", true);
-        this->AutoLineUp(&fForward, &fStrafe, &fRotate);
+        fStrafe = pRobot->LineTracker.GetStrafe(fStrafe);
         bFOD = false;
     }
     else 
@@ -102,7 +102,7 @@ void TeleopControl::TeleopDrive()
 
     MecDrive->Drive(fForward, fStrafe, fRotate, bFOD);
 
-
+    frc::SmartDashboard::PutNumber("Drive Encoder", pRobot->MotorControl_LR.GetSelectedSensorPosition());
 }
 
 void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate)
@@ -213,7 +213,7 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
 
             if (StopCounter >= 5 && fabs(pRobot->Nav.GetYawError()) < 4)
             {
-                AutoLineUpState = 25;
+                AutoLineUpState = -1;
                 StopCounter = 0;
             }
         break;
@@ -273,20 +273,6 @@ void TeleopControl::AutoLineUp(float * fForward, float * fStrafe, float *fRotate
 
 void TeleopControl::TeleopElevator()
 {
-    if (pRobot->DriverCmd.GetLineUp())
-    {
-        if (!(AutoLineUpState > 25))
-        {
-            ControlElevator->ElevatorControl(DriverCommands::ElevatorHeight::Low, DriverCommands::ElevatorMode::Hatch, true);
-        }
-        else
-        {
-            ControlElevator->ElevatorControl(pRobot->DriverCmd.GetElevatorHeight(), pRobot->DriverCmd.GetElevatorMode(), true);
-        }
-        
-    }
-    else
-    {
-        ControlElevator->ElevatorControls();
-    }
+    
+    ControlElevator->ElevatorControls();
 }

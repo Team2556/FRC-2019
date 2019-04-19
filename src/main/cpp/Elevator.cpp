@@ -187,7 +187,7 @@ void Elevator::ElevatorControls()
     CMDMode   = pRobot->DriverCmd.GetElevatorMode();
     WristControl(CMDHeight, CMDMode, pRobot->DriverCmd.bAutomaticElevator());
     int ElevatorOffset = IntakeOuttake();
-    ElevatorControl(CMDHeight, CMDMode, pRobot->DriverCmd.bAutomaticElevator());
+    ElevatorControl(CMDHeight, CMDMode, pRobot->DriverCmd.bTestButton(1));
     ElevatorTilt(pRobot->DriverCmd.bElevatorTilt());
 
     frc::SmartDashboard::PutNumber("Elevator Encoder", ElevatorUpDown.GetSelectedSensorPosition());
@@ -199,7 +199,34 @@ void Elevator::ElevatorControls()
 
 bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommands::ElevatorMode Mode, bool Automatic) // 
 {
+    static bool Manual = true;
     
+    if (fabs(-pRobot->DriverCmd.fTestValue(3))> .5)
+    {
+        Manual = true;
+    }
+
+    if (Automatic)
+    {
+        Manual = false;
+    }
+
+    if (Manual)
+    {
+        Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));
+    }
+    else
+    {
+        Wrist.Set(ControlMode::Position, WRIST_MID);
+    }
+    
+    
+    if (Automatic)
+    {
+        CMDWristPos = WRIST_MID;
+    }
+
+    /*
     if (!Automatic)
     {
     Wrist.Set(ControlMode::PercentOutput, -(pRobot->DriverCmd.fTestValue(3)));// testing until we get a pot on the wrist
@@ -280,6 +307,7 @@ bool Elevator::WristControl(DriverCommands::ElevatorHeight Height, DriverCommand
         Wrist.Set(ControlMode::Position, RollerPos);
 
     }
+    */
 
 }
 
@@ -334,7 +362,7 @@ int Elevator::IntakeOuttake()
         }
 
         // make sure the hatch pistons are in
-        HatchPiston->Set(frc::DoubleSolenoid::Value::kReverse);;
+        HatchPiston->Set(frc::DoubleSolenoid::Value::kForward);;
     }
 
     return ElevatorOffset;

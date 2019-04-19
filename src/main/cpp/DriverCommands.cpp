@@ -33,10 +33,9 @@ DriverCommands::DriverCommands()
 
 bool DriverCommands::GetClimbMode() // this determines whether we are in the process of climbing at the moment
 {
-    bool ClimbMode = false;
     if (Xbox1.GetBumperPressed(frc::XboxController::kRightHand))
     {
-        ClimbMode = !ClimbMode;   
+        ClimbMode = !ClimbMode;
     }
     
     return ClimbMode;
@@ -208,7 +207,7 @@ float DriverCommands::fElevatorUpDownSpeed()
     else 
         fUpDownSpeed = -Xbox2.GetTriggerAxis(frc::XboxController::kLeftHand);
 
-    return fUpDownSpeed*0.35;
+    return fUpDownSpeed*0.7;
     }
 
 

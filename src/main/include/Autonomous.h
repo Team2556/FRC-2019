@@ -34,6 +34,8 @@ class Autonomous {
   void Auto4Init();
   void Auto5();
   void Auto5Init();
+  void Auto6();
+  void Auto6Init();
   bool GetOffHab(float *fForward, float *fStrafe, bool *bFOD);
   bool ZeroElevator();
 
